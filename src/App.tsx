@@ -1,13 +1,31 @@
 import "./App.css"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+
+import Login from "./pages/Login"
 import UserForm from "./components/UserForm"
+
 function App() {
 
   return (
-    <div>
-      <h1>Sistema de Achados e Perdidos</h1>
 
-      <UserForm/>
-    </div>
+    <BrowserRouter>
+
+      <div>
+
+        <h1>Sistema de Achados e Perdidos</h1>
+
+        <Routes>
+
+          <Route path="/" element={<Login />} />
+
+          <Route path="/cadastro" element={<UserForm />} />
+
+        </Routes>
+
+      </div>
+
+    </BrowserRouter>
+
   )
 
 }
