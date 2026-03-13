@@ -1,4 +1,4 @@
-import { User } from "../types/User.ts"
+import type { User } from "../types/User.ts"
 
 const API_URL = "http://localhost:8080/users"
 

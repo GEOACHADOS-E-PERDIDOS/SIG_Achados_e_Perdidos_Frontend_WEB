@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { createUser } from "../services/userService"
-import { User } from "../types/User"
+import type { User } from "../types/User"
 
 function UserForm() {
 
