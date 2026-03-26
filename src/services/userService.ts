@@ -1,6 +1,6 @@
 import type { User } from "../types/User.ts"
 
-const API_URL = "http://localhost:8080/users"
+const API_URL = "http://localhost:8080/auth/registrar"
 
 export async function createUser(user: User): Promise<User> {
 
