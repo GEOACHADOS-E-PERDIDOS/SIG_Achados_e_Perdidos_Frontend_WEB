@@ -1,36 +1,53 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Login.css"; // CSS para estilização
 
 function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
 
-  const navigate = useNavigate()
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro("");
 
-  const [email, setEmail] = useState("")
-  const [senha, setSenha] = useState("")
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        email,
+        senha
+      });
 
-  const handleLogin = (e: React.FormEvent) => {
+      console.log("Resposta do backend:", response.data);
 
-    e.preventDefault()
+      // Aqui você pode extrair o token se quiser salvar:
+      // const token = response.data.split("Token: ")[1];
+      // localStorage.setItem("token", token);
 
-    console.log("Login:", email, senha)
+      alert("Login realizado com sucesso!");
+      navigate("/"); // envia para a página inicial após login
 
-    alert("Login ainda não implementado")
-
-  }
+    } catch (err: any) {
+      console.error(err);
+      if (err.response) {
+        setErro(err.response.data); // mensagem de erro do backend
+      } else {
+        setErro("Erro ao conectar com o servidor");
+      }
+    }
+  };
 
   const irParaCadastro = () => {
-    navigate("/cadastro")
-  }
+    navigate("/cadastro"); // envia para a página de cadastro
+  };
 
   return (
-
-    <div>
-
-      <h1>GeoAchados</h1>
-
+    <div className="login-box">
+      <h2>Login</h2>
+      {erro && <p className="erro">{erro}</p>}
       <form onSubmit={handleLogin}>
-
-        <div>
+        <div className="form-group">
           <label>Email</label>
           <input
             type="email"
@@ -40,7 +57,7 @@ function Login() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Senha</label>
           <input
             type="password"
@@ -50,22 +67,14 @@ function Login() {
           />
         </div>
 
-        <button type="submit">
-          Entrar
-        </button>
-
+        <button type="submit">Entrar</button>
       </form>
 
-      <br />
-
-      <button onClick={irParaCadastro}>
-        Cadastrar novo usuário
+      <button className="cadastro-btn" onClick={irParaCadastro}>
+        Crie sua conta
       </button>
-
     </div>
-
-  )
-
+  );
 }
 
-export default Login
+export default Login;

@@ -60,3 +60,52 @@ button {
 button:hover {
   background-color: #005fa3;
 }
+
+.cadastro-btn {
+  width: 350px;
+  display: block;
+  margin: 10px auto;
+}
+
+.logo {
+  display: block;        /* para centralizar */
+  margin: 10px auto 5px auto;     /* centraliza horizontalmente e dá espaço acima/abaixo */
+  width: 500px;          /* ajuste a largura que quiser */
+  height: auto;          /* mantém proporção */
+}
+
+.home-container {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.home-logo {
+  width: 300px;
+  max-width: 80%;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.home-buttons {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.home-buttons button {
+  width: 200px;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.home-buttons button:hover {
+  background-color: #1976d2;
+}
