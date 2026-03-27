@@ -4,7 +4,7 @@ import logo from './assets/LOGO_geoachados.png';
 
 import Home from "./pages/Home";       // Página inicial
 import Login from "./pages/Login";     // Tela de login
-import UserForm from "./components/UserForm"; // Tela de cadastro
+import CadastroPage from "./pages/CadastroPage"; // Tela de cadastro
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />          {/* Página inicial */}
           <Route path="/login" element={<Login />} />   {/* Login */}
-          <Route path="/cadastro" element={<UserForm />} /> {/* Cadastro */}
+          <Route path="/cadastro" element={<CadastroPage />} /> {/* Cadastro */}
         </Routes>
       </div>
     </BrowserRouter>

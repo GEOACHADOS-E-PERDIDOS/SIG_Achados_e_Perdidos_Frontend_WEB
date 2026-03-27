@@ -1,31 +1,27 @@
+import { useNavigate } from "react-router-dom";
 import type { User } from "../types/User.ts"
 
 const API_URL = "http://localhost:8080/auth/registrar"
 
-export async function createUser(user: User): Promise<User> {
-
+export async function createUser(user: User): Promise<string> {
   const response = await fetch(API_URL, {
-
     method: "POST",
-
     headers: {
       "Content-Type": "application/json"
     },
-
     body: JSON.stringify({
       name: user.name,
       email: user.email,
       senhaHash: user.senha,
       isAdmin: user.isAdmin ?? false
     })
-
-  })
+  });
 
   if (!response.ok) {
-    throw new Error("Erro ao cadastrar usuário")
+    const erro = await response.text(); 
+    throw new Error(erro || "Erro ao cadastrar usuário");
   }
-
-  return response.json()
+  return response.text(); 
 }
 
 export async function getUsers(): Promise<User[]> {

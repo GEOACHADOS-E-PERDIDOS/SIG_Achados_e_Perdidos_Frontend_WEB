@@ -8,6 +8,7 @@ function Home() {
   const irParaAchados = () => navigate("/achados");
   const irParaPerdidos = () => navigate("/perdidos");
   const irParaPerfil = () => navigate("/perfil");
+  const irParaLogin = () => navigate("/login")
 
   return (
     <div className="home-container">
@@ -19,6 +20,7 @@ function Home() {
         <button onClick={irParaAchados}>Ver Achados</button>
         <button onClick={irParaPerdidos}>Ver Perdidos</button>
         <button onClick={irParaPerfil}>Meu Perfil</button>
+        <button onClick={irParaLogin}>Login</button>
       </div>
     </div>
   );

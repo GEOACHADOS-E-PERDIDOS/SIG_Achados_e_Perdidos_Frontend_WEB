@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { createUser } from "../services/userService"
 import type { User } from "../types/User"
+import { useNavigate } from "react-router-dom"
 
-function UserForm() {
+function CadastroPage() {
+  const navigate = useNavigate() // hook para navegação
 
   const [user, setUser] = useState<User>({
     name: "",
@@ -12,28 +14,21 @@ function UserForm() {
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
     const { name, value, type, checked } = e.target
-
     setUser({
       ...user,
       [name]: type === "checkbox" ? checked : value
     })
-
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault()
-
     try {
-
       const newUser = await createUser(user)
-
       console.log("Usuário criado:", newUser)
-
       alert("Usuário cadastrado com sucesso!")
 
+      // Limpa formulário
       setUser({
         name: "",
         email: "",
@@ -41,22 +36,18 @@ function UserForm() {
         isAdmin: false
       })
 
+      // Redireciona para página inicial
+      navigate("/")
+
     } catch (error) {
-
       console.error(error)
-
       alert("Erro ao cadastrar usuário")
-
     }
-
   }
 
   return (
-
     <form onSubmit={handleSubmit}>
-
       <h2>Cadastro de Usuário</h2>
-
       <div>
         <label>Nome</label>
         <input
@@ -103,11 +94,8 @@ function UserForm() {
       <button type="submit">
         Cadastrar
       </button>
-
     </form>
-
   )
-
 }
 
-export default UserForm
+export default CadastroPage

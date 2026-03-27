@@ -7,30 +7,28 @@ function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [token, setToken] = useState(""); // estado para armazenar token
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
-        email,
-        senha
-      });
+      const response = await axios.post("http://localhost:8080/auth/login", { email, senha });
 
-      console.log("Resposta do backend:", response.data);
+      const bearerToken = response.data.token;
 
-      // Aqui você pode extrair o token se quiser salvar:
-      // const token = response.data.split("Token: ")[1];
-      // localStorage.setItem("token", token);
+      localStorage.setItem("token", bearerToken);
+
+      setToken(bearerToken);
 
       alert("Login realizado com sucesso!");
-      navigate("/"); // envia para a página inicial após login
+      navigate("/");
 
     } catch (err: any) {
       console.error(err);
       if (err.response) {
-        setErro(err.response.data); // mensagem de erro do backend
+        setErro(err.response.data);
       } else {
         setErro("Erro ao conectar com o servidor");
       }
@@ -38,14 +36,15 @@ function Login() {
   };
 
   const irParaCadastro = () => {
-    navigate("/cadastro"); // envia para a página de cadastro
+    navigate("/cadastro");
   };
 
   return (
     <div className="login-box">
-      <h2>Login</h2>
       {erro && <p className="erro">{erro}</p>}
+
       <form onSubmit={handleLogin}>
+        <h2>Login</h2>
         <div className="form-group">
           <label>Email</label>
           <input
@@ -72,6 +71,13 @@ function Login() {
       <button className="cadastro-btn" onClick={irParaCadastro}>
         Crie sua conta
       </button>
+
+      {token && (
+        <div style={{ marginTop: "1rem" }}>
+          <label>Bearer Token:</label>
+          <input type="text" value={token} readOnly style={{ width: "100%" }} />
+        </div>
+      )}
     </div>
   );
 }
