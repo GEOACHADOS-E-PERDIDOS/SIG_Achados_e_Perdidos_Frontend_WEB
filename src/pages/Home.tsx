@@ -1,18 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import logo from "../assets/LOGO_geoachados.png";
-import { useNavigate } from "react-router-dom";
-
-const navigate = useNavigate();
-
-const irParaHome = () => navigate("/");
-const irParaAchados = () => navigate("/achados");
-const irParaPerdidos = () => navigate("/perdidos");
-const irParaPerfil = () => navigate("/perfil");
-const sair = () => {
-  localStorage.removeItem("token"); // limpa token ao sair
-  navigate("/login"); // redireciona para login
-};
 
 function Home() {
 
@@ -81,13 +69,13 @@ function Home() {
       </div>
 
       {/* MENU LATERAL */}
-     <div className={`sidebar ${menuAberto ? "open" : ""}`}>
-      <button onClick={irParaHome}>Home</button>
-      <button onClick={irParaAchados}>Achados</button>
-      <button onClick={irParaPerdidos}>Perdidos</button>
-      <button onClick={irParaPerfil}>Meu Perfil</button>
-      <button onClick={sair}>Sair</button>
-     </div>  
+      <div className={`sidebar ${menuAberto ? "open" : ""}`}>
+        <button>Home</button>
+        <button>Achados</button>
+        <button>Perdidos</button>
+        <button>Meu Perfil</button>
+        <button>Sair</button>
+      </div>
 
       {/* BOTÃO + */}
       <div className="add-button" onClick={() => setPopupAberto(true)}>
