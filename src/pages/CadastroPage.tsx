@@ -10,8 +10,7 @@ function CadastroPage() {
   const [user, setUser] = useState<User>({
     name: "",
     email: "",
-    senha: "",
-    isAdmin: false
+    senha: ""
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +33,6 @@ function CadastroPage() {
         name: "",
         email: "",
         senha: "",
-        isAdmin: false
       })
 
       // Redireciona para página inicial
@@ -89,16 +87,6 @@ return (
             value={user.senha}
             onChange={handleChange}
             required
-          />
-        </div>
-
-        <div>
-          <label>Administrador</label>
-          <input
-            type="checkbox"
-            name="isAdmin"
-            checked={user.isAdmin}
-            onChange={handleChange}
           />
         </div>
 

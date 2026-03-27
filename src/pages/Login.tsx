@@ -8,7 +8,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
-  const [token, setToken] = useState(""); // estado para armazenar token
+  const [token, setToken] = useState(""); 
+  const [isTemp, setIsTemp] = useState(false); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,29 +19,29 @@ function Login() {
       const response = await axios.post("http://localhost:8080/auth/login", { email, senha });
 
       const bearerToken = response.data.token;
+      const senhaTemporaria = response.data.isTemp; 
 
       localStorage.setItem("token", bearerToken);
-
+      localStorage.setItem("isTemp", senhaTemporaria); 
       setToken(bearerToken);
+      setIsTemp(senhaTemporaria);
 
-      alert("Login realizado com sucesso!");
       navigate("/home");
 
     } catch (err: any) {
       console.error(err);
       if (err.response) {
-        setErro(err.response.data);
+        setErro(err.response.data.erro || err.response.data); // trata string ou objeto
       } else {
         setErro("Erro ao conectar com o servidor");
       }
     }
   };
 
-  const irParaCadastro = () => {
-    navigate("/cadastro");
-  };
+  const irParaCadastro = () => navigate("/cadastro");
+  const irParaRecuperarSenha = () => navigate("/recuperar-senha");
 
-    return (
+  return (
     <div className="login-container">
 
       <img src={logo} alt="GeoAchados e Perdidos" className="logo-login" />
@@ -79,12 +80,10 @@ function Login() {
           Crie sua conta
         </button>
 
-        {token && (
-          <div style={{ marginTop: "1rem" }}>
-            <label>Bearer Token:</label>
-            <input type="text" value={token} readOnly style={{ width: "100%" }} />
-          </div>
-        )}
+        <button className="cadastro-btn" onClick={irParaRecuperarSenha}>
+          Esqueci a senha
+        </button>
+        
 
       </div>
     </div>
