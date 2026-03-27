@@ -24,7 +24,7 @@ function Login() {
       setToken(bearerToken);
 
       alert("Login realizado com sucesso!");
-      navigate("/");
+      navigate("/home");
 
     } catch (err: any) {
       console.error(err);
