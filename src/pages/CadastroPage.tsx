@@ -2,6 +2,7 @@ import { useState } from "react"
 import { createUser } from "../services/userService"
 import type { User } from "../types/User"
 import { useNavigate } from "react-router-dom"
+import logo from '../assets/LOGO_geoachados.png';
 
 function CadastroPage() {
   const navigate = useNavigate() // hook para navegação
@@ -45,57 +46,69 @@ function CadastroPage() {
     }
   }
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <h2>Cadastro de Usuário</h2>
-      <div>
-        <label>Nome</label>
-        <input
-          type="text"
-          name="name"
-          value={user.name}
-          onChange={handleChange}
-          required
-        />
-      </div>
+return (
+  <div className="login-container">
 
-      <div>
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={user.email}
-          onChange={handleChange}
-          required
-        />
-      </div>
+    <img
+      src={logo}
+      alt="GeoAchados e Perdidos"
+      className="logo-login"
+    />
 
-      <div>
-        <label>Senha</label>
-        <input
-          type="password"
-          name="senha"
-          value={user.senha}
-          onChange={handleChange}
-          required
-        />
-      </div>
+    <div className="login-box">
+      <form onSubmit={handleSubmit}>
+        <h2>Cadastro de Usuário</h2>
 
-      <div>
-        <label>Administrador</label>
-        <input
-          type="checkbox"
-          name="isAdmin"
-          checked={user.isAdmin}
-          onChange={handleChange}
-        />
-      </div>
+        <div>
+          <label>Nome</label>
+          <input
+            type="text"
+            name="name"
+            value={user.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-      <button type="submit">
-        Cadastrar
-      </button>
-    </form>
-  )
+        <div>
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={user.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div>
+          <label>Senha</label>
+          <input
+            type="password"
+            name="senha"
+            value={user.senha}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div>
+          <label>Administrador</label>
+          <input
+            type="checkbox"
+            name="isAdmin"
+            checked={user.isAdmin}
+            onChange={handleChange}
+          />
+        </div>
+
+        <button type="submit">
+          Cadastrar
+        </button>
+      </form>
+    </div>
+
+  </div>
+);
 }
-
 export default CadastroPage

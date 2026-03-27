@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import logo from '../assets/LOGO_geoachados.png';
 
 function Login() {
   const navigate = useNavigate();
@@ -39,45 +40,53 @@ function Login() {
     navigate("/cadastro");
   };
 
-  return (
-    <div className="login-box">
-      {erro && <p className="erro">{erro}</p>}
+    return (
+    <div className="login-container">
 
-      <form onSubmit={handleLogin}>
-        <h2>Login</h2>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+      <img src={logo} alt="GeoAchados e Perdidos" className="logo-login" />
 
-        <div className="form-group">
-          <label>Senha</label>
-          <input
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            required
-          />
-        </div>
+      <div className="login-box">
 
-        <button type="submit">Entrar</button>
-      </form>
+        {erro && <p className="erro">{erro}</p>}
 
-      <button className="cadastro-btn" onClick={irParaCadastro}>
-        Crie sua conta
-      </button>
+        <form onSubmit={handleLogin}>
+          <h2>Login</h2>
 
-      {token && (
-        <div style={{ marginTop: "1rem" }}>
-          <label>Bearer Token:</label>
-          <input type="text" value={token} readOnly style={{ width: "100%" }} />
-        </div>
-      )}
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Senha</label>
+            <input
+              type="password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit">Entrar</button>
+        </form>
+
+        <button className="cadastro-btn" onClick={irParaCadastro}>
+          Crie sua conta
+        </button>
+
+        {token && (
+          <div style={{ marginTop: "1rem" }}>
+            <label>Bearer Token:</label>
+            <input type="text" value={token} readOnly style={{ width: "100%" }} />
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
