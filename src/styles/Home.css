@@ -8,10 +8,19 @@
 .home-page {
   height: 100vh;
   padding-top: 60px; /* espaço da topbar */
+    position: relative;
 }
 
 /* mapa ocupa tudo */
 .leaflet-container {
   height: 100%;
   width: 100%;
+}
+
+
+.add-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
