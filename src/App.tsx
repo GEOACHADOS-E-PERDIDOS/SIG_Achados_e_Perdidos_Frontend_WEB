@@ -8,6 +8,7 @@ import ObjetosPage from "./pages/ObjetosPage";
 import PrivateRoute from "./components/PrivateRoute";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import AlterarSenhaPage from "./pages/AlterarSenhaPage";
+import UsuariosPage from "./pages/UsuariosPage";
 
 function App() {
   return (
@@ -19,7 +20,9 @@ function App() {
         {/*Rotas Privadas*/}
         <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>}/>
         <Route          path="/objetos"element={<PrivateRoute><ObjetosPage /></PrivateRoute>}/>
-        <Route path="/alterar-senha" element={<PrivateRoute><AlterarSenhaPage /></PrivateRoute>}/>
+        <Route path="/usuarios" element={<PrivateRoute adminOnly><UsuariosPage /></PrivateRoute>}/>
+
+        <Route path="/alterar-senha" element={<PrivateRoute ><AlterarSenhaPage /></PrivateRoute>}/>
       </Routes>
     </BrowserRouter>
   );

@@ -1,21 +1,38 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 interface PrivateRouteProps {
-  children: React.ReactNode; // aceita JSX.Element ou vários elementos
+  children: React.ReactNode; 
+  adminOnly?: boolean; 
 }
 
-const PrivateRoute = ({ children }: PrivateRouteProps) => {
+const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
   const token = localStorage.getItem("token"); 
   const isTemp = localStorage.getItem("isTemp") === "true"; 
+  const location = useLocation();
 
-  if (!token) {
-    return <Navigate to="/" replace />;
-  }
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null); 
 
+  useEffect(() => {
+    if (adminOnly && token) {
+      axios
+      .get("http://localhost:8080/auth/admin/check", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setIsAdmin(res.data))
+      .catch(() => setIsAdmin(false));
+    } else if (!adminOnly) {
+      setIsAdmin(false); 
+    }
+  }, [adminOnly, token]);
+
+
+  if (!token) return <Navigate to="/" replace />;
   if (isTemp && location.pathname !== "/alterar-senha") {
     return <Navigate to="/alterar-senha" replace />;
   }
+  if (adminOnly && !isAdmin) return <Navigate to="/home" replace />; 
 
   return <>{children}</>;
 };

@@ -1,0 +1,5 @@
+.popup-box {
+  width: 600px;      /* 👈 aumenta a largura */
+  max-width: 90%;    /* 👈 responsivo (não estoura em telas menores) */
+  padding: 20px;
+}
