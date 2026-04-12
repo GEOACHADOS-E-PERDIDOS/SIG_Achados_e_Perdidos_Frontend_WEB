@@ -54,46 +54,46 @@ function Objetos() {
       console.error("Erro ao listar objetos:", error);
     }
   };
-const handleBuscar = async () => {
-  try {
-    let url = "http://localhost:8080/objetos/buscar?";
-    if (buscaNome) url += `nome=${buscaNome}&`;
-    if (buscaData) url += `data=${buscaData}&`;
+  const handleBuscar = async () => {
+    try {
+      let url = "http://localhost:8080/objetos/buscar?";
+      if (buscaNome) url += `nome=${buscaNome}&`;
+      if (buscaData) url += `data=${buscaData}&`;
 
-    const res = await axios.get(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const objsComImagens = await Promise.all(
-      res.data.map(async (obj: any) => {
-        if (obj.caminhoImagem) {
-          try {
-            const imgRes = await axios.get(
-              `http://localhost:8080/uploads/${obj.caminhoImagem}`,
-              { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" }
-            );
-            const url = URL.createObjectURL(imgRes.data);
-            return { ...obj, imagemUrl: url };
-          } catch {
+      const objsComImagens = await Promise.all(
+        res.data.map(async (obj: any) => {
+          if (obj.caminhoImagem) {
+            try {
+              const imgRes = await axios.get(
+                `http://localhost:8080/uploads/${obj.caminhoImagem}`,
+                { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" }
+              );
+              const url = URL.createObjectURL(imgRes.data);
+              return { ...obj, imagemUrl: url };
+            } catch {
+              return { ...obj, imagemUrl: null };
+            }
+          } else {
             return { ...obj, imagemUrl: null };
           }
-        } else {
-          return { ...obj, imagemUrl: null };
-        }
-      })
-    );
+        })
+      );
 
-    setObjetos(objsComImagens);
-  } catch (err) {
-    console.error("Erro ao buscar objetos:", err);
-  }
-};
+      setObjetos(objsComImagens);
+    } catch (err) {
+      console.error("Erro ao buscar objetos:", err);
+    }
+  };
 
-const handleLimpar = () => {
-  setBuscaNome("");
-  setBuscaData("");
-  listarObjetos(); 
-};
+  const handleLimpar = () => {
+    setBuscaNome("");
+    setBuscaData("");
+    listarObjetos();
+  };
   useEffect(() => {
     listarObjetos();
   }, []);
@@ -154,6 +154,12 @@ const handleLimpar = () => {
               <p>{obj.descricao}</p>
               <p><strong>Endereço:</strong> {obj.enderecoEncontro}</p>
               <p><strong>Data:</strong> {obj.dataEncontro}</p>
+              <p>
+                <strong>Categorias:</strong>{" "}
+                {obj.categorias && obj.categorias.length > 0
+                  ? obj.categorias.map((cat: any) => cat.nome).join(", ")
+                  : "Sem categoria"}
+              </p>
             </div>
 
             {/* Ícone de deletar */}
