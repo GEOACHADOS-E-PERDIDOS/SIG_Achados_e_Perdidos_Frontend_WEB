@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/LOGO_geoachados.png";
 import "../styles/Topbar.css";
 
 function Topbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [menuAberto, setMenuAberto] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
-  const irParaAchados = () => navigate("/objetos");
 
   const sair = () => {
     localStorage.removeItem("token");
@@ -35,6 +34,13 @@ function Topbar() {
     checarAdmin();
   }, []);
 
+  // 🔥 MENU DINÂMICO
+  const menuItems = [
+    { path: "/home", label: "Home" },
+    { path: "/objetos", label: "Objetos" },
+    { path: "/usuarios", label: "Usuários", admin: true }
+  ];
+
   return (
     <>
       {/* TOPO */}
@@ -51,13 +57,23 @@ function Topbar() {
 
       {/* MENU LATERAL */}
       <div className={`sidebar ${menuAberto ? "open" : ""}`}>
-        <button onClick={irParaAchados}>Objetos</button>
+        
+        {menuItems.map((item) => {
+          if (item.path === location.pathname) return null;
+          if (item.admin && !isAdmin) return null;
 
-        {isAdmin && (
-          <button onClick={() => navigate("/usuarios")}>
-            Usuários
-          </button>
-        )}
+          return (
+            <button
+              key={item.path}
+              onClick={() => {
+                navigate(item.path);
+                setMenuAberto(false); // fecha o menu ao clicar
+              }}
+            >
+              {item.label}
+            </button>
+          );
+        })}
 
         <button onClick={sair}>Sair</button>
       </div>
