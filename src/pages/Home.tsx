@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import logo from "../assets/LOGO_geoachados.png";
+import Topbar from "../components/Topbar";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 import CadastroObjeto from "../components/CadastroObjeto";
@@ -59,31 +59,8 @@ function Home() {
   return (
     <div className="home-page">
 
-      {/* TOPO */}
-      <div className="topbar">
-        <img src={logo} alt="GeoAchados e Perdidos" className="logo-top" />
-
-        <div
-          className="menu-icon"
-          onClick={() => setMenuAberto(!menuAberto)}
-        >
-          ☰
-        </div>
-      </div>
-
-      {/* MENU LATERAL */}
-      <div className={`sidebar ${menuAberto ? "open" : ""}`}>
-        <button onClick={irParaAchados}>Objetos</button>
-
-        {isAdmin && (
-          <button onClick={() => navigate("/usuarios")}>
-            Usuários
-          </button>
-        )}
-
-        <button onClick={sair}>Sair</button>
-      </div>
-
+      {/*Criação do componente TOPBAR */}
+      <Topbar />
       {/* BOTÃO + */}
       <div className="add-button" onClick={() => setPopupAberto(true)}>
         +

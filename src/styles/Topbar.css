@@ -1,0 +1,64 @@
+/* ===== TOPO ===== */
+.topbar {
+  width: 100%;
+  height: 60px;
+  background-color: #0077cc;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.logo-top {
+  height: 40px;
+}
+
+.menu-icon {
+  font-size: 26px;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== MENU LATERAL ===== */
+.sidebar {
+  position: fixed;
+  top: 60px; /* começa abaixo do topo */
+  right: -220px; /* escondido */
+  width: 220px;
+  height: 100%;
+
+  background-color: white;
+  box-shadow: -2px 0px 6px rgba(0,0,0,0.2);
+
+  padding: 15px;
+
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+/* ===== BOTÕES DO MENU ===== */
+.sidebar button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+
+  border: none;
+  border-radius: 5px;
+
+  background-color: #0077cc;
+  color: white;
+
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.sidebar button:hover {
+  background-color: #005fa3;
+}

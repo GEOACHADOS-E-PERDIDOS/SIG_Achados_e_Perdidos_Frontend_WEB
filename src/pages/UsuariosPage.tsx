@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import logo from "../assets/LOGO_geoachados.png";
+import Topbar from "../components/Topbar";
 import deleteIcon from "../assets/delete.svg";
 import { useNavigate } from "react-router-dom";
 import "../styles/Objetos.css"; // você pode criar UsuarioPage.css se quiser
@@ -59,18 +59,7 @@ function UsuariosPage() {
   return (
     <div className="home-page">
       {/* TOPO */}
-      <div className="topbar">
-        <img src={logo} alt="GeoAchados e Perdidos" className="logo-top" />
-        <div className="menu-icon" onClick={() => setMenuAberto(!menuAberto)}>
-          ☰
-        </div>
-      </div>
-
-      {/* SIDEBAR */}
-      <div className={`sidebar ${menuAberto ? "open" : ""}`}>
-        <button onClick={irParaHome}>Home</button>
-        <button onClick={sair}>Sair</button>
-      </div>
+      <Topbar />
 
       {/* LISTA DE USUÁRIOS */}
       <div className="lista-objetos">
