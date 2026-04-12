@@ -3,3 +3,15 @@
   max-width: 90%;    /* 👈 responsivo (não estoura em telas menores) */
   padding: 20px;
 }
+
+/* container principal */
+.home-page {
+  height: 100vh;
+  padding-top: 60px; /* espaço da topbar */
+}
+
+/* mapa ocupa tudo */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}

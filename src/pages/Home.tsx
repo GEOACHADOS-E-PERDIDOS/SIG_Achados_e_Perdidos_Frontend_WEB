@@ -4,6 +4,7 @@ import Topbar from "../components/Topbar";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 import CadastroObjeto from "../components/CadastroObjeto";
+import Mapa from "../components/Mapa";
 
 function Home() {
   const navigate = useNavigate();
@@ -61,6 +62,10 @@ function Home() {
 
       {/*Criação do componente TOPBAR */}
       <Topbar />
+
+      {/* FUNDO */}
+      <Mapa />
+      
       {/* BOTÃO + */}
       <div className="add-button" onClick={() => setPopupAberto(true)}>
         +
@@ -73,8 +78,6 @@ function Home() {
         categorias={categorias}
       />
 
-      {/* FUNDO */}
-      <div className="mapa-fundo"></div>
 
     </div>
   );
