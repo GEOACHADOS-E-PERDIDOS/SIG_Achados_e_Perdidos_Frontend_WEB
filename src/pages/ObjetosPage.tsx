@@ -1,64 +1,87 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Topbar from "../components/Topbar";
-import deleteIcon from "../assets/delete.svg";
-import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 import "../styles/Objetos.css";
+import ObjetoCard from "../components/ObjetoCard";
+
+type CategoriaOption = {
+  value: number; // 👈 ID
+  label: string;
+};
 
 function Objetos() {
-  const navigate = useNavigate();
-  const [menuAberto, setMenuAberto] = useState(false);
   const [objetos, setObjetos] = useState<any[]>([]);
-  const [buscaNome, setBuscaNome] = useState("");
+  const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+
+  const [buscarTermo, setbuscarTermo] = useState("");
   const [buscaData, setBuscaData] = useState("");
+  const [categoriaSelecionada, setCategoriaSelecionada] =
+    useState<CategoriaOption | null>(null);
+
   const token = localStorage.getItem("token");
 
-  const irParaHome = () => navigate("/home");
-  const sair = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
-
-  // Buscar todos os objetos com imagens
+  // =========================
+  // LISTAR OBJETOS
+  // =========================
   const listarObjetos = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/objetos", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const res = await axios.get("http://localhost:8080/objetos", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const objsComImagens = await Promise.all(
-        res.data.map(async (obj: any) => {
-          if (obj.caminhoImagem) {
-            try {
-              const imgRes = await axios.get(
-                `http://localhost:8080/uploads/${obj.caminhoImagem}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                  responseType: "blob",
-                }
-              );
-              const url = URL.createObjectURL(imgRes.data);
-              return { ...obj, imagemUrl: url };
-            } catch (e) {
-              console.error("Erro ao buscar imagem:", obj.caminhoImagem, e);
-              return { ...obj, imagemUrl: null };
+    const objsComImagens = await Promise.all(
+      res.data.map(async (obj: any) => {
+        if (!obj.caminhoImagem) return { ...obj, imagemUrl: null };
+
+        try {
+          const imgRes = await axios.get(
+            `http://localhost:8080/uploads/${obj.caminhoImagem}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+              responseType: "blob",
             }
-          } else {
-            return { ...obj, imagemUrl: null };
-          }
-        })
-      );
+          );
 
-      setObjetos(objsComImagens);
-    } catch (error) {
-      console.error("Erro ao listar objetos:", error);
-    }
+          return {
+            ...obj,
+            imagemUrl: URL.createObjectURL(imgRes.data),
+          };
+        } catch {
+          return { ...obj, imagemUrl: null };
+        }
+      })
+    );
+
+    setObjetos(objsComImagens);
   };
+
+  // =========================
+  // LISTAR CATEGORIAS
+  // =========================
+  const listarCategorias = async () => {
+    const res = await axios.get("http://localhost:8080/categorias", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const options = res.data.map((cat: any) => ({
+      value: cat.id,     // 👈 ID AQUI
+      label: cat.nome,
+    }));
+
+    setCategorias(options);
+  };
+
+  // =========================
+  // BUSCAR
+  // =========================
   const handleBuscar = async () => {
     try {
       let url = "http://localhost:8080/objetos/buscar?";
-      if (buscaNome) url += `nome=${buscaNome}&`;
+
+      if (buscarTermo) url += `termo=${buscarTermo}&`;
       if (buscaData) url += `data=${buscaData}&`;
+      if (categoriaSelecionada)
+        url += `categoria=${categoriaSelecionada.value}&`; // 👈 ID ENVIADO
 
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -66,18 +89,22 @@ function Objetos() {
 
       const objsComImagens = await Promise.all(
         res.data.map(async (obj: any) => {
-          if (obj.caminhoImagem) {
-            try {
-              const imgRes = await axios.get(
-                `http://localhost:8080/uploads/${obj.caminhoImagem}`,
-                { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" }
-              );
-              const url = URL.createObjectURL(imgRes.data);
-              return { ...obj, imagemUrl: url };
-            } catch {
-              return { ...obj, imagemUrl: null };
-            }
-          } else {
+          if (!obj.caminhoImagem) return { ...obj, imagemUrl: null };
+
+          try {
+            const imgRes = await axios.get(
+              `http://localhost:8080/uploads/${obj.caminhoImagem}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: "blob",
+              }
+            );
+
+            return {
+              ...obj,
+              imagemUrl: URL.createObjectURL(imgRes.data),
+            };
+          } catch {
             return { ...obj, imagemUrl: null };
           }
         })
@@ -90,42 +117,36 @@ function Objetos() {
   };
 
   const handleLimpar = () => {
-    setBuscaNome("");
+    setbuscarTermo("");
     setBuscaData("");
+    setCategoriaSelecionada(null);
     listarObjetos();
   };
-  useEffect(() => {
-    listarObjetos();
-  }, []);
 
   const deletarObjeto = async (id: number) => {
-    if (!window.confirm("Deseja realmente deletar este objeto?")) return;
+    await axios.delete(`http://localhost:8080/objetos/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-    try {
-      await axios.delete(`http://localhost:8080/objetos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setObjetos(objetos.filter((obj) => obj.id !== id));
-    } catch (error) {
-      console.error("Erro ao deletar objeto:", error);
-      alert("Não foi possível deletar o objeto.");
-    }
-    handleLimpar();
-    listarObjetos();
+    setObjetos((prev) => prev.filter((obj) => obj.id !== id));
   };
+
+  useEffect(() => {
+    listarObjetos();
+    listarCategorias();
+  }, []);
 
   return (
     <div className="home-page">
-      {/* TOPO */}
       <Topbar />
 
-      {/* FORMULÁRIO DE PESQUISA */}
+      {/* FILTROS */}
       <div className="filtro-container">
         <input
           type="text"
-          placeholder="Buscar por nome"
-          value={buscaNome}
-          onChange={(e) => setBuscaNome(e.target.value)}
+          placeholder="Buscar por termo"
+          value={buscarTermo}
+          onChange={(e) => setbuscarTermo(e.target.value)}
         />
 
         <input
@@ -134,43 +155,29 @@ function Objetos() {
           onChange={(e) => setBuscaData(e.target.value)}
         />
 
+        {/* SELECT CATEGORIA (ID) */}
+        <div style={{ width: 220 }}>
+          <Select
+            options={categorias}
+            value={categoriaSelecionada}
+            onChange={(option) => setCategoriaSelecionada(option)}
+            placeholder="Categoria"
+            isClearable
+          />
+        </div>
+
         <button onClick={handleBuscar}>Buscar</button>
         <button onClick={handleLimpar}>Limpar</button>
       </div>
-      {/* LISTA OBJETOS */}
+
+      {/* LISTA */}
       <div className="lista-objetos">
         {objetos.map((obj) => (
-          <div key={obj.id} className="card-objeto">
-            <div className="card-image">
-              {obj.imagemUrl ? (
-                <img src={obj.imagemUrl} alt={obj.nome} />
-              ) : (
-                <div className="imagem-placeholder">Sem imagem</div>
-              )}
-            </div>
-
-            <div className="card-text">
-              <h3>{obj.nome}</h3>
-              <p>{obj.descricao}</p>
-              <p><strong>Endereço:</strong> {obj.enderecoEncontro}</p>
-              <p><strong>Data:</strong> {obj.dataEncontro}</p>
-              <p>
-                <strong>Categorias:</strong>{" "}
-                {obj.categorias && obj.categorias.length > 0
-                  ? obj.categorias.map((cat: any) => cat.nome).join(", ")
-                  : "Sem categoria"}
-              </p>
-            </div>
-
-            {/* Ícone de deletar */}
-            <div
-              style={{ cursor: "pointer", padding: "5px", fontSize: "20px" }}
-              title="Deletar objeto"
-              onClick={() => deletarObjeto(obj.id)}
-            >
-              <img src={deleteIcon} alt="Deletar" style={{ width: "24px" }} />
-            </div>
-          </div>
+          <ObjetoCard
+            key={obj.id}
+            obj={obj}
+            onDelete={deletarObjeto}
+          />
         ))}
       </div>
     </div>

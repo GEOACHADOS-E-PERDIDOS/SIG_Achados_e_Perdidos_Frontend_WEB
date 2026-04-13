@@ -1,10 +1,13 @@
 .lista-objetos {
+  flex: 1;               /* ocupa o resto da tela */
+  overflow-y: auto;     /* 👈 scroll aqui dentro */
+
   display: flex;
-  flex-wrap: wrap;      
-  gap: 20px;            
+  flex-wrap: wrap;
+  gap: 20px;
+
   padding: 20px;
-  max-height: calc(100vh - 120px); 
-  overflow-y: auto;     
+  align-content: flex-start;
 }
 
 .card-objeto {
@@ -43,7 +46,9 @@
 }
 
 .home-page {
-  padding-top: 80px; 
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .filtro-container {
