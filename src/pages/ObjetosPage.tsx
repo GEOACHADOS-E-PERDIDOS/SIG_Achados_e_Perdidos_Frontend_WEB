@@ -4,7 +4,8 @@ import Topbar from "../components/Topbar";
 import Select from "react-select";
 import "../styles/Objetos.css";
 import ObjetoCard from "../components/ObjetoCard";
-
+import ObjetoDetalhe from "../components/ObjetoDetalhe";
+import Modal from "react-modal";
 type CategoriaOption = {
   value: number; // 👈 ID
   label: string;
@@ -16,9 +17,8 @@ function Objetos() {
 
   const [buscarTermo, setbuscarTermo] = useState("");
   const [buscaData, setBuscaData] = useState("");
-  const [categoriaSelecionada, setCategoriaSelecionada] =
-    useState<CategoriaOption | null>(null);
-
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<CategoriaOption | null>(null);
+  const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
   const token = localStorage.getItem("token");
 
   // =========================
@@ -177,9 +177,36 @@ function Objetos() {
             key={obj.id}
             obj={obj}
             onDelete={deletarObjeto}
+            onClick={() => setObjetoSelecionado(obj)}
           />
         ))}
       </div>
+      <Modal
+        isOpen={!!objetoSelecionado}
+        onRequestClose={() => setObjetoSelecionado(null)}
+        contentLabel="Detalhes do Objeto"
+        style={{
+          content: {
+            width: "500px",
+            maxWidth: "90%",
+            inset: "50% auto auto 50%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: "10px",
+            padding: "20px",
+          },
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.6)",
+          },
+        }}
+      >
+        {objetoSelecionado && (
+          <ObjetoDetalhe obj={objetoSelecionado} />
+        )}
+
+        <button onClick={() => setObjetoSelecionado(null)}>
+          Fechar
+        </button>
+      </Modal>
     </div>
   );
 }

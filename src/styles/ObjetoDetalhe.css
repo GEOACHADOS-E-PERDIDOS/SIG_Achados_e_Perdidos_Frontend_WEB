@@ -1,0 +1,26 @@
+
+.objeto-detalhe-imagem {
+  width: 250px;        /* 👈 tamanho fixo */
+  height: 250px;       /* 👈 igual ao width = quadrado */
+  margin: 0 auto 15px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.objeto-detalhe-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.objeto-detalhe-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ccc;
+  border-radius: 10px;
+  color: #555;
+  font-weight: bold;
+}
