@@ -70,7 +70,7 @@ export default function CadastroObjeto({
     const token = localStorage.getItem("token");
 
     try {
-      await axios.post("http://localhost:8080/objetos", formData, {
+      await axios.post("http://localhost:8080/objetos/perdidos", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -97,7 +97,7 @@ export default function CadastroObjeto({
         <form onSubmit={handleSubmit}>
           <input name="nome" placeholder="Nome" onChange={handleChange} />
           <input name="descricao" placeholder="Descrição" onChange={handleChange} />
-          <input name="enderecoEncontro" placeholder="Endereço" onChange={handleChange} />
+          <input name="enderecoPerdido" placeholder="Endereço" onChange={handleChange} />
 
           <Select
             isMulti
@@ -105,7 +105,7 @@ export default function CadastroObjeto({
             onChange={handleCategoriasChange}
           />
 
-          <input type="date" name="dataEncontro" onChange={handleChange} />
+          <input type="date" name="dataPerdido" onChange={handleChange} />
           <input name="latitude" placeholder="Latitude" onChange={handleChange} />
           <input name="longitude" placeholder="Longitude" onChange={handleChange} />
 
