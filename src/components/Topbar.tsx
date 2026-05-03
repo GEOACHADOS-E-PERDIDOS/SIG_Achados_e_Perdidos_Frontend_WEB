@@ -36,10 +36,11 @@ function Topbar() {
 
   // 🔥 MENU DINÂMICO
   const menuItems = [
-    { path: "/home", label: "Home" },
-    { path: "/objetos", label: "Objetos" },
-    { path: "/usuarios", label: "Usuários", admin: true }
-  ];
+  { path: "/home", label: "Home" },
+  { path: "/objetos", label: "Objetos" },
+  { path: "/postos", label: "Postos", admin: true}, // 🔥 NOVO
+  { path: "/usuarios", label: "Usuários", admin: true }
+];
 
   return (
     <>

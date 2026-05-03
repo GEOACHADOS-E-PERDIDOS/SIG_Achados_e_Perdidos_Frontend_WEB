@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
 import CadastroObjeto from "../components/CadastroObjeto";
 import Mapa from "../components/Mapa";
+import CadastroPosto from "../components/CadastroPosto";
 
 function Home() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function Home() {
   const [popupAberto, setPopupAberto] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [categorias, setCategorias] = useState<any[]>([]);
+  const [popupPostoAberto, setPopupPostoAberto] = useState(false);
 
   const checarAdmin = async () => {
     const token = localStorage.getItem("token");
@@ -60,26 +62,44 @@ function Home() {
   return (
     <div className="home-page">
 
-      {/*Criação do componente TOPBAR */}
-      <Topbar />
+  <Topbar />
+  <Mapa />
 
-      {/* FUNDO */}
-      <Mapa />
-      
-      {/* BOTÃO + */}
-      <div className="add-button" onClick={() => setPopupAberto(true)}>
-        +
+  <div className="add-buttons">
+
+    {isAdmin && (
+      <div
+        className="add-item"
+        onClick={() => setPopupPostoAberto(true)}
+      >
+        <div className="add-circle">📍</div>
+        <span>Cadastrar Posto</span>
       </div>
+    )}
 
-      {/* MODAL DE CADASTRO */}
-      <CadastroObjeto
-        aberto={popupAberto}
-        onClose={() => setPopupAberto(false)}
-        categorias={categorias}
-      />
-
-
+    <div
+      className="add-item"
+      onClick={() => setPopupAberto(true)}
+    >
+      <div className="add-circle">+</div>
+      <span>Cadastrar Objeto</span>
     </div>
+
+  </div>
+
+  {/* 🔥 MODAIS */}
+  <CadastroObjeto
+    aberto={popupAberto}
+    onClose={() => setPopupAberto(false)}
+    categorias={categorias}
+  />
+
+  <CadastroPosto
+    aberto={popupPostoAberto}
+    onClose={() => setPopupPostoAberto(false)}
+  />
+
+</div>
   );
 }
 

@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import AlterarSenhaPage from "./pages/AlterarSenhaPage";
 import UsuariosPage from "./pages/UsuariosPage";
+import PostosPage from "./pages/PostosPage";
 
 function App() {
   return (
@@ -19,9 +20,9 @@ function App() {
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         {/*Rotas Privadas*/}
         <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>}/>
-        <Route          path="/objetos"element={<PrivateRoute><ObjetosPage /></PrivateRoute>}/>
+        <Route path="/objetos"element={<PrivateRoute><ObjetosPage /></PrivateRoute>}/>
         <Route path="/usuarios" element={<PrivateRoute adminOnly><UsuariosPage /></PrivateRoute>}/>
-
+        <Route path="/postos" element={ <PrivateRoute adminOnly><PostosPage /></PrivateRoute>}/>
         <Route path="/alterar-senha" element={<PrivateRoute ><AlterarSenhaPage /></PrivateRoute>}/>
       </Routes>
     </BrowserRouter>
