@@ -6,6 +6,7 @@ import "../styles/Home.css";
 import CadastroObjeto from "../components/CadastroObjeto";
 import Mapa from "../components/Mapa";
 import CadastroPosto from "../components/CadastroPosto";
+import CadastroObjetoAchado from "../components/CadastroObjetoAchado";
 
 function Home() {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [categorias, setCategorias] = useState<any[]>([]);
   const [popupPostoAberto, setPopupPostoAberto] = useState(false);
+  const [popupAchadoAberto, setPopupAchadoAberto] = useState(false);
+  const [postos, setPostos] = useState<any[]>([]);
 
   const checarAdmin = async () => {
     const token = localStorage.getItem("token");
@@ -54,9 +57,26 @@ function Home() {
     }
   };
 
+  const buscarPostos = async () => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await axios.get("http://localhost:8080/postos", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    setPostos(res.data);
+  } catch (err) {
+    console.error("Erro ao buscar postos", err);
+  }
+};
+
   useEffect(() => {
     checarAdmin();
     buscarCategorias();
+    buscarPostos();
   }, []);
 
   return (
@@ -85,6 +105,14 @@ function Home() {
       <span>Cadastrar Objeto</span>
     </div>
 
+    <div
+      className="add-item add-item-achado"
+      onClick={() => setPopupAchadoAberto(true)}
+    >
+    <div className="add-circle">✔️</div>
+      <span>Cadastrar Achado</span>
+</div>
+
   </div>
 
   {/* 🔥 MODAIS */}
@@ -98,6 +126,13 @@ function Home() {
     aberto={popupPostoAberto}
     onClose={() => setPopupPostoAberto(false)}
   />
+
+  <CadastroObjetoAchado
+  aberto={popupAchadoAberto}
+  onClose={() => setPopupAchadoAberto(false)}
+  categorias={categorias}
+  postos={postos}
+/>
 
 </div>
   );
