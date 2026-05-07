@@ -1,4 +1,5 @@
 import { MapContainer, TileLayer, WMSTileLayer, LayersControl } from "react-leaflet";
+import { useState } from "react";
 import "leaflet/dist/leaflet.css";
 
 const { Overlay, BaseLayer } = LayersControl;
@@ -26,6 +27,16 @@ function Mapa() {
           />
         </BaseLayer>
 
+        <Overlay checked name="Postos de Retirada">
+          <WMSTileLayer
+            url="/geoserver/wms"
+            layers="Geoachados:posto_retirada"
+            format="image/png"
+            transparent={true}
+            version="1.1.0"
+          />
+        </Overlay>
+
         <Overlay checked name="Objetos Perdidos">
           <WMSTileLayer
             url="/geoserver/wms"
@@ -35,6 +46,17 @@ function Mapa() {
             version="1.1.0"
           />
         </Overlay>
+
+        <Overlay checked name="Objeto Achado">
+          <WMSTileLayer
+            url="/geoserver/wms"
+            layers="Geoachados:view_objeto_achado_map"
+            format="image/png"
+            transparent={true}
+            version="1.1.0"
+          />
+        </Overlay>
+
       </LayersControl>
 
 

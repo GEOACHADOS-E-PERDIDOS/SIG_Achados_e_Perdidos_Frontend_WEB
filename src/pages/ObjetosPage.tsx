@@ -1,74 +1,53 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Topbar from "../components/Topbar";
 import Select from "react-select";
 import "../styles/Objetos.css";
 import ObjetoCard from "../components/ObjetoCard";
 import ObjetoDetalhe from "../components/ObjetoDetalhe";
 import Modal from "react-modal";
-type CategoriaOption = {
-  value: number; // 👈 ID
-  label: string;
-};
+
+import type { CategoriaOption } from "../types/Categoria";
+
+import {
+  listarObjetos,
+  buscarObjetos,
+  deletarObjeto,
+  buscarImagem,
+} from "../services/ObjetoPageService";
+
+import { listarCategorias } from "../services/CategoriaService";
 
 function Objetos() {
   const [objetos, setObjetos] = useState<any[]>([]);
   const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
 
-  const [buscarTermo, setbuscarTermo] = useState("");
+  const [buscarTermo, setBuscarTermo] = useState("");
   const [buscaData, setBuscaData] = useState("");
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState<CategoriaOption | null>(null);
+  const [categoriaSelecionada, setCategoriaSelecionada] =
+    useState<CategoriaOption | null>(null);
+
   const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
-  const token = localStorage.getItem("token");
 
   // =========================
-  // LISTAR OBJETOS
+  // CARREGAR OBJETOS
   // =========================
-  const listarObjetos = async () => {
-    const res = await axios.get("http://localhost:8080/objetos", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const carregarObjetos = async () => {
+    try {
+      const data = await listarObjetos();
 
-    const objsComImagens = await Promise.all(
-      res.data.map(async (obj: any) => {
-        if (!obj.caminhoImagem) return { ...obj, imagemUrl: null };
+      const objsComImagens = await Promise.all(
+        data.map(async (obj: any) => ({
+          ...obj,
+          imagemUrl: obj.caminhoImagem
+            ? await buscarImagem(obj.caminhoImagem)
+            : null,
+        }))
+      );
 
-        try {
-          const imgRes = await axios.get(
-            `http://localhost:8080/uploads/${obj.caminhoImagem}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-              responseType: "blob",
-            }
-          );
-
-          return {
-            ...obj,
-            imagemUrl: URL.createObjectURL(imgRes.data),
-          };
-        } catch {
-          return { ...obj, imagemUrl: null };
-        }
-      })
-    );
-
-    setObjetos(objsComImagens);
-  };
-
-  // =========================
-  // LISTAR CATEGORIAS
-  // =========================
-  const listarCategorias = async () => {
-    const res = await axios.get("http://localhost:8080/categorias", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const options = res.data.map((cat: any) => ({
-      value: cat.id,     // 👈 ID AQUI
-      label: cat.nome,
-    }));
-
-    setCategorias(options);
+      setObjetos(objsComImagens);
+    } catch (err) {
+      console.error("Erro ao carregar objetos:", err);
+    }
   };
 
   // =========================
@@ -76,38 +55,19 @@ function Objetos() {
   // =========================
   const handleBuscar = async () => {
     try {
-      let url = "http://localhost:8080/objetos/buscar?";
-
-      if (buscarTermo) url += `termo=${buscarTermo}&`;
-      if (buscaData) url += `data=${buscaData}&`;
-      if (categoriaSelecionada)
-        url += `categoria=${categoriaSelecionada.value}&`; // 👈 ID ENVIADO
-
-      const res = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const data = await buscarObjetos(
+        buscarTermo,
+        buscaData,
+        categoriaSelecionada?.value
+      );
 
       const objsComImagens = await Promise.all(
-        res.data.map(async (obj: any) => {
-          if (!obj.caminhoImagem) return { ...obj, imagemUrl: null };
-
-          try {
-            const imgRes = await axios.get(
-              `http://localhost:8080/uploads/${obj.caminhoImagem}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-                responseType: "blob",
-              }
-            );
-
-            return {
-              ...obj,
-              imagemUrl: URL.createObjectURL(imgRes.data),
-            };
-          } catch {
-            return { ...obj, imagemUrl: null };
-          }
-        })
+        data.map(async (obj: any) => ({
+          ...obj,
+          imagemUrl: obj.caminhoImagem
+            ? await buscarImagem(obj.caminhoImagem)
+            : null,
+        }))
       );
 
       setObjetos(objsComImagens);
@@ -116,24 +76,39 @@ function Objetos() {
     }
   };
 
+  // =========================
+  // LIMPAR FILTROS
+  // =========================
   const handleLimpar = () => {
-    setbuscarTermo("");
+    setBuscarTermo("");
     setBuscaData("");
     setCategoriaSelecionada(null);
-    listarObjetos();
+    carregarObjetos();
   };
 
-  const deletarObjeto = async (id: number) => {
-    await axios.delete(`http://localhost:8080/objetos/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    setObjetos((prev) => prev.filter((obj) => obj.id !== id));
+  // =========================
+  // DELETAR
+  // =========================
+  const handleDelete = async (id: number) => {
+    try {
+      await deletarObjeto(id);
+      setObjetos((prev) => prev.filter((obj) => obj.id !== id));
+    } catch (err) {
+      console.error("Erro ao deletar objeto:", err);
+    }
   };
 
+  // =========================
+  // INIT
+  // =========================
   useEffect(() => {
-    listarObjetos();
-    listarCategorias();
+    carregarObjetos();
+
+    listarCategorias()
+      .then(setCategorias)
+      .catch((err) =>
+        console.error("Erro ao carregar categorias:", err)
+      );
   }, []);
 
   return (
@@ -146,7 +121,7 @@ function Objetos() {
           type="text"
           placeholder="Buscar por termo"
           value={buscarTermo}
-          onChange={(e) => setbuscarTermo(e.target.value)}
+          onChange={(e) => setBuscarTermo(e.target.value)}
         />
 
         <input
@@ -155,12 +130,13 @@ function Objetos() {
           onChange={(e) => setBuscaData(e.target.value)}
         />
 
-        {/* SELECT CATEGORIA (ID) */}
         <div style={{ width: 220 }}>
           <Select
             options={categorias}
             value={categoriaSelecionada}
-            onChange={(option) => setCategoriaSelecionada(option)}
+            onChange={(option) =>
+              setCategoriaSelecionada(option)
+            }
             placeholder="Categoria"
             isClearable
           />
@@ -176,11 +152,13 @@ function Objetos() {
           <ObjetoCard
             key={obj.id}
             obj={obj}
-            onDelete={deletarObjeto}
+            onDelete={handleDelete}
             onClick={() => setObjetoSelecionado(obj)}
           />
         ))}
       </div>
+
+      {/* MODAL */}
       <Modal
         isOpen={!!objetoSelecionado}
         onRequestClose={() => setObjetoSelecionado(null)}

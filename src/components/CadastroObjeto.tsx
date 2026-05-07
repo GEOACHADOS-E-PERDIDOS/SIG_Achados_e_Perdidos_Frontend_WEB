@@ -2,11 +2,10 @@ import { useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import type { MultiValue } from "react-select";
+import { cadastrarObjeto } from "../services/CadastroObjetoService";
+import type { CategoriaOption } from "../types/Categoria";
 
-type CategoriaOption = {
-  value: number;
-  label: string;
-};
+
 
 type Props = {
   aberto: boolean;
@@ -34,6 +33,21 @@ export default function CadastroObjeto({
 
   if (!aberto) return null;
 
+
+  const limparFormulario = () => {
+    setObjeto({
+      nome: "",
+      descricao: "",
+      enderecoEncontro: "",
+      dataEncontro: "",
+      latitude: "",
+      longitude: "",
+    });
+
+    setImagem(null);
+    setCategoriasSelecionadas([]);
+  };
+
   const handleChange = (e: any) => {
     setObjeto({
       ...objeto,
@@ -55,26 +69,14 @@ export default function CadastroObjeto({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const formData = new FormData();
-
-    Object.entries(objeto).forEach(([key, value]) => {
-      formData.append(key, value as any);
-    });
-
-    categoriasSelecionadas.forEach((id) => {
-      formData.append("categorias", id.toString());
-    });
-
-    if (imagem) formData.append("imagem", imagem);
-
     const token = localStorage.getItem("token");
 
     try {
-      await axios.post("http://localhost:8080/objetos/perdidos", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        }
+      await cadastrarObjeto({
+        objeto,
+        categoriasSelecionadas,
+        imagem,
+        token,
       });
 
       alert("Objeto cadastrado com sucesso!");
@@ -97,7 +99,7 @@ export default function CadastroObjeto({
         <form onSubmit={handleSubmit}>
           <input name="nome" placeholder="Nome" onChange={handleChange} />
           <input name="descricao" placeholder="Descrição" onChange={handleChange} />
-          <input name="enderecoPerdido" placeholder="Endereço" onChange={handleChange} />
+          <input name="enderecoEncontro" placeholder="Endereço" onChange={handleChange} />
 
           <Select
             isMulti
@@ -112,7 +114,7 @@ export default function CadastroObjeto({
           <input type="file" onChange={handleImagem} />
 
           <button type="submit">Cadastrar</button>
-          <button type="button" onClick={onClose}>Fechar</button>
+          <button type="button" onClick={() => { limparFormulario(); onClose(); }}>Fechar</button>
         </form>
       </div>
     </div>

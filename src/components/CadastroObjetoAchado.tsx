@@ -2,11 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import type { MultiValue } from "react-select";
-
-type CategoriaOption = {
-  value: number;
-  label: string;
-};
+import type {  CategoriaOption } from "../types/Categoria";
 
 type PostoOption = {
   value: number;
@@ -61,20 +57,17 @@ export default function CadastroObjetoAchado({
   };
 
   const handlePostoChange = (selecionado: any) => {
-  setPostoSelecionado({
-    value: selecionado?.value,
-    label: selecionado?.label,
-    latitude: selecionado?.latitude,
-    longitude: selecionado?.longitude
-  });
-};
+    setPostoSelecionado({
+      value: selecionado?.value,
+      label: selecionado?.label,
+      latitude: selecionado?.latitude,
+      longitude: selecionado?.longitude
+    });
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-     console.log("OBJETO:", objeto);
-  console.log("CATEGORIAS:", categoriasSelecionadas);
-  console.log("IMAGEM:", imagem);
-  console.log("POSTO SELECIONADO:", postoSelecionado);
+
     if (!postoSelecionado) {
       alert("Posto de retirada é obrigatório!");
       return;
@@ -88,8 +81,8 @@ export default function CadastroObjetoAchado({
     formData.append("enderecoEncontro", objeto.enderecoEncontro);
     formData.append("dataEncontro", objeto.dataEncontro);
 
-    formData.append("latitudeAchado", String(postoSelecionado.latitude));
-    formData.append("longitudeAchado", String(postoSelecionado.longitude));
+    formData.append("latitudeAchado", String(objeto.latitude));
+    formData.append("longitudeAchado", String(objeto.longitude));
 
     // categorias
     categoriasSelecionadas.forEach((id) => {
@@ -101,7 +94,6 @@ export default function CadastroObjetoAchado({
       formData.append("imagem", imagem);
     }
 
-    // 🔴 POSTO (ManyToOne correto)
     formData.append(
       "postoRetiradaId",
       String(postoSelecionado.value)
@@ -187,7 +179,19 @@ export default function CadastroObjetoAchado({
             onChange={handleChange}
           />
 
-          {/* 🔴 POSTO DE RETIRADA (SELECT BONITO) */}
+          <input
+            name="latitude"
+            placeholder="Latitude"
+            onChange={handleChange}
+          />
+
+          <input
+            name="longitude"
+            placeholder="Longitude"
+            onChange={handleChange}
+          />
+
+          {/* POSTO DE RETIRADA */}
           <Select
             options={postosOptions}
             onChange={handlePostoChange}
