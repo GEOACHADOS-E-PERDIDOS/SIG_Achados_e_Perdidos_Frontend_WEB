@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from '../assets/LOGO_geoachados.png';
+import "../styles/Login.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -48,7 +49,19 @@ function Login() {
 
       <div className="login-box">
 
-        {erro && <p className="erro">{erro}</p>}
+       {erro && (
+          <div className="erro-box">
+            <span>{erro}</span>
+
+            <button
+              className="fechar-erro"
+              onClick={() => setErro("")}
+              type="button"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
           <h2>Login</h2>

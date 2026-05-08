@@ -3,6 +3,15 @@ import axios from "axios";
 import Select from "react-select";
 import type { MultiValue } from "react-select";
 import type {  CategoriaOption } from "../types/Categoria";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "../styles/pop_up.css"
 
 type PostoOption = {
   value: number;
@@ -16,6 +25,31 @@ type Props = {
   postos: any[];
 };
 
+function SelecionadorMapa({ setObjeto }: any) {
+
+  const [posicao, setPosicao] = useState<any>(null);
+
+  useMapEvents({
+    click(e) {
+
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      setPosicao([lat, lng]);
+
+      setObjeto((prev: any) => ({
+        ...prev,
+        latitudeAchado: lat,
+        longitudeAchado: lng
+      }));
+    }
+  });
+
+  return posicao ? <Marker position={posicao} /> : null;
+}
+
+
+
 export default function CadastroObjetoAchado({
   aberto,
   onClose,
@@ -28,9 +62,10 @@ export default function CadastroObjetoAchado({
     descricao: "",
     enderecoEncontro: "",
     dataEncontro: "",
-    latitude: "",
-    longitude: ""
+    latitudeAchado: "",
+    longitudeAchado: ""
   });
+
 
   const [imagem, setImagem] = useState<File | null>(null);
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
@@ -81,8 +116,15 @@ export default function CadastroObjetoAchado({
     formData.append("enderecoEncontro", objeto.enderecoEncontro);
     formData.append("dataEncontro", objeto.dataEncontro);
 
-    formData.append("latitudeAchado", String(objeto.latitude));
-    formData.append("longitudeAchado", String(objeto.longitude));
+    formData.append(
+      "latitudeAchado",
+      String(objeto.latitudeAchado)
+    );
+
+    formData.append(
+      "longitudeAchado",
+      String(objeto.longitudeAchado)
+    );
 
     // categorias
     categoriasSelecionadas.forEach((id) => {
@@ -179,17 +221,32 @@ export default function CadastroObjetoAchado({
             onChange={handleChange}
           />
 
-          <input
-            name="latitude"
-            placeholder="Latitude"
-            onChange={handleChange}
-          />
+          <p>Clique no mapa para marcar o local do encontro:</p>
 
-          <input
-            name="longitude"
-            placeholder="Longitude"
-            onChange={handleChange}
-          />
+          <MapContainer
+            center={[-15.7939, -47.8828]}
+            zoom={13}
+            style={{
+              height: "300px",
+              width: "100%",
+              marginBottom: "15px"
+            }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            <SelecionadorMapa setObjeto={setObjeto} />
+
+            {objeto.latitudeAchado && objeto.longitudeAchado && (
+              <Marker
+                position={[
+                  Number(objeto.latitudeAchado),
+                  Number(objeto.longitudeAchado)
+                ]}
+              />
+            )}
+          </MapContainer>
 
           {/* POSTO DE RETIRADA */}
           <Select

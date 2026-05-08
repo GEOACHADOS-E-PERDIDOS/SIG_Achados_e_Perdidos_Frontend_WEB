@@ -7,6 +7,9 @@ import CadastroObjeto from "../components/CadastroObjeto";
 import Mapa from "../components/Mapa";
 import CadastroPosto from "../components/CadastroPosto";
 import CadastroObjetoAchado from "../components/CadastroObjetoAchado";
+import pinPosto from "../assets/icone_posto.png";
+import pinAchado from "../assets/icone_achado.png";
+import pinPerdido from "../assets/icone_perdido.png"; 
 
 function Home() {
   const navigate = useNavigate();
@@ -85,6 +88,26 @@ function Home() {
   <Topbar />
   <Mapa />
 
+  <div className="legenda-mapa">
+
+    <div className="item-legenda">
+      <img src={pinPosto} alt="Posto" />
+      <span>Postos de Retirada</span>
+    </div>
+
+    <div className="item-legenda">
+      <img src={pinAchado} alt="Achado" />
+      <span>Objetos Achados</span>
+    </div>
+
+    <div className="item-legenda">
+      <img src={pinPerdido} alt="Perdido" />
+      <span>Objetos Perdidos</span>
+    </div>
+
+  </div>
+
+
   <div className="add-buttons">
 
     {isAdmin && (
@@ -93,7 +116,7 @@ function Home() {
         onClick={() => setPopupPostoAberto(true)}
       >
         <div className="add-circle">📍</div>
-        <span>Cadastrar Posto</span>
+        <span>Cadastrar Posto de Retirada</span>
       </div>
     )}
 
@@ -102,7 +125,7 @@ function Home() {
       onClick={() => setPopupAberto(true)}
     >
       <div className="add-circle">+</div>
-      <span>Cadastrar Objeto</span>
+      <span>Cadastrar Objeto Perdido</span>
     </div>
 
     <div
@@ -110,7 +133,7 @@ function Home() {
       onClick={() => setPopupAchadoAberto(true)}
     >
     <div className="add-circle">✔️</div>
-      <span>Cadastrar Achado</span>
+      <span>Cadastrar Objeto Achado</span>
 </div>
 
   </div>

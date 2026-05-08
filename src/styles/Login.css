@@ -1,0 +1,51 @@
+.erro-box {
+  position: relative;
+
+  background-color: #ffd6d6;
+  color: #a10000;
+
+  border: 1px solid #ffb3b3;
+  border-radius: 8px;
+
+  padding: 12px 35px 12px 12px;
+
+  margin: 0 auto 15px auto;
+
+  font-size: 14px;
+
+  max-width: 320px;
+
+  text-align: center;
+}
+
+.fechar-erro {
+  position: absolute;
+
+  top: 6px;
+  right: 8px;
+
+  background: transparent;
+  border: none;
+
+  color: #a10000;
+
+  font-size: 12px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  padding: 0;
+
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  line-height: 1;
+}
+
+.fechar-erro:hover {
+  opacity: 0.7;
+}

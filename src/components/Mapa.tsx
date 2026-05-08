@@ -11,7 +11,7 @@ function Mapa() {
       zoom={14}
       style={{ height: "100%", width: "100%" }}
     >
-      <LayersControl position="bottomleft">
+      <LayersControl position="topright">
 
         <BaseLayer checked name="Satélite">
           <TileLayer
