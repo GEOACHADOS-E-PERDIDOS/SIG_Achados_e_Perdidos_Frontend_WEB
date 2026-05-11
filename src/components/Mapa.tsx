@@ -2,6 +2,8 @@ import { MapContainer, TileLayer, WMSTileLayer, LayersControl } from "react-leaf
 import { useState } from "react";
 import "leaflet/dist/leaflet.css";
 
+import ClickMapa from "./ClickMapa";
+
 const { Overlay, BaseLayer } = LayersControl;
 
 function Mapa() {
@@ -59,6 +61,7 @@ function Mapa() {
 
       </LayersControl>
 
+      <ClickMapa/>
 
     </MapContainer>
   );
