@@ -1,0 +1,15 @@
+.input-data {
+  margin: 0;
+  padding: 0;
+}
+
+.react-datepicker-wrapper, .react-datepicker__input-container {
+  margin: 0;
+  padding: 0;
+}
+
+.react-datepicker__tab-loop {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}

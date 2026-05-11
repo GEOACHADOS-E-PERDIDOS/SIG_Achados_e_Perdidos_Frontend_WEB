@@ -1,6 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
+
 import Select from "react-select";
+
 import type { MultiValue } from "react-select";
 import type {  CategoriaOption } from "../types/Categoria";
 import {
@@ -9,14 +10,17 @@ import {
   Marker,
   useMapEvents
 } from "react-leaflet";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../styles/pop_up.css"
 
-type PostoOption = {
-  value: number;
-  label: string;
-};
+
+import DataInput from "./DateInput";
+
+import {
+  cadastrarObjetoAchado
+} from "../services/CadastroObjetoAchadoService";
+
+import "../styles/CadastroObjeto.css";
 
 type Props = {
   aberto: boolean;
@@ -66,126 +70,161 @@ export default function CadastroObjetoAchado({
     longitudeAchado: ""
   });
 
+  const [dataEncontro, setDataEncontro] =
+    useState<Date | null>(null);
 
-  const [imagem, setImagem] = useState<File | null>(null);
-  const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
-  const [postoSelecionado, setPostoSelecionado] = useState<any>(null);
+  const [imagem, setImagem] =
+    useState<File | null>(null);
+
+  const [categoriasSelecionadas,
+    setCategoriasSelecionadas] =
+    useState<number[]>([]);
+
+  const [postoSelecionado,
+    setPostoSelecionado] =
+    useState<any>(null);
 
   if (!aberto) return null;
 
-  const handleChange = (e: any) => {
+  const limparFormulario = () => {
+
+    setObjeto({
+      nome: "",
+      descricao: "",
+      enderecoEncontro: "",
+      dataEncontro: "",
+      latitudeAchado: "",
+      longitudeAchado: ""
+    });
+
+    setDataEncontro(null);
+
+    setImagem(null);
+
+    setCategoriasSelecionadas([]);
+
+    setPostoSelecionado(null);
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+
     setObjeto({
       ...objeto,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleImagem = (e: any) => {
-    setImagem(e.target.files[0]);
+  const handleImagem = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+
+    if (e.target.files?.[0]) {
+      setImagem(e.target.files[0]);
+    }
   };
 
   const handleCategoriasChange = (
     selecionadas: MultiValue<CategoriaOption>
   ) => {
-    const ids = selecionadas.map((cat) => cat.value);
+
+    const ids = selecionadas.map(
+      (cat) => cat.value
+    );
+
     setCategoriasSelecionadas(ids);
   };
 
-  const handlePostoChange = (selecionado: any) => {
-    setPostoSelecionado({
-      value: selecionado?.value,
-      label: selecionado?.label,
-      latitude: selecionado?.latitude,
-      longitude: selecionado?.longitude
-    });
+  const handlePostoChange = (
+    selecionado: any
+  ) => {
+
+    setPostoSelecionado(selecionado);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+
     e.preventDefault();
 
     if (!postoSelecionado) {
-      alert("Posto de retirada é obrigatório!");
+
+      alert(
+        "Posto de retirada é obrigatório!"
+      );
+
       return;
     }
 
-    const formData = new FormData();
+    const token =
+      localStorage.getItem("token");
 
-    // campos básicos
-    formData.append("nome", objeto.nome);
-    formData.append("descricao", objeto.descricao);
-    formData.append("enderecoEncontro", objeto.enderecoEncontro);
-    formData.append("dataEncontro", objeto.dataEncontro);
-
-    formData.append(
-      "latitudeAchado",
-      String(objeto.latitudeAchado)
-    );
-
-    formData.append(
-      "longitudeAchado",
-      String(objeto.longitudeAchado)
-    );
-
-    // categorias
-    categoriasSelecionadas.forEach((id) => {
-      formData.append("categorias", id.toString());
-    });
-
-    // imagem
-    if (imagem) {
-      formData.append("imagem", imagem);
-    }
-
-    formData.append(
-      "postoRetiradaId",
-      String(postoSelecionado.value)
-    );
-
-    console.log("POSTO SELECIONADO:", postoSelecionado);
-
-
-    const token = localStorage.getItem("token");
+    const dataFormatada =
+      dataEncontro
+        ? dataEncontro
+            .toISOString()
+            .split("T")[0]
+        : "";
 
     try {
-      await axios.post(
-        "http://localhost:8080/objetos/achados",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          }
-        }
+
+      await cadastrarObjetoAchado({
+        objeto: {
+          ...objeto,
+          dataEncontro: dataFormatada
+        },
+
+        categoriasSelecionadas,
+
+        imagem,
+
+        postoSelecionado,
+
+        token,
+      });
+
+      alert(
+        "Objeto achado cadastrado com sucesso!"
       );
 
-      alert("Objeto achado cadastrado com sucesso!");
+      limparFormulario();
+
       onClose();
 
     } catch (error) {
+
       console.error(error);
-      alert("Erro ao cadastrar objeto achado");
+
+      alert(
+        "Erro ao cadastrar objeto achado"
+      );
     }
   };
 
-  const categoriasOptions = categorias.map((cat) => ({
-    value: cat.id,
-    label: cat.nome
-  }));
+  const categoriasOptions =
+    categorias.map((cat) => ({
+      value: cat.id,
+      label: cat.nome
+    }));
 
-
-  console.log("POSTOS DO BACKEND:", postos);
-  console.log("PRIMEIRO POSTO REAL:", postos[0]);
-  const postosOptions = postos.map((p) => ({
-    value: String(p.id),
-    label: p.nome,
-    latitude: p.latitude,
-    longitude: p.longitude
-  }));
+  const postosOptions =
+    postos.map((p) => ({
+      value: p.id,
+      label: p.nome,
+      latitude: p.latitude,
+      longitude: p.longitude
+    }));
 
   return (
     <div className="popup-overlay">
+
       <div className="popup-box">
-        <h2>Cadastrar Objeto Achado</h2>
+
+        <h2>
+          Cadastrar Objeto Achado
+        </h2>
 
         <form onSubmit={handleSubmit}>
 
@@ -207,7 +246,7 @@ export default function CadastroObjetoAchado({
             onChange={handleChange}
           />
 
-          {/* CATEGORIAS */}
+          {/* Categorias */}
           <Select
             isMulti
             options={categoriasOptions}
@@ -215,10 +254,10 @@ export default function CadastroObjetoAchado({
             placeholder="Categorias"
           />
 
-          <input
-            type="date"
-            name="dataEncontro"
-            onChange={handleChange}
+          {/* Data */}
+          <DataInput
+            selected={dataEncontro}
+            onChange={setDataEncontro}
           />
 
           <p>Clique no mapa para marcar o local do encontro:</p>
@@ -248,9 +287,10 @@ export default function CadastroObjetoAchado({
             )}
           </MapContainer>
 
-          {/* POSTO DE RETIRADA */}
+          {/* Posto de retirada */}
           <Select
             options={postosOptions}
+            value={postoSelecionado}
             onChange={handlePostoChange}
             placeholder="Selecione o posto de retirada"
           />
@@ -260,15 +300,33 @@ export default function CadastroObjetoAchado({
             onChange={handleImagem}
           />
 
-          <div style={{ display: "flex", gap: 10 }}>
-            <button type="submit">Cadastrar</button>
-            <button type="button" onClick={onClose}>
+          <div
+            style={{
+              display: "flex",
+              gap: 10
+            }}
+          >
+
+            <button type="submit">
+              Cadastrar
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                limparFormulario();
+                onClose();
+              }}
+            >
               Fechar
             </button>
+
           </div>
 
         </form>
+
       </div>
+
     </div>
   );
 }

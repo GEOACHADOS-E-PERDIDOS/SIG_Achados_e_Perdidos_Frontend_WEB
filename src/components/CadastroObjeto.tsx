@@ -4,7 +4,8 @@ import Select from "react-select";
 import type { MultiValue } from "react-select";
 import { cadastrarObjeto } from "../services/CadastroObjetoService";
 import type { CategoriaOption } from "../types/Categoria";
-
+import DataInput from "./DateInput";
+import "../styles/CadastroObjeto.css"
 
 
 type Props = {
@@ -23,11 +24,12 @@ export default function CadastroObjeto({
     nome: "",
     descricao: "",
     enderecoEncontro: "",
-    dataEncontro: "",
+    dataPerdido: "",
     latitude: "",
     longitude: ""
   });
-
+  const [dataPerdido, setdataPerdido] =
+    useState<Date | null>(null);
   const [imagem, setImagem] = useState<File | null>(null);
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
 
@@ -39,11 +41,11 @@ export default function CadastroObjeto({
       nome: "",
       descricao: "",
       enderecoEncontro: "",
-      dataEncontro: "",
+      dataPerdido: "",
       latitude: "",
       longitude: "",
     });
-
+    setdataPerdido(null);
     setImagem(null);
     setCategoriasSelecionadas([]);
   };
@@ -67,22 +69,51 @@ export default function CadastroObjeto({
   };
 
   const handleSubmit = async (e: any) => {
+
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
+
+    const dataFormatada =
+      dataPerdido
+        ? dataPerdido
+          .toISOString()
+          .split("T")[0]
+        : "";
 
     try {
+
       await cadastrarObjeto({
-        objeto,
+
+        objeto: {
+          ...objeto,
+
+          dataPerdido: dataFormatada
+        },
+
         categoriasSelecionadas,
+
         imagem,
+
         token,
       });
 
-      alert("Objeto cadastrado com sucesso!");
+      alert(
+        "Objeto cadastrado com sucesso!"
+      );
+
+      limparFormulario();
+
       onClose();
+
     } catch (error) {
-      alert("Erro ao cadastrar objeto");
+
+      console.error(error);
+
+      alert(
+        "Erro ao cadastrar objeto"
+      );
     }
   };
 
@@ -107,7 +138,10 @@ export default function CadastroObjeto({
             onChange={handleCategoriasChange}
           />
 
-          <input type="date" name="dataPerdido" onChange={handleChange} />
+          <DataInput
+            selected={dataPerdido}
+            onChange={setdataPerdido}
+          />
           <input name="latitude" placeholder="Latitude" onChange={handleChange} />
           <input name="longitude" placeholder="Longitude" onChange={handleChange} />
 
