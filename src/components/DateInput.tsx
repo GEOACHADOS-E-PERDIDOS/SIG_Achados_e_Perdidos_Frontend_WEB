@@ -28,6 +28,7 @@ export default function DataInput({
       dateFormat="dd/MM/yyyy"
       placeholderText={placeholder}
       className="input-data"
+      popperClassName="datepicker-popper"
     />
   );
 }

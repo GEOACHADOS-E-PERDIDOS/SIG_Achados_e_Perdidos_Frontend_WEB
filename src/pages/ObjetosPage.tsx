@@ -130,7 +130,7 @@ function Objetos() {
           onChange={(e) => setBuscaData(e.target.value)}
         />
 
-        <div style={{ width: 220 }}>
+        <div style={{ width: 620 }}>
           <Select
             options={categorias}
             value={categoriaSelecionada}

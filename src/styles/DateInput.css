@@ -13,3 +13,7 @@
   margin-bottom: 0 !important;
   padding: 0 !important;
 }
+
+.datepicker-popper {
+  z-index: 9999 !important;
+}

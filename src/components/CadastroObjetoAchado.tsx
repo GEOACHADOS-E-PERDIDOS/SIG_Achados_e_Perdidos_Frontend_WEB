@@ -252,6 +252,13 @@ export default function CadastroObjetoAchado({
             options={categoriasOptions}
             onChange={handleCategoriasChange}
             placeholder="Categorias"
+            menuPortalTarget={document.body}
+            styles={{
+              menuPortal: (base) => ({
+                ...base,
+                zIndex: 9999
+              })
+            }}
           />
 
           {/* Data */}
@@ -293,6 +300,13 @@ export default function CadastroObjetoAchado({
             value={postoSelecionado}
             onChange={handlePostoChange}
             placeholder="Selecione o posto de retirada"
+
+             styles={{
+              menuPortal: (base) => ({
+                ...base,
+                zIndex: 9999
+              })
+            }}
           />
 
           <input

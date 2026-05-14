@@ -4,6 +4,7 @@ import Topbar from "../components/Topbar";
 import deleteIcon from "../assets/delete.svg";
 import { useNavigate } from "react-router-dom";
 import "../styles/Objetos.css"; // você pode criar UsuarioPage.css se quiser
+import UsuarioCard from "../components/UsuarioCard";
 
 interface Usuario {
   id: number;
@@ -52,39 +53,94 @@ function UsuariosPage() {
     }
   };
 
+  const tornarAdmin = async (id: number) => {
+
+  try {
+
+    await axios.put(
+      `http://localhost:8080/usuario/${id}/tornar-admin`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    listarUsuarios();
+
+  } catch (error) {
+
+    console.error("Erro ao tornar admin:", error);
+
+    alert("Não foi possível promover o usuário.");
+  }
+};
+
   useEffect(() => {
     listarUsuarios();
   }, []);
 
   return (
-    <div className="home-page">
-      {/* TOPO */}
-      <Topbar />
+  <div className="home-page">
 
-      {/* LISTA DE USUÁRIOS */}
-      <div className="lista-objetos">
-        {usuarios.map((user) => (
-          <div key={user.id} className="card-objeto">
-            <div className="card-text">
-              <h3>{user.name}</h3>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Admin:</strong> {user.isAdmin ? "Sim" : "Não"}</p>
-              <p><strong>Cadastro:</strong> {new Date(user.dataCadastro).toLocaleDateString("pt-BR")}</p>
-            </div>
+    {/* TOPO */}
+    <Topbar />
 
-            {/* Ícone de deletar */}
-            <div
-              style={{ cursor: "pointer", padding: "5px", fontSize: "20px" }}
-              title="Deletar usuário"
-              onClick={() => deletarUsuario(user.id)}
-            >
-              <img src={deleteIcon} alt="Deletar" style={{ width: "24px" }} />
-            </div>
+    {/* LISTA DE USUÁRIOS */}
+    <div className="lista-objetos">
+
+      {usuarios.map((user) => (
+
+        <div
+          key={user.id}
+          style={{
+            position: "relative"
+          }}
+        >
+
+          <UsuarioCard
+            usuario={{
+              id: user.id,
+              nome: user.name,
+              email: user.email,
+              role: user.isAdmin
+                ? "ADMIN"
+                : "USER",
+              dataCadastro: user.dataCadastro,
+            }}
+            onTornarAdmin={tornarAdmin}
+          />
+
+          {/* Ícone deletar */}
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              cursor: "pointer",
+              padding: "5px",
+              zIndex: 2,
+            }}
+            title="Deletar usuário"
+            onClick={() => deletarUsuario(user.id)}
+          >
+
+            <img
+              src={deleteIcon}
+              alt="Deletar"
+              style={{ width: "24px" }}
+            />
+
           </div>
-        ))}
-      </div>
+
+        </div>
+      ))}
+
     </div>
-  );
+
+  </div>
+);
 }
 
 export default UsuariosPage;

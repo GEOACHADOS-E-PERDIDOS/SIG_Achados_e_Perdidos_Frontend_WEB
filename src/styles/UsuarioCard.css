@@ -1,0 +1,114 @@
+.usuario-card {
+  background: white;
+
+  border-radius: 12px;
+
+  border: 1px solid #ddd;
+
+  padding: 50px;
+
+  width: 100%;
+  max-width: 700px;
+
+  min-height: 120px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.card-text {
+  width: 100%;
+  text-align: left;
+}
+
+.usuario-card h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.usuario-card p {
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.usuario-card:hover {
+  transform: scale(1.01);
+}
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+.popup-box {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.usuario-popup h2 {
+  margin-bottom: 20px;
+}
+
+.admin-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.fechar-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+
+  background: #ddd;
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.confirmar-botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirmar-btn {
+  flex: 1;
+  padding: 10px;
+
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.cancelar-btn {
+  flex: 1;
+  padding: 10px;
+
+}
