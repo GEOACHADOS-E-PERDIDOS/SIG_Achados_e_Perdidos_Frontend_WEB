@@ -1,0 +1,16 @@
+.posto-detalhe {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.posto-detalhe h2 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.posto-detalhe p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}

@@ -32,7 +32,7 @@ function Mapa() {
         <Overlay checked name="Postos de Retirada">
           <WMSTileLayer
             url="/geoserver/wms"
-            layers="Geoachados:posto_retirada"
+            layers="Geoachados:view_posto_retirada_map"
             format="image/png"
             transparent={true}
             version="1.1.0"
@@ -42,7 +42,7 @@ function Mapa() {
         <Overlay checked name="Objetos Perdidos">
           <WMSTileLayer
             url="/geoserver/wms"
-            layers="Geoachados:objeto_perdido"
+            layers="Geoachados:view_objeto_perdido_map"
             format="image/png"
             transparent={true}
             version="1.1.0"
