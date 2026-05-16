@@ -6,7 +6,9 @@ import { cadastrarObjeto } from "../services/CadastroObjetoService";
 import type { CategoriaOption } from "../types/Categoria";
 import DataInput from "./DateInput";
 import "../styles/CadastroObjeto.css"
-
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "../styles/pop_up.css"
 
 type Props = {
   aberto: boolean;
@@ -35,6 +37,26 @@ export default function CadastroObjeto({
 
   if (!aberto) return null;
 
+function SelecionadorMapa({ setObjeto }: any) {
+  const [posicao, setPosicao] = useState<any>(null);
+
+  useMapEvents({
+    click(e) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      setPosicao([lat, lng]);
+
+      setObjeto((prev: any) => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng
+      }));
+    }
+  });
+
+  return posicao ? <Marker position={posicao} /> : null;
+}
 
   const limparFormulario = () => {
     setObjeto({
@@ -136,14 +158,43 @@ export default function CadastroObjeto({
             isMulti
             options={categoriasOptions}
             onChange={handleCategoriasChange}
+            menuPortalTarget={document.body}
+            styles={{
+              menuPortal: (base) => ({
+                ...base,
+                zIndex: 9999
+              })
+            }}
           />
 
           <DataInput
             selected={dataPerdido}
             onChange={setdataPerdido}
           />
-          <input name="latitude" placeholder="Latitude" onChange={handleChange} />
-          <input name="longitude" placeholder="Longitude" onChange={handleChange} />
+          <p>Clique no mapa para marcar a localização do objeto perdido:</p>
+
+          <MapContainer
+            center={[-15.7939, -47.8828]}
+            zoom={13}
+            style={{
+              height: "300px",
+              width: "100%",
+              marginBottom: "15px"
+            }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+            <SelecionadorMapa setObjeto={setObjeto} />
+
+            {objeto.latitude && objeto.longitude && (
+              <Marker
+                position={[
+                  Number(objeto.latitude),
+                  Number(objeto.longitude)
+                ]}
+              />
+            )}
+          </MapContainer>
 
           <input type="file" onChange={handleImagem} />
 
