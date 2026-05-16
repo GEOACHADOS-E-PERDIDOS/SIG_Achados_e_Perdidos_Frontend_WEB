@@ -1,9 +1,11 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useRef } from "react";
+
 import Select from "react-select";
 import type { MultiValue } from "react-select";
+
 import { cadastrarObjeto } from "../services/CadastroObjetoService";
 import type { CategoriaOption } from "../types/Categoria";
+
 import DataInput from "./DateInput";
 import "../styles/CadastroObjeto.css"
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -19,8 +21,11 @@ type Props = {
 export default function CadastroObjeto({
   aberto,
   onClose,
-  categorias
+  categorias,
 }: Props) {
+  /* ===================== */
+  /* STATE */
+  /* ===================== */
 
   const [objeto, setObjeto] = useState({
     nome: "",
@@ -28,11 +33,14 @@ export default function CadastroObjeto({
     enderecoEncontro: "",
     dataPerdido: "",
     latitude: "",
-    longitude: ""
+    longitude: "",
   });
-  const [dataPerdido, setdataPerdido] =
-    useState<Date | null>(null);
-  const [imagem, setImagem] = useState<File | null>(null);
+
+  const [dataPerdido, setDataPerdido] = useState<Date | null>(null);
+
+  const [imagens, setImagens] = useState<File[]>([]);
+  const inputImagemRef = useRef<HTMLInputElement>(null);
+
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
 
   if (!aberto) return null;
@@ -57,6 +65,21 @@ function SelecionadorMapa({ setObjeto }: any) {
 
   return posicao ? <Marker position={posicao} /> : null;
 }
+  /* ===================== */
+  /* LIMPAR IMAGENS */
+  /* ===================== */
+
+  const limparImagens = () => {
+    setImagens([]);
+
+    if (inputImagemRef.current) {
+      inputImagemRef.current.value = "";
+    }
+  };
+
+  /* ===================== */
+  /* LIMPAR FORM */
+  /* ===================== */
 
   const limparFormulario = () => {
     setObjeto({
@@ -67,20 +90,26 @@ function SelecionadorMapa({ setObjeto }: any) {
       latitude: "",
       longitude: "",
     });
-    setdataPerdido(null);
-    setImagem(null);
+
+    setDataPerdido(null);
     setCategoriasSelecionadas([]);
+    limparImagens();
   };
 
-  const handleChange = (e: any) => {
+  /* ===================== */
+  /* INPUTS */
+  /* ===================== */
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setObjeto({
       ...objeto,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleImagem = (e: any) => {
-    setImagem(e.target.files[0]);
+  const handleImagens = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setImagens(files);
   };
 
   const handleCategoriasChange = (
@@ -90,59 +119,52 @@ function SelecionadorMapa({ setObjeto }: any) {
     setCategoriasSelecionadas(ids);
   };
 
-  const handleSubmit = async (e: any) => {
+  /* ===================== */
+  /* SUBMIT */
+  /* ===================== */
 
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token =
-      localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-    const dataFormatada =
-      dataPerdido
-        ? dataPerdido
-          .toISOString()
-          .split("T")[0]
-        : "";
+    const dataFormatada = dataPerdido
+      ? dataPerdido.toISOString().split("T")[0]
+      : "";
 
     try {
-
       await cadastrarObjeto({
-
         objeto: {
           ...objeto,
-
-          dataPerdido: dataFormatada
+          dataPerdido: dataFormatada,
         },
-
         categoriasSelecionadas,
-
-        imagem,
-
+        imagens,
         token,
       });
 
-      alert(
-        "Objeto cadastrado com sucesso!"
-      );
+      alert("Objeto cadastrado com sucesso!");
 
       limparFormulario();
-
       onClose();
-
     } catch (error) {
-
       console.error(error);
-
-      alert(
-        "Erro ao cadastrar objeto"
-      );
+      alert("Erro ao cadastrar objeto");
     }
   };
 
+  /* ===================== */
+  /* OPTIONS */
+  /* ===================== */
+
   const categoriasOptions = categorias.map((cat) => ({
     value: cat.id,
-    label: cat.nome
+    label: cat.nome,
   }));
+
+  /* ===================== */
+  /* UI */
+  /* ===================== */
 
   return (
     <div className="popup-overlay">
@@ -150,9 +172,23 @@ function SelecionadorMapa({ setObjeto }: any) {
         <h2>Cadastrar Objeto</h2>
 
         <form onSubmit={handleSubmit}>
-          <input name="nome" placeholder="Nome" onChange={handleChange} />
-          <input name="descricao" placeholder="Descrição" onChange={handleChange} />
-          <input name="enderecoEncontro" placeholder="Endereço" onChange={handleChange} />
+          <input
+            name="nome"
+            placeholder="Nome"
+            onChange={handleChange}
+          />
+
+          <input
+            name="descricao"
+            placeholder="Descrição"
+            onChange={handleChange}
+          />
+
+          <input
+            name="enderecoEncontro"
+            placeholder="Endereço"
+            onChange={handleChange}
+          />
 
           <Select
             isMulti
@@ -169,7 +205,19 @@ function SelecionadorMapa({ setObjeto }: any) {
 
           <DataInput
             selected={dataPerdido}
-            onChange={setdataPerdido}
+            onChange={setDataPerdido}
+          />
+
+          <input
+            name="latitude"
+            placeholder="Latitude"
+            onChange={handleChange}
+          />
+
+          <input
+            name="longitude"
+            placeholder="Longitude"
+            onChange={handleChange}
           />
           <p>Clique no mapa para marcar a localização do objeto perdido:</p>
 
@@ -196,10 +244,71 @@ function SelecionadorMapa({ setObjeto }: any) {
             )}
           </MapContainer>
 
-          <input type="file" onChange={handleImagem} />
+          {/* ===================== */}
+          {/* IMAGENS */}
+          {/* ===================== */}
+
+          <input
+            ref={inputImagemRef}
+            type="file"
+            multiple
+            onChange={handleImagens}
+          />
+
+          {/* PREVIEW */}
+          {imagens.length > 0 && (
+            <div style={{ marginTop: "10px", position: "relative" }}>
+              
+              {/* BOTÃO X */}
+              <button
+                type="button"
+                onClick={limparImagens}
+                title="Limpar imagens"
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "#e53935",
+                  color: "white",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ×
+              </button>
+
+              <p>Imagens selecionadas:</p>
+
+              <ul>
+                {imagens.map((img, index) => (
+                  <li key={index}>{img.name}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* ===================== */}
+          {/* BOTÕES */}
+          {/* ===================== */}
 
           <button type="submit">Cadastrar</button>
-          <button type="button" onClick={() => { limparFormulario(); onClose(); }}>Fechar</button>
+
+          <button
+            type="button"
+            onClick={() => {
+              limparFormulario();
+              onClose();
+            }}
+          >
+            Fechar
+          </button>
         </form>
       </div>
     </div>

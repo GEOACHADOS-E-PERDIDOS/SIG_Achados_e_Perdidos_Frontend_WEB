@@ -37,16 +37,30 @@ export const deletarObjeto = async (id: number) => {
   await axios.delete(`${API_URL}/objetos/${id}`, getAuthHeader());
 };
 
-// IMAGEM
-export const buscarImagem = async (caminho: string) => {
-  try {
-    const res = await axios.get(`${API_URL}/uploads/${caminho}`, {
-      ...getAuthHeader(),
-      responseType: "blob",
-    });
+// =========================
+// IMAGENS (MÚLTIPLAS)
+// =========================
+export const buscarImagens = async (caminhos?: string[]) => {
+  if (!caminhos || caminhos.length === 0) return [];
 
-    return URL.createObjectURL(res.data);
-  } catch {
-    return null;
+  try {
+    const imagens = await Promise.all(
+      caminhos.map(async (caminho) => {
+        const res = await axios.get(
+          `${API_URL}/uploads/${caminho}`,
+          {
+            ...getAuthHeader(),
+            responseType: "blob",
+          }
+        );
+
+        return URL.createObjectURL(res.data);
+      })
+    );
+
+    return imagens;
+  } catch (err) {
+    console.error("Erro ao buscar imagens:", err);
+    return [];
   }
 };

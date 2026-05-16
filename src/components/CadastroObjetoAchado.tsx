@@ -1,26 +1,24 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import Select from "react-select";
-
 import type { MultiValue } from "react-select";
-import type {  CategoriaOption } from "../types/Categoria";
+import type { CategoriaOption } from "../types/Categoria";
+
 import {
   MapContainer,
   TileLayer,
   Marker,
-  useMapEvents
+  useMapEvents,
 } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import "../styles/pop_up.css"
 
+import "leaflet/dist/leaflet.css";
+
+import "../styles/pop_up.css";
+import "../styles/CadastroObjeto.css";
 
 import DataInput from "./DateInput";
 
-import {
-  cadastrarObjetoAchado
-} from "../services/CadastroObjetoAchadoService";
-
-import "../styles/CadastroObjeto.css";
+import { cadastrarObjetoAchado } from "../services/CadastroObjetoAchadoService";
 
 type Props = {
   aberto: boolean;
@@ -29,13 +27,15 @@ type Props = {
   postos: any[];
 };
 
-function SelecionadorMapa({ setObjeto }: any) {
+/* ===================== */
+/* MAP CLICK */
+/* ===================== */
 
+function SelecionadorMapa({ setObjeto }: any) {
   const [posicao, setPosicao] = useState<any>(null);
 
   useMapEvents({
     click(e) {
-
       const lat = e.latlng.lat;
       const lng = e.latlng.lng;
 
@@ -44,286 +44,260 @@ function SelecionadorMapa({ setObjeto }: any) {
       setObjeto((prev: any) => ({
         ...prev,
         latitudeAchado: lat,
-        longitudeAchado: lng
+        longitudeAchado: lng,
       }));
-    }
+    },
   });
 
   return posicao ? <Marker position={posicao} /> : null;
 }
 
-
+/* ===================== */
+/* COMPONENTE */
+/* ===================== */
 
 export default function CadastroObjetoAchado({
   aberto,
   onClose,
   categorias,
-  postos
+  postos,
 }: Props) {
-
   const [objeto, setObjeto] = useState({
     nome: "",
     descricao: "",
     enderecoEncontro: "",
     dataEncontro: "",
     latitudeAchado: "",
-    longitudeAchado: ""
+    longitudeAchado: "",
   });
 
-  const [dataEncontro, setDataEncontro] =
-    useState<Date | null>(null);
+  const [dataEncontro, setDataEncontro] = useState<Date | null>(null);
 
-  const [imagem, setImagem] =
-    useState<File | null>(null);
+  const [imagens, setImagens] = useState<File[]>([]);
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const [categoriasSelecionadas,
-    setCategoriasSelecionadas] =
-    useState<number[]>([]);
-
-  const [postoSelecionado,
-    setPostoSelecionado] =
-    useState<any>(null);
+  const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
+  const [postoSelecionado, setPostoSelecionado] = useState<any>(null);
 
   if (!aberto) return null;
 
-  const limparFormulario = () => {
+  /* ===================== */
+  /* LIMPAR IMAGENS */
+  /* ===================== */
 
+  const limparImagens = () => {
+    setImagens([]);
+    if (inputFileRef.current) inputFileRef.current.value = "";
+  };
+
+  /* ===================== */
+  /* LIMPAR FORM */
+  /* ===================== */
+
+  const limparFormulario = () => {
     setObjeto({
       nome: "",
       descricao: "",
       enderecoEncontro: "",
       dataEncontro: "",
       latitudeAchado: "",
-      longitudeAchado: ""
+      longitudeAchado: "",
     });
 
     setDataEncontro(null);
-
-    setImagem(null);
-
     setCategoriasSelecionadas([]);
-
     setPostoSelecionado(null);
+    limparImagens();
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  /* ===================== */
+  /* HANDLES */
+  /* ===================== */
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setObjeto({
       ...objeto,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleImagem = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-
-    if (e.target.files?.[0]) {
-      setImagem(e.target.files[0]);
-    }
+  const handleImagem = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImagens(Array.from(e.target.files || []));
   };
 
-  const handleCategoriasChange = (
-    selecionadas: MultiValue<CategoriaOption>
-  ) => {
-
-    const ids = selecionadas.map(
-      (cat) => cat.value
-    );
-
-    setCategoriasSelecionadas(ids);
+  const handleCategoriasChange = (selecionadas: MultiValue<CategoriaOption>) => {
+    setCategoriasSelecionadas(selecionadas.map((c) => c.value));
   };
 
-  const handlePostoChange = (
-    selecionado: any
-  ) => {
-
+  const handlePostoChange = (selecionado: any) => {
     setPostoSelecionado(selecionado);
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  /* ===================== */
+  /* SUBMIT */
+  /* ===================== */
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!postoSelecionado) {
-
-      alert(
-        "Posto de retirada é obrigatório!"
-      );
-
+      alert("Posto de retirada é obrigatório!");
       return;
     }
 
-    const token =
-      localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-    const dataFormatada =
-      dataEncontro
-        ? dataEncontro
-            .toISOString()
-            .split("T")[0]
-        : "";
+    const dataFormatada = dataEncontro
+      ? dataEncontro.toISOString().split("T")[0]
+      : "";
 
     try {
-
       await cadastrarObjetoAchado({
         objeto: {
           ...objeto,
-          dataEncontro: dataFormatada
+          dataEncontro: dataFormatada,
         },
-
         categoriasSelecionadas,
-
-        imagem,
-
+        imagens,
         postoSelecionado,
-
         token,
       });
 
-      alert(
-        "Objeto achado cadastrado com sucesso!"
-      );
-
+      alert("Objeto achado cadastrado com sucesso!");
       limparFormulario();
-
       onClose();
-
     } catch (error) {
-
       console.error(error);
-
-      alert(
-        "Erro ao cadastrar objeto achado"
-      );
+      alert("Erro ao cadastrar objeto achado");
     }
   };
 
-  const categoriasOptions =
-    categorias.map((cat) => ({
-      value: cat.id,
-      label: cat.nome
-    }));
+  /* ===================== */
+  /* OPTIONS */
+  /* ===================== */
 
-  const postosOptions =
-    postos.map((p) => ({
-      value: p.id,
-      label: p.nome,
-      latitude: p.latitude,
-      longitude: p.longitude
-    }));
+  const categoriasOptions = categorias.map((cat) => ({
+    value: cat.id,
+    label: cat.nome,
+  }));
+
+  const postosOptions = postos.map((p) => ({
+    value: p.id,
+    label: p.nome,
+  }));
+
+  /* ===================== */
+  /* UI */
+  /* ===================== */
 
   return (
     <div className="popup-overlay">
-
       <div className="popup-box">
-
-        <h2>
-          Cadastrar Objeto Achado
-        </h2>
+        <h2>Cadastrar Objeto Achado</h2>
 
         <form onSubmit={handleSubmit}>
-
-          <input
-            name="nome"
-            placeholder="Nome"
-            onChange={handleChange}
-          />
-
-          <input
-            name="descricao"
-            placeholder="Descrição"
-            onChange={handleChange}
-          />
-
+          <input name="nome" placeholder="Nome" onChange={handleChange} />
+          <input name="descricao" placeholder="Descrição" onChange={handleChange} />
           <input
             name="enderecoEncontro"
             placeholder="Endereço do encontro"
             onChange={handleChange}
           />
 
-          {/* Categorias */}
           <Select
             isMulti
             options={categoriasOptions}
             onChange={handleCategoriasChange}
             placeholder="Categorias"
-            menuPortalTarget={document.body}
-            styles={{
-              menuPortal: (base) => ({
-                ...base,
-                zIndex: 9999
-              })
-            }}
           />
 
-          {/* Data */}
-          <DataInput
-            selected={dataEncontro}
-            onChange={setDataEncontro}
-          />
+          <DataInput selected={dataEncontro} onChange={setDataEncontro} />
 
+          {/* MAPA */}
           <p>Clique no mapa para marcar o local do encontro:</p>
 
           <MapContainer
             center={[-15.7939, -47.8828]}
             zoom={13}
-            style={{
-              height: "300px",
-              width: "100%",
-              marginBottom: "15px"
-            }}
+            style={{ height: "300px", width: "100%", marginBottom: "15px" }}
           >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <SelecionadorMapa setObjeto={setObjeto} />
 
             {objeto.latitudeAchado && objeto.longitudeAchado && (
               <Marker
                 position={[
                   Number(objeto.latitudeAchado),
-                  Number(objeto.longitudeAchado)
+                  Number(objeto.longitudeAchado),
                 ]}
               />
             )}
           </MapContainer>
 
-          {/* Posto de retirada */}
+          {/* POSTO */}
           <Select
             options={postosOptions}
             value={postoSelecionado}
             onChange={handlePostoChange}
             placeholder="Selecione o posto de retirada"
-
-             styles={{
-              menuPortal: (base) => ({
-                ...base,
-                zIndex: 9999
-              })
-            }}
           />
 
+          {/* IMAGENS */}
           <input
+            ref={inputFileRef}
             type="file"
+            multiple
             onChange={handleImagem}
           />
 
-          <div
-            style={{
-              display: "flex",
-              gap: 10
-            }}
-          >
+          {/* PREVIEW COM X */}
+          {imagens.length > 0 && (
+            <div
+              style={{
+                marginTop: "10px",
+                position: "relative",
+                padding: "10px",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={limparImagens}
+                title="Limpar imagens"
+                style={{
+                  position: "absolute",
+                  top: "6px",
+                  right: "6px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "#e53935",
+                  color: "white",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ×
+              </button>
 
-            <button type="submit">
-              Cadastrar
-            </button>
+              <strong>Imagens selecionadas:</strong>
+
+              <ul>
+                {imagens.map((img, i) => (
+                  <li key={i}>{img.name}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* BOTÕES */}
+          <div style={{ display: "flex", gap: 10 }}>
+            <button type="submit">Cadastrar</button>
 
             <button
               type="button"
@@ -334,13 +308,9 @@ export default function CadastroObjetoAchado({
             >
               Fechar
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 }

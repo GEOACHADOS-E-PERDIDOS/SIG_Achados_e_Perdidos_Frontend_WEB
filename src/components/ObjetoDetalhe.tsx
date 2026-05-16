@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import "../styles/ObjetoDetalhe.css";
+
+
 type Categoria = {
     nome: string;
 };
@@ -10,45 +12,118 @@ type Objeto = {
     descricao: string;
     enderecoEncontro: string;
     dataEncontro: string;
-    imagemUrl?: string | null;
+
+    // URLs finais das imagens
+    caminhosImagens?: string[];
+
     categorias?: Categoria[];
-    status: "DISPONIVEL" | "DEVOLVIDO" | "DESCARTADO";
+
+    status:
+    | "DISPONIVEL"
+    | "DEVOLVIDO"
+    | "DESCARTADO";
 };
 
 type Props = {
     obj: Objeto;
 };
 
-export default function ObjetoDetalhe({ obj }: Props) {
+export default function ObjetoDetalhe({
+    obj,
+}: Props) {
+
+    const scrollRef =
+        useRef<HTMLDivElement>(null);
+
+
+    const handleWheel = (
+        e: React.WheelEvent<HTMLDivElement>
+    ) => {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        const container =
+            scrollRef.current;
+
+        if (!container) return;
+
+        container.scrollLeft +=
+            e.deltaY * 2.5;
+    };
+
     return (
         <div className="objeto-detalhe">
 
             <h2>{obj.nome}</h2>
 
-            <div className="objeto-detalhe-imagem">
-                {obj.imagemUrl ? (
-                    <img src={obj.imagemUrl} alt={obj.nome} />
+            {/* IMAGENS */}
+            <div className="objeto-detalhe-imagem-container">
+
+                {obj.caminhosImagens &&
+                    obj.caminhosImagens.length > 0 ? (
+                    <div
+                        ref={scrollRef}
+                        className={`objeto-detalhe-imagem-scroll ${obj.caminhosImagens.length === 1
+                                ? "single-image"
+                                : ""
+                            }`}
+                        onWheel={handleWheel}
+                    >
+
+                        {obj.caminhosImagens.map(
+                            (img, index) => (
+
+                                <img
+                                    key={index}
+                                    src={img}
+                                    alt={`${obj.nome}-${index}`}
+                                    className="objeto-detalhe-imagem"
+                                />
+                            )
+                        )}
+
+                    </div>
+
                 ) : (
+
                     <div className="objeto-detalhe-placeholder">
                         Sem imagem
                     </div>
                 )}
+
             </div>
 
-            <p><strong>Descrição:</strong> {obj.descricao}</p>
-            <p><strong>Endereço:</strong> {obj.enderecoEncontro}</p>
-            <p><strong>Data:</strong> {obj.dataEncontro}</p>
+            <p>
+                <strong>Descrição:</strong>{" "}
+                {obj.descricao}
+            </p>
+
+            <p>
+                <strong>Endereço:</strong>{" "}
+                {obj.enderecoEncontro}
+            </p>
+
+            <p>
+                <strong>Data:</strong>{" "}
+                {obj.dataEncontro}
+            </p>
 
             <p>
                 <strong>Status:</strong>{" "}
+
                 <span
                     style={{
                         color:
-                            obj.status === "DISPONIVEL"
+                            obj.status ===
+                                "DISPONIVEL"
                                 ? "green"
-                                : obj.status === "DEVOLVIDO"
+                                : obj.status ===
+                                    "DEVOLVIDO"
                                     ? "blue"
                                     : "red",
+
                         fontWeight: "bold",
                     }}
                 >
@@ -58,8 +133,12 @@ export default function ObjetoDetalhe({ obj }: Props) {
 
             <p>
                 <strong>Categorias:</strong>{" "}
-                {obj.categorias?.length
-                    ? obj.categorias.map((c) => c.nome).join(", ")
+
+                {obj.categorias &&
+                    obj.categorias.length > 0
+                    ? obj.categorias
+                        .map((c) => c.nome)
+                        .join(", ")
                     : "Sem categoria"}
             </p>
 

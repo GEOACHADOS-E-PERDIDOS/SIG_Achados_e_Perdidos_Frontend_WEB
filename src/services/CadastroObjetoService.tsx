@@ -1,10 +1,11 @@
 // services/objetoService.ts
+
 import axios from "axios";
 
 export async function cadastrarObjeto({
   objeto,
   categoriasSelecionadas,
-  imagem,
+  imagens,
   token,
 }: {
   objeto: {
@@ -15,30 +16,65 @@ export async function cadastrarObjeto({
     latitude: string;
     longitude: string;
   };
+
   categoriasSelecionadas: number[];
-  imagem: File | null;
+
+  imagens: File[];
+
   token: string | null;
 }) {
+
   const formData = new FormData();
 
+  /* ========================= */
+  /* DADOS DO OBJETO */
+  /* ========================= */
+
   Object.entries(objeto).forEach(([key, value]) => {
+
     formData.append(key, value);
+
   });
+
+  /* ========================= */
+  /* CATEGORIAS */
+  /* ========================= */
 
   categoriasSelecionadas.forEach((id) => {
-    formData.append("categorias", id.toString());
+
+    formData.append(
+      "categorias",
+      id.toString()
+    );
+
   });
 
-  if (imagem) {
-    formData.append("imagem", imagem);
-  }
+  /* ========================= */
+  /* IMAGENS */
+  /* ========================= */
+
+  imagens.forEach((imagem) => {
+
+    formData.append(
+      "imagens",
+      imagem
+    );
+
+  });
+
+  /* ========================= */
+  /* REQUEST */
+  /* ========================= */
 
   return axios.post(
+
     "http://localhost:8080/objetos/perdidos",
+
     formData,
+
     {
       headers: {
-        "Content-Type": "multipart/form-data",
+
         Authorization: `Bearer ${token}`,
       },
     }

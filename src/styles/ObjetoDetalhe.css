@@ -1,26 +1,94 @@
-
 .objeto-detalhe-imagem {
-  width: 250px;        /* 👈 tamanho fixo */
-  height: 250px;       /* 👈 igual ao width = quadrado */
-  margin: 0 auto 15px;
-  overflow: hidden;
-  border-radius: 10px;
+    min-width: 250px;
+    width: 250px;
+    height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    flex-shrink: 0;
 }
 
 .objeto-detalhe-imagem img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .objeto-detalhe-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ccc;
-  border-radius: 10px;
-  color: #555;
-  font-weight: bold;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #ccc;
+
+    border-radius: 10px;
+
+    color: #555;
+
+    font-weight: bold;
+}
+
+.objeto-detalhe-imagem-container {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* CARROSSEL */
+.objeto-detalhe-imagem-scroll {
+
+    display: flex;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    gap: 10px;
+
+    width: 100%;
+
+    scroll-behavior: smooth;
+
+    scroll-snap-type: x mandatory;
+
+    padding-bottom: 10px;
+}
+
+/* CENTRALIZAR QUANDO FOR APENAS 1 IMAGEM */
+.objeto-detalhe-imagem-scroll.single-image {
+    justify-content: center;
+}
+
+/* IMAGENS DO CARROSSEL */
+.objeto-detalhe-imagem-scroll img {
+
+    width: 250px;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    flex-shrink: 0;
+
+    scroll-snap-align: center;
+
+    border: 1px solid #ddd;
+}
+
+/* SCROLLBAR */
+.objeto-detalhe-imagem-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.objeto-detalhe-imagem-scroll::-webkit-scrollbar-thumb {
+
+    background: #aaa;
+
+    border-radius: 10px;
 }

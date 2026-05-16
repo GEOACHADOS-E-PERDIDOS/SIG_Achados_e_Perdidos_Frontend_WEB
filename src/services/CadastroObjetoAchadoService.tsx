@@ -14,7 +14,7 @@ type Props = {
 
   categoriasSelecionadas: number[];
 
-  imagem: File | null;
+  imagens: File[];
 
   postoSelecionado: {
     value: number | string;
@@ -26,68 +26,97 @@ type Props = {
 export async function cadastrarObjetoAchado({
   objeto,
   categoriasSelecionadas,
-  imagem,
+  imagens,
   postoSelecionado,
   token
 }: Props) {
 
   const formData = new FormData();
 
-  // campos básicos
-  formData.append("nome", objeto.nome);
+  /* ========================= */
+  /* DADOS DO OBJETO */
+  /* ========================= */
 
-  formData.append(
-    "descricao",
-    objeto.descricao
+  Object.entries(objeto).forEach(
+
+    ([key, value]) => {
+
+      formData.append(
+        key,
+        value
+      );
+    }
   );
 
-  formData.append(
-    "enderecoEncontro",
-    objeto.enderecoEncontro
+  /* ========================= */
+  /* CATEGORIAS */
+  /* ========================= */
+
+  categoriasSelecionadas.forEach(
+
+    (id) => {
+
+      formData.append(
+        "categorias",
+        id.toString()
+      );
+    }
   );
 
-  formData.append(
-    "dataEncontro",
-    objeto.dataEncontro
+  /* ========================= */
+  /* IMAGENS */
+  /* ========================= */
+
+  imagens.forEach(
+
+    (imagem) => {
+
+      formData.append(
+        "imagens",
+        imagem
+      );
+    }
   );
 
-  formData.append(
-    "latitudeAchado",
-    String(objeto.latitudeAchado)
-  );
+  /* ========================= */
+  /* POSTO */
+  /* ========================= */
 
   formData.append(
-    "longitudeAchado",
-    String(objeto.longitudeAchado)
-  );
 
-  // categorias
-  categoriasSelecionadas.forEach((id) => {
-    formData.append(
-      "categorias",
-      id.toString()
-    );
-  });
-
-  // imagem
-  if (imagem) {
-    formData.append("imagem", imagem);
-  }
-
-  // posto
-  formData.append(
     "postoRetiradaId",
-    String(postoSelecionado.value)
+
+    String(
+      postoSelecionado.value
+    )
   );
 
+  /* ========================= */
+  /* REQUEST */
+  /* ========================= */
+console.log("====== FORMDATA ======");
+
+for (const pair of formData.entries()) {
+
+  console.log(
+    pair[0],
+    pair[1]
+  );
+}
+
+console.log("======================");
   return axios.post(
+
     "http://localhost:8080/objetos/achados",
+
     formData,
+
     {
       headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      }
+
+        Authorization:
+          `Bearer ${token}`,
+      },
     }
   );
 }

@@ -12,7 +12,7 @@ import {
   listarObjetos,
   buscarObjetos,
   deletarObjeto,
-  buscarImagem,
+  buscarImagens,
 } from "../services/ObjetoPageService";
 
 import { listarCategorias } from "../services/CategoriaService";
@@ -29,22 +29,34 @@ function Objetos() {
   const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
 
   // =========================
+  // NORMALIZA IMAGENS
+  // =========================
+  const montarObjetoComImagens = async (obj: any) => {
+    const caminhos: string[] = obj.caminhosImagens ?? [];
+
+    const imagens =
+      caminhos.length > 0
+        ? await buscarImagens(caminhos)
+        : [];
+
+    return {
+      ...obj,
+      caminhosImagens: imagens, // usado pelo ObjetoDetalhe
+    };
+  };
+
+  // =========================
   // CARREGAR OBJETOS
   // =========================
   const carregarObjetos = async () => {
     try {
       const data = await listarObjetos();
 
-      const objsComImagens = await Promise.all(
-        data.map(async (obj: any) => ({
-          ...obj,
-          imagemUrl: obj.caminhoImagem
-            ? await buscarImagem(obj.caminhoImagem)
-            : null,
-        }))
+      const objs = await Promise.all(
+        data.map((obj: any) => montarObjetoComImagens(obj))
       );
 
-      setObjetos(objsComImagens);
+      setObjetos(objs);
     } catch (err) {
       console.error("Erro ao carregar objetos:", err);
     }
@@ -61,23 +73,18 @@ function Objetos() {
         categoriaSelecionada?.value
       );
 
-      const objsComImagens = await Promise.all(
-        data.map(async (obj: any) => ({
-          ...obj,
-          imagemUrl: obj.caminhoImagem
-            ? await buscarImagem(obj.caminhoImagem)
-            : null,
-        }))
+      const objs = await Promise.all(
+        data.map((obj: any) => montarObjetoComImagens(obj))
       );
 
-      setObjetos(objsComImagens);
+      setObjetos(objs);
     } catch (err) {
       console.error("Erro ao buscar objetos:", err);
     }
   };
 
   // =========================
-  // LIMPAR FILTROS
+  // LIMPAR
   // =========================
   const handleLimpar = () => {
     setBuscarTermo("");
@@ -134,9 +141,7 @@ function Objetos() {
           <Select
             options={categorias}
             value={categoriaSelecionada}
-            onChange={(option) =>
-              setCategoriaSelecionada(option)
-            }
+            onChange={(option) => setCategoriaSelecionada(option)}
             placeholder="Categoria"
             isClearable
           />
@@ -151,9 +156,14 @@ function Objetos() {
         {objetos.map((obj) => (
           <ObjetoCard
             key={obj.id}
-            obj={obj}
+            obj={{
+              ...obj,
+              imagemUrl: obj.caminhosImagens?.[0] ?? null, // só 1 imagem no card
+            }}
             onDelete={handleDelete}
-            onClick={() => setObjetoSelecionado(obj)}
+            onClick={() =>
+              setObjetoSelecionado(obj)
+            }
           />
         ))}
       </div>
