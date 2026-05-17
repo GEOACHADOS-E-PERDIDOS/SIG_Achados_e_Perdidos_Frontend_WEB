@@ -26,7 +26,15 @@ function Objetos() {
   const [categoriaSelecionada, setCategoriaSelecionada] =
     useState<CategoriaOption | null>(null);
 
+  const [statusSelecionado, setStatusSelecionado] =
+  useState("");
+
   const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
+
+  const statusOptions = [
+  { value: "PERDIDO", label: "Perdido" },
+  { value: "DISPONIVEL", label: "Disponível" },
+  ];
 
   // =========================
   // NORMALIZA IMAGENS
@@ -70,7 +78,8 @@ function Objetos() {
       const data = await buscarObjetos(
         buscarTermo,
         buscaData,
-        categoriaSelecionada?.value
+        categoriaSelecionada?.value,
+        statusSelecionado
       );
 
       const objs = await Promise.all(
@@ -90,6 +99,7 @@ function Objetos() {
     setBuscarTermo("");
     setBuscaData("");
     setCategoriaSelecionada(null);
+    setStatusSelecionado("");
     carregarObjetos();
   };
 
@@ -146,6 +156,24 @@ function Objetos() {
             isClearable
           />
         </div>
+
+       <div style={{ width: 620 }}>
+        <Select
+          options={statusOptions}
+          value={
+            statusOptions.find(
+              (opt) => opt.value === statusSelecionado
+            ) || null
+          }
+          onChange={(option) =>
+            setStatusSelecionado(
+              option?.value || ""
+            )
+          }
+          placeholder="Status"
+          isClearable
+        />
+      </div>
 
         <button onClick={handleBuscar}>Buscar</button>
         <button onClick={handleLimpar}>Limpar</button>

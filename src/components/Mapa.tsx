@@ -73,7 +73,7 @@ function Mapa() {
           style={{
             position: "absolute",
             zIndex: 1000,
-            top: 60,
+            top: 200,
             right: 10,
             display: "flex",
             flexDirection: "row",

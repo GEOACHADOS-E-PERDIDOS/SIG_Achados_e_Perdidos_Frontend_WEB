@@ -56,6 +56,7 @@ function ClickMapa() {
         const layerName =
           feature.id.split(".")[0];
 
+
         /* ===================================== */
         /* POSTO */
         /* ===================================== */
@@ -83,6 +84,7 @@ function ClickMapa() {
         /* ===================================== */
         /* OBJETO */
         /* ===================================== */
+
 
         const objeto =
           await buscarObjetoCompleto(

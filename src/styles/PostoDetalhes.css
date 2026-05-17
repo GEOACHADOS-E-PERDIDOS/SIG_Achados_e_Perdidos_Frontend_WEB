@@ -14,3 +14,80 @@
   font-size: 16px;
   color: #555;
 }
+
+.posto-detalhe {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.objetos-lista-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.objeto-card-simples {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.objeto-card-simples:hover {
+  transform: scale(1.02);
+}
+
+.objeto-card-simples h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.objeto-card-simples .descricao {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.objeto-card-simples .categoria {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #1976d2;
+  font-weight: bold;
+}
+
+.posto-abas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.posto-abas button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: rgb(30, 42, 56);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.posto-abas button.ativo {
+  background: rgb(30, 42, 56);
+  color: white;
+  border-color: rgb(30, 42, 56);
+}
+
+.objeto-card-img {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain; /* 👈 mantém a imagem inteira */
+  display: block;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}

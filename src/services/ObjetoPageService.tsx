@@ -20,13 +20,15 @@ export const listarObjetos = async () => {
 export const buscarObjetos = async (
   termo?: string,
   data?: string,
-  categoriaId?: number
+  categoriaId?: number,
+  status?: string
 ) => {
   let url = `${API_URL}/objetos/buscar?`;
 
   if (termo) url += `termo=${termo}&`;
   if (data) url += `data=${data}&`;
   if (categoriaId) url += `categoria=${categoriaId}&`;
+  if (status) url += `status=${status}&`;
 
   const res = await axios.get(url, getAuthHeader());
   return res.data;

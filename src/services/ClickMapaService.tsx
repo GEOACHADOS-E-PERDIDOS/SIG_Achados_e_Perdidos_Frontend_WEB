@@ -7,7 +7,7 @@ const API_URL = "http://localhost:8080";
 /* ===================================================== */
 
 const getAuthHeader = () => {
-
+  console.log(localStorage.getItem("token"));
   const token = localStorage.getItem("token");
 
   return {
@@ -75,7 +75,11 @@ export const buscarFeatureMapa = async (
 
   const response = await fetch(url);
 
-  return response.json();
+  const text = await response.text();
+
+  console.log(text);
+
+  return JSON.parse(text);
 };
 
 /* ===================================================== */
