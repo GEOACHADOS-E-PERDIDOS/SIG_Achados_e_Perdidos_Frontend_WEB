@@ -11,6 +11,7 @@ import "../styles/CadastroObjeto.css"
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "../styles/pop_up.css"
+import "../styles/CadastroObjeto.css"
 
 type Props = {
   aberto: boolean;
