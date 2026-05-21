@@ -38,29 +38,29 @@ function Mapa() {
 
   const buscarObjetos = async () => {
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  try {
+    try {
 
-    const res = await axios.get(
-      "http://localhost:8080/objetos/buscar",
-      {
-        params: {
-          termo: busca
-        },
+      const res = await axios.get(
+        "http://localhost:8080/objetos/buscar",
+        {
+          params: {
+            termo: busca
+          },
 
-        headers: {
-          Authorization: `Bearer ${token}`
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    setResultadoBusca(res.data);
+      setResultadoBusca(res.data);
 
-  } catch (err) {
-    console.error("Erro ao buscar objetos:", err);
-  }
-};
+    } catch (err) {
+      console.error("Erro ao buscar objetos:", err);
+    }
+  };
 
   return (
     <MapContainer
@@ -70,60 +70,64 @@ function Mapa() {
     >
 
       <div
+        style={{
+          position: "absolute",
+          zIndex: 1000,
+          top: 200,
+          right: 10,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "6px",
+          background: "white",
+          padding: "6px",
+          borderRadius: "6px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+        }}
+      >
+        <input
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              buscarObjetos();
+            }
+          }}
+          placeholder="Buscar objeto..."
           style={{
-            position: "absolute",
-            zIndex: 1000,
-            top: 200,
-            right: 10,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: "6px",
-            background: "white",
+            width: "220px",
             padding: "6px",
-            borderRadius: "6px",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+            border: "1px solid #ccc",
+            borderRadius: "4px"
+          }}
+        />
+
+        <button
+          onClick={buscarObjetos}
+          style={{
+            padding: "6px 10px",
+            fontSize: "12px",
+            cursor: "pointer"
           }}
         >
-          <input
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar objeto..."
-            style={{
-              width: "220px",
-              padding: "6px",
-              border: "1px solid #ccc",
-              borderRadius: "4px"
-            }}
-          />
+          Buscar
+        </button>
 
-          <button
-            onClick={buscarObjetos}
-            style={{
-              padding: "6px 10px",
-              fontSize: "12px",
-              cursor: "pointer"
-            }}
-          >
-            Buscar
-          </button>
+        <button
+          onClick={() => {
+            setBusca("");
+            setResultadoBusca([]);
+          }}
+          style={{
+            padding: "6px 10px",
+            fontSize: "12px",
+            cursor: "pointer"
+          }}
+        >
+          Limpar
+        </button>
+      </div>
 
-          <button
-            onClick={() => {
-              setBusca("");
-              setResultadoBusca([]);
-            }}
-            style={{
-              padding: "6px 10px",
-              fontSize: "12px",
-              cursor: "pointer"
-            }}
-          >
-            Limpar
-          </button>
-        </div>
-
-      {/* HIGHLIGHT DOS RESULTADOS */}
       {resultadoBusca
         .filter(obj => obj.latitudeEncontro != null && obj.longitudeEncontro != null)
         .map((obj) => (
@@ -139,13 +143,13 @@ function Mapa() {
             }}
           >
             <Tooltip
-                direction="top"
-                permanent
-                offset={[0, -10]}
-                className="map-label"
-              >
-                {obj.nome}
-              </Tooltip>
+              direction="top"
+              permanent
+              offset={[0, -10]}
+              className="map-label"
+            >
+              {obj.nome}
+            </Tooltip>
           </CircleMarker>
         ))}
 
@@ -197,7 +201,7 @@ function Mapa() {
 
       </LayersControl>
 
-      <ClickMapa/>
+      <ClickMapa />
 
     </MapContainer>
   );

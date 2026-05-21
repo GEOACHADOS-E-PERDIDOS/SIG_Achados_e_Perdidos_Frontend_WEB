@@ -7,8 +7,15 @@ import { cadastrarObjeto } from "../services/CadastroObjetoService";
 import type { CategoriaOption } from "../types/Categoria";
 
 import DataInput from "./DateInput";
-import "../styles/CadastroObjeto.css"
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "../styles/CadastroObjeto.css";
+
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+} from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 import "../styles/pop_up.css"
 import "../styles/CadastroObjeto.css"
@@ -18,6 +25,34 @@ type Props = {
   onClose: () => void;
   categorias: any[];
 };
+
+/* ===================== */
+/* MAPA */
+/* ===================== */
+function SelecionadorMapa({ setObjeto }: any) {
+  const [posicao, setPosicao] = useState<any>(null);
+
+  useMapEvents({
+    click(e) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      setPosicao([lat, lng]);
+
+      setObjeto((prev: any) => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+      }));
+    },
+  });
+
+  return posicao ? <Marker position={posicao} /> : null;
+}
+
+/* ===================== */
+/* COMPONENTE */
+/* ===================== */
 
 export default function CadastroObjeto({
   aberto,
@@ -46,26 +81,6 @@ export default function CadastroObjeto({
 
   if (!aberto) return null;
 
-function SelecionadorMapa({ setObjeto }: any) {
-  const [posicao, setPosicao] = useState<any>(null);
-
-  useMapEvents({
-    click(e) {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
-
-      setPosicao([lat, lng]);
-
-      setObjeto((prev: any) => ({
-        ...prev,
-        latitude: lat,
-        longitude: lng
-      }));
-    }
-  });
-
-  return posicao ? <Marker position={posicao} /> : null;
-}
   /* ===================== */
   /* LIMPAR IMAGENS */
   /* ===================== */
@@ -116,8 +131,7 @@ function SelecionadorMapa({ setObjeto }: any) {
   const handleCategoriasChange = (
     selecionadas: MultiValue<CategoriaOption>
   ) => {
-    const ids = selecionadas.map((cat) => cat.value);
-    setCategoriasSelecionadas(ids);
+    setCategoriasSelecionadas(selecionadas.map((cat) => cat.value));
   };
 
   /* ===================== */
@@ -187,7 +201,7 @@ function SelecionadorMapa({ setObjeto }: any) {
 
           <input
             name="enderecoEncontro"
-            placeholder="Endereço"
+            placeholder="Região ou ponto de referência do local da perda"
             onChange={handleChange}
           />
 
@@ -199,8 +213,8 @@ function SelecionadorMapa({ setObjeto }: any) {
             styles={{
               menuPortal: (base) => ({
                 ...base,
-                zIndex: 9999
-              })
+                zIndex: 9999,
+              }),
             }}
           />
 
@@ -209,18 +223,11 @@ function SelecionadorMapa({ setObjeto }: any) {
             onChange={setDataPerdido}
           />
 
-          <input
-            name="latitude"
-            placeholder="Latitude"
-            onChange={handleChange}
-          />
+          {/* ===================== */}
+          {/* MAPA (ÚNICA FONTE DE LAT/LNG) */}
+          {/* ===================== */}
 
-          <input
-            name="longitude"
-            placeholder="Longitude"
-            onChange={handleChange}
-          />
-          <p>Clique no mapa para marcar a localização do objeto perdido:</p>
+          <p>Clique no mapa para marcar a localização:</p>
 
           <MapContainer
             center={[-15.7939, -47.8828]}
@@ -228,7 +235,7 @@ function SelecionadorMapa({ setObjeto }: any) {
             style={{
               height: "300px",
               width: "100%",
-              marginBottom: "15px"
+              marginBottom: "15px",
             }}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -239,7 +246,7 @@ function SelecionadorMapa({ setObjeto }: any) {
               <Marker
                 position={[
                   Number(objeto.latitude),
-                  Number(objeto.longitude)
+                  Number(objeto.longitude),
                 ]}
               />
             )}
@@ -256,15 +263,11 @@ function SelecionadorMapa({ setObjeto }: any) {
             onChange={handleImagens}
           />
 
-          {/* PREVIEW */}
           {imagens.length > 0 && (
             <div style={{ marginTop: "10px", position: "relative" }}>
-              
-              {/* BOTÃO X */}
               <button
                 type="button"
                 onClick={limparImagens}
-                title="Limpar imagens"
                 style={{
                   position: "absolute",
                   top: "-8px",
@@ -275,8 +278,8 @@ function SelecionadorMapa({ setObjeto }: any) {
                   border: "none",
                   background: "#e53935",
                   color: "white",
-                  fontWeight: "bold",
                   cursor: "pointer",
+                  fontWeight: "bold",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",

@@ -200,7 +200,7 @@ export default function CadastroObjetoAchado({
           <input name="descricao" placeholder="Descrição" onChange={handleChange} />
           <input
             name="enderecoEncontro"
-            placeholder="Endereço do encontro"
+            placeholder="Local onde o objeto foi encontrado"
             onChange={handleChange}
           />
 

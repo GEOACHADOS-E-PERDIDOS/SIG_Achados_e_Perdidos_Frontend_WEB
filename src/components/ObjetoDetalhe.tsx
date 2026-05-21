@@ -1,147 +1,152 @@
 import React, { useRef } from "react";
 import "../styles/ObjetoDetalhe.css";
 
-
 type Categoria = {
-    nome: string;
+  nome: string;
 };
 
 type Objeto = {
-    id: number;
-    nome: string;
-    descricao: string;
-    enderecoEncontro: string;
-    dataEncontro: string;
+  id: number;
+  nome: string;
+  descricao: string;
+  enderecoEncontro: string;
+  dataEncontro: string;
 
-    // URLs finais das imagens
-    caminhosImagens?: string[];
+  // URLs finais das imagens
+  caminhosImagens?: string[];
 
-    categorias?: Categoria[];
+  categorias?: Categoria[];
 
-    status:
-    | "DISPONIVEL"
-    | "DEVOLVIDO"
-    | "DESCARTADO";
+  status:
+  | "DISPONIVEL"
+  | "DEVOLVIDO"
+  | "DESCARTADO";
 };
 
 type Props = {
-    obj: Objeto;
+  obj: Objeto;
 };
 
 export default function ObjetoDetalhe({
-    obj,
+  obj,
 }: Props) {
 
-    const scrollRef =
-        useRef<HTMLDivElement>(null);
+  const scrollRef =
+    useRef<HTMLDivElement>(null);
 
+  const formatarData = (data: string) => {
+    const [ano, mes, dia] = data.split("-");
 
-    const handleWheel = (
-        e: React.WheelEvent<HTMLDivElement>
-    ) => {
+    return `${dia}/${mes}/${ano}`;
+  };
 
-        e.preventDefault();
+  const handleWheel = (
+    e: React.WheelEvent<HTMLDivElement>
+  ) => {
 
-        e.stopPropagation();
+    e.preventDefault();
 
-        const container =
-            scrollRef.current;
+    e.stopPropagation();
 
-        if (!container) return;
+    const container =
+      scrollRef.current;
 
-        container.scrollLeft +=
-            e.deltaY * 2.5;
-    };
+    if (!container) return;
 
-    return (
-        <div className="objeto-detalhe">
+    container.scrollLeft +=
+      e.deltaY * 2.5;
+  };
 
-            <h2>{obj.nome}</h2>
+  return (
+    <div className="objeto-detalhe">
 
-            {/* IMAGENS */}
-            <div className="objeto-detalhe-imagem-container">
+      <h2>{obj.nome}</h2>
 
-                {obj.caminhosImagens &&
-                    obj.caminhosImagens.length > 0 ? (
-                    <div
-                        ref={scrollRef}
-                        className={`objeto-detalhe-imagem-scroll ${obj.caminhosImagens.length === 1
-                                ? "single-image"
-                                : ""
-                            }`}
-                        onWheel={handleWheel}
-                    >
+      {/* IMAGENS */}
+      <div className="objeto-detalhe-imagem-container">
 
-                        {obj.caminhosImagens.map(
-                            (img, index) => (
+        {obj.caminhosImagens &&
+          obj.caminhosImagens.length > 0 ? (
 
-                                <img
-                                    key={index}
-                                    src={img}
-                                    alt={`${obj.nome}-${index}`}
-                                    className="objeto-detalhe-imagem"
-                                />
-                            )
-                        )}
+          <div
+            ref={scrollRef}
+            className={`objeto-detalhe-imagem-scroll ${obj.caminhosImagens.length === 1
+                ? "single-image"
+                : ""
+              }`}
+            onWheel={handleWheel}
+          >
 
-                    </div>
+            {obj.caminhosImagens.map(
+              (img, index) => (
 
-                ) : (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`${obj.nome}-${index}`}
+                  className="objeto-detalhe-imagem"
+                />
+              )
+            )}
 
-                    <div className="objeto-detalhe-placeholder">
-                        Sem imagem
-                    </div>
-                )}
+          </div>
 
-            </div>
+        ) : (
 
-            <p>
-                <strong>Descrição:</strong>{" "}
-                {obj.descricao}
-            </p>
+          <div className="objeto-detalhe-placeholder">
+            Sem imagem
+          </div>
+        )}
 
-            <p>
-                <strong>Endereço:</strong>{" "}
-                {obj.enderecoEncontro}
-            </p>
+      </div>
 
-            <p>
-                <strong>Data:</strong>{" "}
-                {obj.dataEncontro}
-            </p>
+      <p>
+        <strong>Descrição:</strong>{" "}
+        {obj.descricao}
+      </p>
 
-            <p>
-                <strong>Status:</strong>{" "}
+      <p>
+        <strong>Endereço:</strong>{" "}
+        {obj.enderecoEncontro}
+      </p>
 
-                <span
-                    style={{
-                        color:
-                            obj.status ===
-                                "DISPONIVEL"
-                                ? "green"
-                                : obj.status ===
-                                    "DEVOLVIDO"
-                                    ? "blue"
-                                    : "red",
+      <p>
+        <strong>Data:</strong>{" "}
+        {formatarData(obj.dataEncontro)}
+      </p>
 
-                        fontWeight: "bold",
-                    }}
-                >
-                    {obj.status}
-                </span>
-            </p>
+      <p>
+        <strong>Status:</strong>{" "}
 
-            <p>
-                <strong>Categorias:</strong>{" "}
+        <span
+          style={{
+            color:
+              obj.status ===
+                "DISPONIVEL"
+                ? "green"
+                : obj.status ===
+                  "DEVOLVIDO"
+                  ? "blue"
+                  : "red",
 
-                {obj.categorias &&
-                    obj.categorias.length > 0
-                    ? obj.categorias
-                        .map((c) => c.nome)
-                        .join(", ")
-                    : "Sem categoria"}
-            </p>
+            fontWeight: "bold",
+          }}
+        >
+          {obj.status}
+        </span>
+      </p>
 
-        </div>
-    );
+      <p>
+        <strong>Categorias:</strong>{" "}
+
+        {obj.categorias &&
+          obj.categorias.length > 0
+          ? obj.categorias
+            .map((c) => c.nome)
+            .join(", ")
+          : "Sem categoria"}
+      </p>
+
+    </div>
+  );
 }

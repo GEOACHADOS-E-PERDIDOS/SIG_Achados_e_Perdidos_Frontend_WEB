@@ -1,5 +1,11 @@
 import { useState } from "react";
+
 import "../styles/UsuarioCard.css";
+
+import {
+  tornarAdmin,
+  resetarSenha
+} from "../services/UsuarioCardService";
 
 type Usuario = {
   id: number;
@@ -11,12 +17,10 @@ type Usuario = {
 
 type Props = {
   usuario: Usuario;
-  onTornarAdmin: (id: number) => Promise<void>;
 };
 
 export default function UsuarioCard({
   usuario,
-  onTornarAdmin,
 }: Props) {
 
   const [popupAberto,
@@ -25,13 +29,18 @@ export default function UsuarioCard({
   const [confirmacaoAberta,
     setConfirmacaoAberta] = useState(false);
 
+  const [senhaTemporaria,
+    setSenhaTemporaria] = useState("");
+
   const handleConfirmar = async () => {
 
     try {
 
-      await onTornarAdmin(usuario.id);
+      await tornarAdmin(usuario.id);
 
-      alert("Usuário promovido para admin!");
+      alert(
+        "Usuário promovido para admin!"
+      );
 
       setConfirmacaoAberta(false);
 
@@ -41,50 +50,82 @@ export default function UsuarioCard({
 
       console.error(error);
 
-      alert("Erro ao promover usuário");
+      alert(
+        "Erro ao promover usuário"
+      );
+    }
+  };
+
+  const handleResetarSenha =
+    async () => {
+
+    try {
+
+      const resposta =
+        await resetarSenha(
+          usuario.id
+        );
+
+      setSenhaTemporaria(
+        resposta
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Erro ao resetar senha"
+      );
     }
   };
 
   return (
     <>
 
-      {/* Card */}
       <div
         className="usuario-card"
-        onClick={() => setPopupAberto(true)}
+        onClick={() =>
+          setPopupAberto(true)
+        }
       >
 
-         <div className="card-text">
+        <div className="card-text">
 
-    <h3>{usuario.nome}</h3>
+          <h3>{usuario.nome}</h3>
 
-    <p>
-      <strong>Email:</strong>
-      {usuario.email}
-    </p>
+          <p>
+            <strong>Email:</strong>
+            {usuario.email}
+          </p>
 
-    <p>
-      <strong>Admin:</strong>
-      {usuario.role === "ADMIN"
-        ? "Sim"
-        : "Não"}
-    </p>
+          <p>
+            <strong>Admin:</strong>
 
-    {usuario.dataCadastro && (
-      <p>
-        <strong>Cadastro:</strong>
+            {usuario.role === "ADMIN"
+              ? "Sim"
+              : "Não"}
+          </p>
 
-        {new Date(
-          usuario.dataCadastro
-        ).toLocaleDateString("pt-BR")}
-      </p>
-    )}
+          {usuario.dataCadastro && (
 
-  </div>
+            <p>
+
+              <strong>Cadastro:</strong>
+
+              {new Date(
+                usuario.dataCadastro
+              ).toLocaleDateString(
+                "pt-BR"
+              )}
+
+            </p>
+          )}
+
+        </div>
 
       </div>
 
-      {/* Popup principal */}
       {popupAberto && (
 
         <div className="popup-overlay">
@@ -112,15 +153,51 @@ export default function UsuarioCard({
 
               <button
                 className="admin-btn"
-                onClick={() => setConfirmacaoAberta(true)}
+                onClick={() =>
+                  setConfirmacaoAberta(true)
+                }
               >
                 Tornar Admin
               </button>
             )}
 
             <button
+              className="admin-btn"
+              onClick={
+                handleResetarSenha
+              }
+            >
+              Resetar Senha
+            </button>
+
+            {senhaTemporaria && (
+
+              <div
+                style={{
+                  marginTop: "15px"
+                }}
+              >
+
+                <p>
+
+                  <strong>
+                    Senha temporária:
+                  </strong>
+
+                </p>
+
+                <p>
+                  {senhaTemporaria}
+                </p>
+
+              </div>
+            )}
+
+            <button
               className="fechar-btn"
-              onClick={() => setPopupAberto(false)}
+              onClick={() =>
+                setPopupAberto(false)
+              }
             >
               Fechar
             </button>
@@ -130,7 +207,6 @@ export default function UsuarioCard({
         </div>
       )}
 
-      {/* Popup confirmação */}
       {confirmacaoAberta && (
 
         <div className="popup-overlay">
@@ -153,7 +229,9 @@ export default function UsuarioCard({
 
               <button
                 className="cancelar-btn"
-                onClick={() => setConfirmacaoAberta(false)}
+                onClick={() =>
+                  setConfirmacaoAberta(false)
+                }
               >
                 Cancelar
               </button>

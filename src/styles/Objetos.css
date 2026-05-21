@@ -1,48 +1,14 @@
 .lista-objetos {
-  flex: 1;               /* ocupa o resto da tela */
-  overflow-y: auto;     /* 👈 scroll aqui dentro */
+  flex: 1;
+  overflow-y: auto;
 
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 
   padding: 20px;
+
   align-content: flex-start;
-}
-
-.card-objeto {
-  background: white;
-  border-radius: 10px;
-  padding: 15px;
-  width: calc(50% - 10px); 
-  display: flex;          
-  align-items: center;
-  gap: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.card-image {
-  width: 150px;
-  height: 150px;
-  flex-shrink: 0;
-}
-
-.card-image img, .card-image .imagem-placeholder {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ccc;
-  color: #555;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.card-text {
-  flex: 1; /* ocupa o restante do espaço */
 }
 
 .home-page {
@@ -61,21 +27,41 @@
   margin: 15px 20px;
 }
 
-.filtro-container input {
-  padding: 8px 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+/* busca menor */
+.input-busca {
+  flex: 0 0 300px;
+  height: 40px;
+  font-size: 15px;
 }
 
-.filtro-container button {
-  padding: 8px 12px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
+/* categoria e status maiores */
+.filtro-select {
+  flex: 0 0 280px;
 }
 
-.filtro-container button:hover {
-  background-color: #0056b3;
+/* botões pequenos */
+.botao-filtro {
+  flex: 0 0 320px;
+  height: 40px;
+  font-size: 20px;
+}
+
+/* tamanho do container */
+/* tamanho do container */
+.filtro-data-objetos {
+  flex: 0 0 300px;
+}
+
+/* força o DatePicker a ocupar tudo */
+.filtro-data-objetos .react-datepicker-wrapper,
+.filtro-data-objetos .react-datepicker__input-container {
+  width: 100%;
+}
+
+/* altera o input real */
+.filtro-data-objetos .input-data {
+  width: 100%;
+  height: 40px;
+  font-size: 15px;
+  box-sizing: border-box;
 }
