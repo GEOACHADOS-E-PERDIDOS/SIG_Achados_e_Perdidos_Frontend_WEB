@@ -1,5 +1,3 @@
-// components/DataInput.tsx
-
 import DatePicker from "react-datepicker";
 
 import { ptBR } from "date-fns/locale";

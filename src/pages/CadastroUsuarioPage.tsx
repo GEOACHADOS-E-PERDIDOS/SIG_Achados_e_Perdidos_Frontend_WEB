@@ -1,10 +1,10 @@
 import { useState } from "react"
-import { createUser } from "../services/userService"
+import { createUser } from "../services/CadastroUsuarioService"
 import type { User } from "../types/User"
 import { useNavigate } from "react-router-dom"
 import logo from '../assets/LOGO_geoachados.png';
 
-function CadastroPage() {
+function CadastroUsuarioPage() {
   const navigate = useNavigate() // hook para navegação
 
   const [user, setUser] = useState<User>({
@@ -99,4 +99,4 @@ return (
   </div>
 );
 }
-export default CadastroPage
+export default CadastroUsuarioPage

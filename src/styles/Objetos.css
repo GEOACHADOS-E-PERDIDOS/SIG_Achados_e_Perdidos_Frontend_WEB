@@ -43,7 +43,10 @@
 .botao-filtro {
   flex: 0 0 320px;
   height: 40px;
-  font-size: 20px;
+
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 /* tamanho do container */

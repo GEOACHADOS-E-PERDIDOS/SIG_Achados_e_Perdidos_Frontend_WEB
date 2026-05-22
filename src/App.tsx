@@ -9,9 +9,9 @@ import {
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import CadastroPage from "./pages/CadastroPage";
+import CadastroUsuarioPage from "./pages/CadastroUsuarioPage";
 import ObjetosPage from "./pages/ObjetosPage";
-import RecuperarSenha from "./pages/RecuperarSenha";
+import RecuperarSenha from "./pages/RecuperarSenhaPage";
 import AlterarSenhaPage from "./pages/AlterarSenhaPage";
 import UsuariosPage from "./pages/UsuariosPage";
 import PostosPage from "./pages/PostosPage";
@@ -43,7 +43,7 @@ function App() {
 
         <Route
           path="/cadastro"
-          element={<CadastroPage />}
+          element={<CadastroUsuarioPage />}
         />
 
         <Route

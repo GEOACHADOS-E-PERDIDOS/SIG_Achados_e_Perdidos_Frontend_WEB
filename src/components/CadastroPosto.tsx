@@ -1,12 +1,17 @@
 import { useState } from "react";
-import axios from "axios";
+
+import CadastroPostoService 
+from "../services/CadastroPostoService";
 
 type Props = {
   aberto: boolean;
   onClose: () => void;
 };
 
-export default function CadastroPosto({ aberto, onClose }: Props) {
+export default function CadastroPosto({
+  aberto,
+  onClose
+}: Props) {
 
   const [posto, setPosto] = useState({
     nome: "",
@@ -19,44 +24,56 @@ export default function CadastroPosto({ aberto, onClose }: Props) {
 
   if (!aberto) return null;
 
-  // 🔄 igual ao objeto
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+
     setPosto({
       ...posto,
-      [e.target.name]: e.target.value
+      [e.target.name]:
+      e.target.value
     });
+
   };
 
-  // 🚀 submit no mesmo padrão
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
+
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
-
     try {
-      await axios.post(
-        "http://localhost:8080/postos",
-        {
+
+      await CadastroPostoService
+        .cadastrarPosto({
+
           nome: posto.nome,
           endereco: posto.endereco,
           telefone: posto.telefone,
           email: posto.email,
-          latitude: parseFloat(posto.latitude),
-          longitude: parseFloat(posto.longitude)
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+
+          latitude: parseFloat(
+            posto.latitude
+          ),
+
+          longitude: parseFloat(
+            posto.longitude
+          )
+      });
+
+      alert(
+        "Posto cadastrado com sucesso!"
       );
 
-      alert("Posto cadastrado com sucesso!");
       onClose();
 
     } catch (error) {
+
       console.error(error);
-      alert("Erro ao cadastrar posto");
+
+      alert(
+        "Erro ao cadastrar posto"
+      );
     }
   };
 
@@ -64,7 +81,9 @@ export default function CadastroPosto({ aberto, onClose }: Props) {
     <div className="popup-overlay">
       <div className="popup-box">
 
-        <h2>Cadastrar Posto</h2>
+        <h2>
+          Cadastrar Posto
+        </h2>
 
         <form onSubmit={handleSubmit}>
 
@@ -104,10 +123,19 @@ export default function CadastroPosto({ aberto, onClose }: Props) {
             onChange={handleChange}
           />
 
-          <button type="submit">Cadastrar</button>
-          <button type="button" onClick={onClose}>Fechar</button>
+          <button type="submit">
+            Cadastrar
+          </button>
+
+          <button
+            type="button"
+            onClick={onClose}
+          >
+            Fechar
+          </button>
 
         </form>
+
       </div>
     </div>
   );

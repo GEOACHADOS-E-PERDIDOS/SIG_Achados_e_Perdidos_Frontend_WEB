@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Topbar from "../components/Topbar";
 import "../styles/Postos.css";
 
-function Postos() {
+import {
+  listarPostosService,
+  buscarPostosService,
+  deletarPostoService,
+} from "../services/PostosPageService";
+
+function PostosPage() {
   const [postos, setPostos] = useState<any[]>([]);
   const [postoSelecionado, setPostoSelecionado] = useState<any | null>(null);
-
   const [termo, setTermo] = useState("");
 
-  const token = localStorage.getItem("token");
-
   // =========================
-  // LISTAR POSTOS
+  // LISTAR
   // =========================
   const listarPostos = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/postos", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setPostos(res.data);
+      const data = await listarPostosService();
+      setPostos(data);
     } catch (err) {
       console.error("Erro ao listar postos:", err);
     }
@@ -31,21 +30,8 @@ function Postos() {
   // =========================
   const handleBuscar = async () => {
     try {
-        console.log("TERMO:", termo);
-
-      let url = "http://localhost:8080/postos";
-
-      if (termo) {
-        url += `?termo=${termo}`;
-      }
-
-console.log("URL FINAL:", url);
-
-      const res = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setPostos(res.data);
+      const data = await buscarPostosService(termo);
+      setPostos(data);
     } catch (err) {
       console.error("Erro ao buscar postos:", err);
     }
@@ -64,10 +50,7 @@ console.log("URL FINAL:", url);
   // =========================
   const deletarPosto = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8080/postos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await deletarPostoService(id);
       setPostos((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Erro ao deletar posto:", err);
@@ -84,9 +67,8 @@ console.log("URL FINAL:", url);
 
       <h2 style={{ margin: "20px" }}>Postos de Retirada</h2>
 
-      {/* 🔎 FILTRO CORRIGIDO */}
+      {/* FILTRO */}
       <div className="filtro-container">
-
         <input
           type="text"
           placeholder="Buscar por nome ou endereço"
@@ -94,9 +76,8 @@ console.log("URL FINAL:", url);
           onChange={(e) => setTermo(e.target.value)}
         />
 
-       <button onClick={() => {console.log("🔥 BOTÃO BUSCAR CLICADO");handleBuscar();}}>Buscar</button>
+        <button onClick={handleBuscar}>Buscar</button>
         <button onClick={handleLimpar}>Limpar</button>
-
       </div>
 
       {/* LISTA */}
@@ -126,12 +107,25 @@ console.log("URL FINAL:", url);
 
       {/* MODAL */}
       {postoSelecionado && (
-        <div className="modal-overlay" onClick={() => setPostoSelecionado(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay"
+          onClick={() => setPostoSelecionado(null)}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2>{postoSelecionado.nome}</h2>
-            <p><strong>Endereço:</strong> {postoSelecionado.endereco}</p>
-            <p><strong>Telefone:</strong> {postoSelecionado.telefone}</p>
-            <p><strong>Email:</strong> {postoSelecionado.email}</p>
+
+            <p>
+              <strong>Endereço:</strong> {postoSelecionado.endereco}
+            </p>
+            <p>
+              <strong>Telefone:</strong> {postoSelecionado.telefone}
+            </p>
+            <p>
+              <strong>Email:</strong> {postoSelecionado.email}
+            </p>
 
             <button onClick={() => setPostoSelecionado(null)}>
               Fechar
@@ -143,4 +137,4 @@ console.log("URL FINAL:", url);
   );
 }
 
-export default Postos;
+export default PostosPage;

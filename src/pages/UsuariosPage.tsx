@@ -3,17 +3,13 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
-
 import Topbar from "../components/Topbar";
-
 import deleteIcon from "../assets/delete.svg";
-
 import { useNavigate } from "react-router-dom";
-
 import "../styles/Objetos.css";
-
 import UsuarioCard from "../components/UsuarioCard";
+
+import UsuarioPageService from "../services/UsuarioPageService";
 
 interface Usuario {
   id: number;
@@ -30,46 +26,20 @@ function UsuariosPage() {
   const [usuarios,
     setUsuarios] = useState<Usuario[]>([]);
 
-  const token =
-    localStorage.getItem("token");
-
-  const irParaHome = () =>
-    navigate("/home");
-
-  const sair = () => {
-
-    localStorage.removeItem("token");
-
-    navigate("/");
-  };
-
-  // Buscar usuários
   const listarUsuarios = async () => {
-
     try {
 
-      const res = await axios.get(
-        "http://localhost:8080/usuario",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+      const data =
+        await UsuarioPageService.listarUsuarios();
 
-      setUsuarios(res.data);
+      setUsuarios(data);
 
     } catch (error) {
 
-      console.error(
-        "Erro ao listar usuários:",
-        error
-      );
+      console.error(error);
     }
   };
 
-  // Deletar usuário
   const deletarUsuario = async (
     id: number
   ) => {
@@ -82,14 +52,8 @@ function UsuariosPage() {
 
     try {
 
-      await axios.delete(
-        `http://localhost:8080/usuario/${id}`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
+      await UsuarioPageService.deletarUsuario(
+        id
       );
 
       setUsuarios(
@@ -100,10 +64,7 @@ function UsuariosPage() {
 
     } catch (error) {
 
-      console.error(
-        "Erro ao deletar usuário:",
-        error
-      );
+      console.error(error);
 
       alert(
         "Não foi possível deletar o usuário."
@@ -112,19 +73,14 @@ function UsuariosPage() {
   };
 
   useEffect(() => {
-
     listarUsuarios();
-
   }, []);
 
   return (
-
     <div className="home-page">
 
-      {/* TOPO */}
       <Topbar />
 
-      {/* LISTA */}
       <div className="lista-objetos">
 
         {usuarios.map((user) => (
@@ -149,7 +105,6 @@ function UsuariosPage() {
               }}
             />
 
-            {/* Ícone deletar */}
             <div
               style={{
                 position: "absolute",
@@ -164,7 +119,6 @@ function UsuariosPage() {
                 deletarUsuario(user.id)
               }
             >
-
               <img
                 src={deleteIcon}
                 alt="Deletar"
@@ -172,10 +126,10 @@ function UsuariosPage() {
                   width: "24px"
                 }}
               />
-
             </div>
 
           </div>
+
         ))}
 
       </div>
