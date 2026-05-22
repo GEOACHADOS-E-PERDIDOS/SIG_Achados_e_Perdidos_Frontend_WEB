@@ -24,6 +24,8 @@ type Props = {
   aberto: boolean;
   onClose: () => void;
   categorias: any[];
+
+  onObjetoCadastrado: () => void;
 };
 
 /* ===================== */
@@ -58,6 +60,7 @@ export default function CadastroObjeto({
   aberto,
   onClose,
   categorias,
+  onObjetoCadastrado,
 }: Props) {
   /* ===================== */
   /* STATE */
@@ -159,6 +162,8 @@ export default function CadastroObjeto({
       });
 
       alert("Objeto cadastrado com sucesso!");
+
+      onObjetoCadastrado();
 
       limparFormulario();
       onClose();

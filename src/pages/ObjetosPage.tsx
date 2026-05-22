@@ -231,9 +231,22 @@ function Objetos() {
           onChange={(e) =>
             setBuscarTermo(e.target.value)
           }
+
+           onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleBuscar();
+            }
+          }}
         />
 
-        <div className="filtro-data filtro-data-objetos">
+        <div className="filtro-data filtro-data-objetos"
+
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleBuscar();
+            }
+          }}>
+
           <DataInput
             selected={dataSelecionada}
             onChange={(date) => {
@@ -339,14 +352,14 @@ function Objetos() {
 
         style={{
           content: {
-            width: "500px",
+            width: "700px",
             maxWidth: "90%",
             inset:
               "50% auto auto 50%",
             transform:
               "translate(-50%, -50%)",
             borderRadius: "10px",
-            padding: "20px",
+            padding: "30px",
           },
 
           overlay: {

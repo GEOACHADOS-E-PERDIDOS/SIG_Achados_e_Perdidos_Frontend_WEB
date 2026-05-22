@@ -257,13 +257,13 @@ function ClickMapa() {
 
               style={{
 
-                marginTop: "15px",
+                marginTop: "30px",
 
-                padding: "10px 15px",
+                padding: "15px 20px",
 
                 border: "none",
 
-                borderRadius: "8px",
+                borderRadius: "10px",
 
                 background: "#1976d2",
 

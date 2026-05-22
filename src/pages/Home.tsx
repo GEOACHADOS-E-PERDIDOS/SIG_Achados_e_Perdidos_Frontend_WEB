@@ -30,6 +30,12 @@ function Home() {
   const [popupAchadoAberto, setPopupAchadoAberto] = useState(false);
   const [postos, setPostos] = useState<any[]>([]);
 
+  const [refreshMapa, setRefreshMapa] = useState(0);
+
+  const atualizarMapa = () => {
+    setRefreshMapa(prev => prev + 1);
+  };
+
   const checarAdmin = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -86,7 +92,8 @@ function Home() {
     <div className="home-page">
 
   <Topbar />
-  <Mapa />
+  <Mapa key={refreshMapa}
+  refreshKey={refreshMapa}/>
 
   <div className="legenda-mapa">
 
@@ -143,6 +150,7 @@ function Home() {
     aberto={popupAberto}
     onClose={() => setPopupAberto(false)}
     categorias={categorias}
+    onObjetoCadastrado={atualizarMapa}
   />
 
   <CadastroPosto
