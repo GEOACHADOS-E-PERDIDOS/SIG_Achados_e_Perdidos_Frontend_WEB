@@ -1,28 +1,99 @@
-import { useState } from "react";
+import { useState, useRef} from "react";
 
-import CadastroPostoService 
+import CadastroPostoService
 from "../services/CadastroPostoService";
+
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  LayersControl,
+  useMapEvents,
+} from "react-leaflet";
+
+import "leaflet/dist/leaflet.css";
 
 type Props = {
   aberto: boolean;
   onClose: () => void;
+
+  onPostoCadastrado: () => void;
 };
+
+const { BaseLayer } = LayersControl;
+
+/* ====================================== */
+/* MAPA */
+/* ====================================== */
+
+function SelecionadorMapa({
+  setPosto
+}: any) {
+
+  const [posicao, setPosicao] =
+    useState<any>(null);
+
+  useMapEvents({
+
+    click(e) {
+
+      const lat =
+        e.latlng.lat;
+
+      const lng =
+        e.latlng.lng;
+
+      setPosicao([lat, lng]);
+
+      setPosto((prev: any) => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+      }));
+    },
+  });
+
+  return posicao
+    ? <Marker position={posicao} />
+    : null;
+}
+
+/* ====================================== */
+/* COMPONENTE */
+/* ====================================== */
 
 export default function CadastroPosto({
   aberto,
-  onClose
+  onClose,
+  onPostoCadastrado
 }: Props) {
 
-  const [posto, setPosto] = useState({
-    nome: "",
-    endereco: "",
-    telefone: "",
-    email: "",
-    latitude: "",
-    longitude: ""
-  });
+  const [posto, setPosto] =
+    useState({
+
+      nome: "",
+
+      endereco: "",
+
+      telefone: "",
+
+      email: "",
+
+      latitude: "",
+
+      longitude: ""
+    });
+
+  const [imagens, setImagens] = useState<File[]>([]);
+
+  const inputImagemRef = useRef<HTMLInputElement>(null);
+
 
   if (!aberto) return null;
+
+  /* ====================================== */
+  /* INPUTS */
+  /* ====================================== */
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -31,10 +102,34 @@ export default function CadastroPosto({
     setPosto({
       ...posto,
       [e.target.name]:
-      e.target.value
+        e.target.value
     });
-
   };
+
+  const handleImagens = (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+
+  const files = Array.from(
+    e.target.files || []
+  );
+
+  setImagens(files);
+};
+
+const limparImagens = () => {
+
+  setImagens([]);
+
+  if (inputImagemRef.current) {
+
+    inputImagemRef.current.value = "";
+  }
+};
+
+  /* ====================================== */
+  /* SUBMIT */
+  /* ====================================== */
 
   const handleSubmit = async (
     e: React.FormEvent
@@ -48,23 +143,30 @@ export default function CadastroPosto({
         .cadastrarPosto({
 
           nome: posto.nome,
+
           endereco: posto.endereco,
+
           telefone: posto.telefone,
+
           email: posto.email,
 
           latitude: parseFloat(
-            posto.latitude
+            String(posto.latitude)
           ),
 
           longitude: parseFloat(
-            posto.longitude
-          )
-      });
+            String(posto.longitude)
+          ),
+
+          imagens
+        });
 
       alert(
         "Posto cadastrado com sucesso!"
       );
 
+      onPostoCadastrado();
+      
       onClose();
 
     } catch (error) {
@@ -77,8 +179,14 @@ export default function CadastroPosto({
     }
   };
 
+  /* ====================================== */
+  /* UI */
+  /* ====================================== */
+
   return (
+
     <div className="popup-overlay">
+
       <div className="popup-box">
 
         <h2>
@@ -111,17 +219,126 @@ export default function CadastroPosto({
             onChange={handleChange}
           />
 
-          <input
-            name="latitude"
-            placeholder="Latitude"
-            onChange={handleChange}
-          />
+          {/* ====================================== */}
+          {/* MAPA */}
+          {/* ====================================== */}
+
+          <p>
+            Clique no mapa para
+            marcar a localização:
+          </p>
+
+          <MapContainer
+            center={[-15.7939, -47.8828]}
+            zoom={13}
+
+            style={{
+              height: "300px",
+              width: "100%",
+              marginBottom: "15px",
+            }}
+          >
+
+            <LayersControl
+              position="topright"
+            >
+
+              {/* SATÉLITE */}
+              <BaseLayer
+                checked
+                name="Satélite"
+              >
+                <TileLayer
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  attribution="Tiles © Esri"
+                />
+              </BaseLayer>
+
+              {/* MAPA */}
+              <BaseLayer
+                name="Mapa"
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution="© OpenStreetMap"
+                />
+              </BaseLayer>
+
+            </LayersControl>
+
+            <SelecionadorMapa
+              setPosto={setPosto}
+            />
+
+            {posto.latitude &&
+              posto.longitude && (
+
+                <Marker
+                  position={[
+                    Number(posto.latitude),
+                    Number(posto.longitude),
+                  ]}
+                />
+              )}
+
+          </MapContainer>
 
           <input
-            name="longitude"
-            placeholder="Longitude"
-            onChange={handleChange}
+            ref={inputImagemRef}
+            type="file"
+            multiple
+            onChange={handleImagens}
           />
+
+          {imagens.length > 0 && (
+
+            <div
+              style={{
+                marginTop: "10px",
+                position: "relative"
+              }}
+            >
+
+              <button
+                type="button"
+                onClick={limparImagens}
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "#e53935",
+                  color: "white",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+              >
+                ×
+              </button>
+
+              <p>Imagens selecionadas:</p>
+
+              <ul>
+
+                {imagens.map((img, index) => (
+
+                  <li key={index}>
+                    {img.name}
+                  </li>
+
+                ))}
+
+              </ul>
+
+            </div>
+          )}
+
+          {/* ====================================== */}
+          {/* BOTÕES */}
+          {/* ====================================== */}
 
           <button type="submit">
             Cadastrar
@@ -137,6 +354,7 @@ export default function CadastroPosto({
         </form>
 
       </div>
+
     </div>
   );
 }

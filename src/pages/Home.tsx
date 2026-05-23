@@ -130,7 +130,8 @@ function Home() {
       {/* POPUP POSTO */}
       <CadastroPosto
         aberto={popupPostoAberto}
-        onClose={() => {
+        onClose={() => setPopupPostoAberto(false)}
+        onPostoCadastrado={() => {
           setPopupPostoAberto(false);
           atualizarMapa();
         }}
@@ -139,12 +140,13 @@ function Home() {
       {/* POPUP OBJETO ACHADO */}
       <CadastroObjetoAchado
         aberto={popupAchadoAberto}
-        onClose={() => {
+        onClose={() => setPopupAchadoAberto(false)}
+        categorias={categorias}
+        postos={postos}
+        onObjetoCadastrado={() => {
           setPopupAchadoAberto(false);
           atualizarMapa();
         }}
-        categorias={categorias}
-        postos={postos}
       />
     </div>
   );

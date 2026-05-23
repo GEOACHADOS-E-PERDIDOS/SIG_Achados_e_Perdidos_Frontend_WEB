@@ -56,7 +56,6 @@ export default function ObjetoDetalhe({
     container.scrollLeft +=
       e.deltaY * 2.5;
   };
-
   return (
     <div className="objeto-detalhe">
 

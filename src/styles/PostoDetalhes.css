@@ -194,3 +194,21 @@
     background:
         rgb(30,42,56);
 }
+
+.posto-imagens {
+    margin-top: 20px;
+}
+
+.posto-imagens-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.posto-imagem {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}

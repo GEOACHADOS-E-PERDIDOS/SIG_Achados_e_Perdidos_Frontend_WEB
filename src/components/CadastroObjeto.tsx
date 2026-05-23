@@ -13,6 +13,7 @@ import {
   MapContainer,
   TileLayer,
   Marker,
+  LayersControl,
   useMapEvents,
 } from "react-leaflet";
 
@@ -243,18 +244,46 @@ export default function CadastroObjeto({
               marginBottom: "15px",
             }}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-            <SelecionadorMapa setObjeto={setObjeto} />
+            <LayersControl position="topright">
 
-            {objeto.latitude && objeto.longitude && (
-              <Marker
-                position={[
-                  Number(objeto.latitude),
-                  Number(objeto.longitude),
-                ]}
-              />
-            )}
+              {/* SATÉLITE (PADRÃO) */}
+              <LayersControl.BaseLayer
+                checked
+                name="Satélite"
+              >
+                <TileLayer
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  attribution="Tiles © Esri"
+                />
+              </LayersControl.BaseLayer>
+
+              {/* MAPA NORMAL */}
+              <LayersControl.BaseLayer
+                name="Mapa"
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution="© OpenStreetMap"
+                />
+              </LayersControl.BaseLayer>
+
+            </LayersControl>
+
+            <SelecionadorMapa
+              setObjeto={setObjeto}
+            />
+
+            {objeto.latitude &&
+              objeto.longitude && (
+                <Marker
+                  position={[
+                    Number(objeto.latitude),
+                    Number(objeto.longitude),
+                  ]}
+                />
+              )}
+
           </MapContainer>
 
           {/* ===================== */}

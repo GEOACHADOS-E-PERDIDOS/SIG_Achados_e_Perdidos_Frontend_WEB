@@ -1,17 +1,15 @@
-import React, {
-    useEffect,
-    useState,
+import React, {useEffect, useState, useRef,
 } from "react";
 
 import { createPortal } from "react-dom";
 
 import "../styles/PostoDetalhes.css";
+import "../styles/ObjetoDetalhe.css";
 
-import ObjetoDetalhe
-    from "./ObjetoDetalhe";
+import { buscarImagens } from "../services/ObjetoPageService";
+import ObjetoDetalhe from "./ObjetoDetalhe";
 
-import ObjetoPostoCard
-    from "./ObjetoPostoCard";
+import ObjetoPostoCard from "./ObjetoPostoCard";
 
 import {
     buscarObjetosPosto,
@@ -25,6 +23,8 @@ type PostoDeRetirada = {
     endereco: string;
     telefone: string;
     email: string;
+    imagens?: string[];
+
 };
 
 type Props = {
@@ -58,6 +58,28 @@ export default function PostoDetalhe({
         setObjetoSelecionado
     ] = useState<any | null>(null);
 
+    const [imagensCarregadas, setImagensCarregadas] =
+    useState<string[]>([]);
+
+    const scrollRef =
+    useRef<HTMLDivElement>(null);
+
+    const handleWheel = (
+        e: React.WheelEvent<HTMLDivElement>
+    ) => {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        const container =
+            scrollRef.current;
+
+        if (!container) return;
+
+        container.scrollLeft +=
+            e.deltaY * 2.5;
+    };
 
     useEffect(() => {
 
@@ -127,6 +149,36 @@ export default function PostoDetalhe({
         objetosCarregados
     ]);
 
+    useEffect(() => {
+
+        async function carregarImagens() {
+
+            if (!posto.imagens ||
+                posto.imagens.length === 0) {
+
+                setImagensCarregadas([]);
+
+                return;
+            }
+
+            try {
+
+                const imgs =
+                    await buscarImagens(
+                        posto.imagens
+                    );
+
+                setImagensCarregadas(imgs);
+
+            } catch (err) {
+
+                console.error(err);
+            }
+        }
+
+        carregarImagens();
+
+    }, [posto.imagens]);
 
     async function handleClickObjeto(
         id: number
@@ -159,7 +211,7 @@ export default function PostoDetalhe({
         }
     }
 
-
+    console.log("POSTO DETALHE:",posto);
     return (
 
         <div className="posto-detalhe">
@@ -201,6 +253,46 @@ export default function PostoDetalhe({
                     <h2>
                         {posto.nome}
                     </h2>
+
+
+                    <div className="objeto-detalhe-imagem-container">
+
+                        {imagensCarregadas &&
+                        imagensCarregadas.length > 0 ? (
+
+                            <div
+                                ref={scrollRef}
+                                className={`objeto-detalhe-imagem-scroll ${
+                                    imagensCarregadas.length === 1
+                                        ? "single-image"
+                                        : ""
+                                }`}
+                                onWheel={handleWheel}
+                            >
+
+                                {imagensCarregadas.map(
+                                    (img, index) => (
+
+                                        <img
+                                            key={index}
+                                            src={img}
+                                            alt={`${posto.nome}-${index}`}
+                                            className="objeto-detalhe-imagem"
+                                        />
+                                    )
+                                )}
+
+                            </div>
+
+                        ) : (
+
+                            <div className="objeto-detalhe-placeholder">
+                                Sem imagem
+                            </div>
+                        )}
+
+                    </div>
+
 
                     <p>
                         <strong>

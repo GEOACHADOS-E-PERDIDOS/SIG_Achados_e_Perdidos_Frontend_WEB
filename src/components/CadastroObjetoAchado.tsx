@@ -8,6 +8,7 @@ import {
   MapContainer,
   TileLayer,
   Marker,
+  LayersControl,
   useMapEvents,
 } from "react-leaflet";
 
@@ -25,6 +26,7 @@ type Props = {
   onClose: () => void;
   categorias: any[];
   postos: any[];
+  onObjetoCadastrado: () => void;
 };
 
 /* ===================== */
@@ -61,6 +63,7 @@ export default function CadastroObjetoAchado({
   onClose,
   categorias,
   postos,
+  onObjetoCadastrado,
 }: Props) {
   const [objeto, setObjeto] = useState({
     nome: "",
@@ -164,6 +167,9 @@ export default function CadastroObjetoAchado({
       });
 
       alert("Objeto achado cadastrado com sucesso!");
+
+      onObjetoCadastrado();
+
       limparFormulario();
       onClose();
     } catch (error) {
@@ -209,6 +215,18 @@ export default function CadastroObjetoAchado({
             options={categoriasOptions}
             onChange={handleCategoriasChange}
             placeholder="Categorias"
+
+            styles={{
+              menuPortal: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+
+              menu: (base) => ({
+                ...base,
+                zIndex: 9999,
+              }),
+            }}
           />
 
           <DataInput selected={dataEncontro} onChange={setDataEncontro} />
@@ -217,22 +235,57 @@ export default function CadastroObjetoAchado({
           <p>Clique no mapa para marcar o local do encontro:</p>
 
           <MapContainer
-            center={[-15.7939, -47.8828]}
-            zoom={13}
-            style={{ height: "300px", width: "100%", marginBottom: "15px" }}
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <SelecionadorMapa setObjeto={setObjeto} />
+              center={[-15.7939, -47.8828]}
+              zoom={13}
 
-            {objeto.latitudeAchado && objeto.longitudeAchado && (
-              <Marker
-                position={[
-                  Number(objeto.latitudeAchado),
-                  Number(objeto.longitudeAchado),
-                ]}
+              style={{
+                height: "300px",
+                width: "100%",
+                marginBottom: "15px"
+              }}
+            >
+
+              <LayersControl position="topright">
+
+                {/* SATÉLITE */}
+                <LayersControl.BaseLayer
+                  checked
+                  name="Satélite"
+                >
+                  <TileLayer
+                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                    attribution="Tiles © Esri"
+                  />
+                </LayersControl.BaseLayer>
+
+                {/* MAPA */}
+                <LayersControl.BaseLayer
+                  name="Mapa"
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution="© OpenStreetMap"
+                  />
+                </LayersControl.BaseLayer>
+
+              </LayersControl>
+
+              <SelecionadorMapa
+                setObjeto={setObjeto}
               />
-            )}
-          </MapContainer>
+
+              {objeto.latitudeAchado &&
+                objeto.longitudeAchado && (
+
+                  <Marker
+                    position={[
+                      Number(objeto.latitudeAchado),
+                      Number(objeto.longitudeAchado),
+                    ]}
+                  />
+                )}
+
+            </MapContainer>
 
           {/* POSTO */}
           <Select
