@@ -15,11 +15,12 @@ import {
 import "leaflet/dist/leaflet.css";
 
 import "../styles/pop_up.css";
-import "../styles/CadastroObjeto.css";
+import "../styles/CadastroObjetoAchado.css";
 
 import DataInput from "./DateInput";
 
 import { cadastrarObjetoAchado } from "../services/CadastroObjetoAchadoService";
+import Swal from "sweetalert2";
 
 type Props = {
   aberto: boolean;
@@ -28,10 +29,6 @@ type Props = {
   postos: any[];
   onObjetoCadastrado: () => void;
 };
-
-/* ===================== */
-/* MAP CLICK */
-/* ===================== */
 
 function SelecionadorMapa({ setObjeto }: any) {
   const [posicao, setPosicao] = useState<any>(null);
@@ -53,10 +50,6 @@ function SelecionadorMapa({ setObjeto }: any) {
 
   return posicao ? <Marker position={posicao} /> : null;
 }
-
-/* ===================== */
-/* COMPONENTE */
-/* ===================== */
 
 export default function CadastroObjetoAchado({
   aberto,
@@ -84,18 +77,13 @@ export default function CadastroObjetoAchado({
 
   if (!aberto) return null;
 
-  /* ===================== */
-  /* LIMPAR IMAGENS */
-  /* ===================== */
-
   const limparImagens = () => {
     setImagens([]);
-    if (inputFileRef.current) inputFileRef.current.value = "";
-  };
 
-  /* ===================== */
-  /* LIMPAR FORM */
-  /* ===================== */
+    if (inputFileRef.current) {
+      inputFileRef.current.value = "";
+    }
+  };
 
   const limparFormulario = () => {
     setObjeto({
@@ -113,10 +101,6 @@ export default function CadastroObjetoAchado({
     limparImagens();
   };
 
-  /* ===================== */
-  /* HANDLES */
-  /* ===================== */
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setObjeto({
       ...objeto,
@@ -128,7 +112,9 @@ export default function CadastroObjetoAchado({
     setImagens(Array.from(e.target.files || []));
   };
 
-  const handleCategoriasChange = (selecionadas: MultiValue<CategoriaOption>) => {
+  const handleCategoriasChange = (
+    selecionadas: MultiValue<CategoriaOption>
+  ) => {
     setCategoriasSelecionadas(selecionadas.map((c) => c.value));
   };
 
@@ -136,15 +122,22 @@ export default function CadastroObjetoAchado({
     setPostoSelecionado(selecionado);
   };
 
-  /* ===================== */
-  /* SUBMIT */
-  /* ===================== */
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!postoSelecionado) {
-      alert("Posto de retirada é obrigatório!");
+
+      await Swal.fire({
+        title: "Atenção",
+        text: "Posto de retirada é obrigatório!",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#f39c12",
+      });
+
       return;
     }
 
@@ -155,6 +148,7 @@ export default function CadastroObjetoAchado({
       : "";
 
     try {
+
       await cadastrarObjetoAchado({
         objeto: {
           ...objeto,
@@ -166,21 +160,36 @@ export default function CadastroObjetoAchado({
         token,
       });
 
-      alert("Objeto achado cadastrado com sucesso!");
+
+      await Swal.fire({
+        title: "Sucesso",
+        text: "Objeto cadastrado com sucesso!",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
+
 
       onObjetoCadastrado();
-
       limparFormulario();
       onClose();
+
     } catch (error) {
+
       console.error(error);
-      alert("Erro ao cadastrar objeto achado");
+
+      Swal.fire({
+        title: "Erro",
+        text: "Erro ao cadastrar objeto",
+        icon: "error",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#d33",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
     }
   };
-
-  /* ===================== */
-  /* OPTIONS */
-  /* ===================== */
 
   const categoriasOptions = categorias.map((cat) => ({
     value: cat.id,
@@ -192,18 +201,24 @@ export default function CadastroObjetoAchado({
     label: p.nome,
   }));
 
-  /* ===================== */
-  /* UI */
-  /* ===================== */
-
   return (
     <div className="popup-overlay">
       <div className="popup-box">
         <h2>Cadastrar Objeto Achado</h2>
 
         <form onSubmit={handleSubmit}>
-          <input name="nome" placeholder="Nome" onChange={handleChange} />
-          <input name="descricao" placeholder="Descrição" onChange={handleChange} />
+          <input
+            name="nome"
+            placeholder="Nome"
+            onChange={handleChange}
+          />
+
+          <input
+            name="descricao"
+            placeholder="Descrição"
+            onChange={handleChange}
+          />
+
           <input
             name="enderecoEncontro"
             placeholder="Local onde o objeto foi encontrado"
@@ -215,7 +230,7 @@ export default function CadastroObjetoAchado({
             options={categoriasOptions}
             onChange={handleCategoriasChange}
             placeholder="Categorias"
-
+            menuPortalTarget={document.body}
             styles={{
               menuPortal: (base) => ({
                 ...base,
@@ -229,9 +244,11 @@ export default function CadastroObjetoAchado({
             }}
           />
 
-          <DataInput selected={dataEncontro} onChange={setDataEncontro} />
+          <DataInput
+            selected={dataEncontro}
+            onChange={setDataEncontro}
+          />
 
-          {/* MAPA */}
           <p>Clique no mapa para marcar o local do encontro:</p>
 
           <MapContainer
@@ -287,7 +304,6 @@ export default function CadastroObjetoAchado({
 
             </MapContainer>
 
-          {/* POSTO */}
           <Select
             options={postosOptions}
             value={postoSelecionado}
@@ -295,7 +311,6 @@ export default function CadastroObjetoAchado({
             placeholder="Selecione o posto de retirada"
           />
 
-          {/* IMAGENS */}
           <input
             ref={inputFileRef}
             type="file"
@@ -303,54 +318,38 @@ export default function CadastroObjetoAchado({
             onChange={handleImagem}
           />
 
-          {/* PREVIEW COM X */}
           {imagens.length > 0 && (
-            <div
-              style={{
-                marginTop: "10px",
-                position: "relative",
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-              }}
-            >
-              <button
-                type="button"
-                onClick={limparImagens}
-                title="Limpar imagens"
-                style={{
-                  position: "absolute",
-                  top: "6px",
-                  right: "6px",
-                  width: "24px",
-                  height: "24px",
-                  borderRadius: "50%",
-                  border: "none",
-                  background: "#e53935",
-                  color: "white",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ×
-              </button>
+            <div className="imagens-preview">
+              <div className="lista-imagens">
 
-              <strong>Imagens selecionadas:</strong>
+                <button
+                  type="button"
+                  onClick={limparImagens}
+                  className="btn-remover"
+                >
+                  ×
+                </button>
 
-              <ul>
-                {imagens.map((img, i) => (
-                  <li key={i}>{img.name}</li>
-                ))}
-              </ul>
+                <p className="titulo-imagens">
+                  Imagens selecionadas ({imagens.length})
+                </p>
+
+                <ul>
+                  {imagens.map((img, i) => (
+                    <li key={i} className="item-imagem">
+                      📷 {img.name}
+                    </li>
+                  ))}
+                </ul>
+
+              </div>
             </div>
           )}
 
-          {/* BOTÕES */}
-          <div style={{ display: "flex", gap: 10 }}>
-            <button type="submit">Cadastrar</button>
+          <div className="botoes-container">
+            <button type="submit">
+              Cadastrar
+            </button>
 
             <button
               type="button"

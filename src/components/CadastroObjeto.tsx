@@ -18,20 +18,23 @@ import {
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
-import "../styles/pop_up.css"
-import "../styles/CadastroObjeto.css"
+import "../styles/pop_up.css";
+
+
+import Swal from 'sweetalert2'
+
 
 type Props = {
   aberto: boolean;
   onClose: () => void;
   categorias: any[];
-
   onObjetoCadastrado: () => void;
 };
 
 /* ===================== */
 /* MAPA */
 /* ===================== */
+
 function SelecionadorMapa({ setObjeto }: any) {
   const [posicao, setPosicao] = useState<any>(null);
 
@@ -53,20 +56,12 @@ function SelecionadorMapa({ setObjeto }: any) {
   return posicao ? <Marker position={posicao} /> : null;
 }
 
-/* ===================== */
-/* COMPONENTE */
-/* ===================== */
-
 export default function CadastroObjeto({
   aberto,
   onClose,
   categorias,
   onObjetoCadastrado,
 }: Props) {
-  /* ===================== */
-  /* STATE */
-  /* ===================== */
-
   const [objeto, setObjeto] = useState({
     nome: "",
     descricao: "",
@@ -85,10 +80,6 @@ export default function CadastroObjeto({
 
   if (!aberto) return null;
 
-  /* ===================== */
-  /* LIMPAR IMAGENS */
-  /* ===================== */
-
   const limparImagens = () => {
     setImagens([]);
 
@@ -96,10 +87,6 @@ export default function CadastroObjeto({
       inputImagemRef.current.value = "";
     }
   };
-
-  /* ===================== */
-  /* LIMPAR FORM */
-  /* ===================== */
 
   const limparFormulario = () => {
     setObjeto({
@@ -115,10 +102,6 @@ export default function CadastroObjeto({
     setCategoriasSelecionadas([]);
     limparImagens();
   };
-
-  /* ===================== */
-  /* INPUTS */
-  /* ===================== */
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setObjeto({
@@ -138,11 +121,10 @@ export default function CadastroObjeto({
     setCategoriasSelecionadas(selecionadas.map((cat) => cat.value));
   };
 
-  /* ===================== */
-  /* SUBMIT */
-  /* ===================== */
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
 
-  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
@@ -152,6 +134,7 @@ export default function CadastroObjeto({
       : "";
 
     try {
+
       await cadastrarObjeto({
         objeto: {
           ...objeto,
@@ -162,35 +145,46 @@ export default function CadastroObjeto({
         token,
       });
 
-      alert("Objeto cadastrado com sucesso!");
+      await Swal.fire({
+        title: "Sucesso",
+        text: "Objeto cadastrado com sucesso!",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
 
       onObjetoCadastrado();
 
       limparFormulario();
+
       onClose();
+
     } catch (error) {
+
       console.error(error);
-      alert("Erro ao cadastrar objeto");
+
+      Swal.fire({
+        title: "Erro",
+        text: "Erro ao cadastrar objeto",
+        icon: "error",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#d33",
+        customClass: {
+          popup: "swal-popup"
+        },
+      });
     }
   };
-
-  /* ===================== */
-  /* OPTIONS */
-  /* ===================== */
 
   const categoriasOptions = categorias.map((cat) => ({
     value: cat.id,
     label: cat.nome,
   }));
 
-  /* ===================== */
-  /* UI */
-  /* ===================== */
-
   return (
     <div className="popup-overlay">
       <div className="popup-box">
-        <h2>Cadastrar Objeto</h2>
+        <h2>Cadastrar Objeto Perdido</h2>
 
         <form onSubmit={handleSubmit}>
           <input
@@ -222,6 +216,7 @@ export default function CadastroObjeto({
                 zIndex: 9999,
               }),
             }}
+            placeholder="Categorias"
           />
 
           <DataInput
@@ -229,20 +224,12 @@ export default function CadastroObjeto({
             onChange={setDataPerdido}
           />
 
-          {/* ===================== */}
-          {/* MAPA (ÚNICA FONTE DE LAT/LNG) */}
-          {/* ===================== */}
-
           <p>Clique no mapa para marcar a localização:</p>
 
           <MapContainer
             center={[-15.7939, -47.8828]}
             zoom={13}
-            style={{
-              height: "300px",
-              width: "100%",
-              marginBottom: "15px",
-            }}
+            className="map-container"
           >
 
             <LayersControl position="topright">
@@ -286,10 +273,6 @@ export default function CadastroObjeto({
 
           </MapContainer>
 
-          {/* ===================== */}
-          {/* IMAGENS */}
-          {/* ===================== */}
-
           <input
             ref={inputImagemRef}
             type="file"
@@ -298,43 +281,32 @@ export default function CadastroObjeto({
           />
 
           {imagens.length > 0 && (
-            <div style={{ marginTop: "10px", position: "relative" }}>
-              <button
-                type="button"
-                onClick={limparImagens}
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  width: "24px",
-                  height: "24px",
-                  borderRadius: "50%",
-                  border: "none",
-                  background: "#e53935",
-                  color: "white",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ×
-              </button>
+            <div className="imagens-preview">
+              <div className="lista-imagens">
 
-              <p>Imagens selecionadas:</p>
+                <button
+                  type="button"
+                  onClick={limparImagens}
+                  className="btn-remover"
+                >
+                  ×
+                </button>
 
-              <ul>
-                {imagens.map((img, index) => (
-                  <li key={index}>{img.name}</li>
-                ))}
-              </ul>
+                <p className="titulo-imagens">
+                  Imagens selecionadas ({imagens.length})
+                </p>
+
+                <ul>
+                  {imagens.map((img, index) => (
+                    <li key={index} className="item-imagem">
+                      📷 {img.name}
+                    </li>
+                  ))}
+                </ul>
+
+              </div>
             </div>
           )}
-
-          {/* ===================== */}
-          {/* BOTÕES */}
-          {/* ===================== */}
 
           <button type="submit">Cadastrar</button>
 

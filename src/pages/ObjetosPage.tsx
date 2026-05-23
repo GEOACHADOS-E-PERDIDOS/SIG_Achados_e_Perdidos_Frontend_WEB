@@ -62,6 +62,14 @@ function Objetos() {
       value: "DISPONIVEL",
       label: "Disponível",
     },
+    {
+      value: "DEVOLVIDO",
+      label: "Devolvido",
+    },
+    {
+      value: "DESCARTADO",
+      label: "Descartado",
+    },
   ];
 
   // =========================
@@ -232,7 +240,7 @@ function Objetos() {
             setBuscarTermo(e.target.value)
           }
 
-           onKeyDown={(e) => {
+          onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleBuscar();
             }

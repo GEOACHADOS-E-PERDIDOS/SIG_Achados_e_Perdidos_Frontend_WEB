@@ -6,6 +6,7 @@ import logo from "../assets/LOGO_geoachados.png";
 import {
     alterarSenha
 } from "../services/AlterarSenhaService"
+import Swal from "sweetalert2";
 
 function AlterarSenhaPage() {
 
@@ -22,63 +23,75 @@ function AlterarSenhaPage() {
         setSenhaConfirmacao
     ] = useState("");
 
-    const handleSubmit =
-        async (
-            e: React.FormEvent
-        ) => {
+const handleSubmit =
+  async (
+    e: React.FormEvent
+  ) => {
 
-            e.preventDefault();
+    e.preventDefault();
 
-            if (
-                senhaNova !==
-                senhaConfirmacao
-            ) {
+    if (
+      senhaNova !==
+      senhaConfirmacao
+    ) {
 
-                alert(
-                    "As senhas não coincidem"
-                );
+      await Swal.fire({
+        title: "Atenção",
+        text: "As senhas não coincidem",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#f39c12",
+      });
 
-                return;
-            }
+      return;
+    }
 
-            try {
+    try {
 
-                const mensagem =
-                    await alterarSenha(
-                        senhaNova
-                    );
+      const mensagem =
+        await alterarSenha(
+          senhaNova
+        );
 
-                alert(
-                    mensagem
-                );
+      await Swal.fire({
+        title: "Sucesso",
+        text: mensagem,
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
 
-                setSenhaNova("");
-                setSenhaConfirmacao("");
+      setSenhaNova("");
+      setSenhaConfirmacao("");
 
-                localStorage.setItem(
-                    "isTemp",
-                    "false"
-                );
+      localStorage.setItem(
+        "isTemp",
+        "false"
+      );
 
-                navigate(
-                    "/home"
-                );
+      navigate(
+        "/home"
+      );
 
-            } catch (error: any) {
+    } catch (error: any) {
 
-                console.error(
-                    error
-                );
+      console.error(
+        error
+      );
 
-                alert(
-                    error?.response?.data ||
-                    error?.message ||
-                    "Erro ao alterar senha"
-                );
+      Swal.fire({
+        title: "Erro",
+        text:
+          error?.response?.data ||
+          error?.message ||
+          "Erro ao alterar senha",
+        icon: "error",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#d33",
+      });
 
-            }
-        };
-
+    }
+};
     return (
 
         <div className="login-container">

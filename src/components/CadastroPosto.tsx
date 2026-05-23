@@ -2,6 +2,7 @@ import { useState, useRef} from "react";
 
 import CadastroPostoService
 from "../services/CadastroPostoService";
+import Swal from "sweetalert2";
 
 import {
   MapContainer,
@@ -135,12 +136,12 @@ const limparImagens = () => {
     e: React.FormEvent
   ) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
+  try {
 
-      await CadastroPostoService
-        .cadastrarPosto({
+    await CadastroPostoService
+      .cadastrarPosto({
 
           nome: posto.nome,
 
@@ -161,23 +162,31 @@ const limparImagens = () => {
           imagens
         });
 
-      alert(
-        "Posto cadastrado com sucesso!"
-      );
+    await Swal.fire({
+      title: "Sucesso",
+      text: "Posto cadastrado com sucesso!",
+      icon: "success",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3085d6",
+    });
 
       onPostoCadastrado();
       
       onClose();
 
-    } catch (error) {
+  } catch (error) {
 
-      console.error(error);
+    console.error(error);
 
-      alert(
-        "Erro ao cadastrar posto"
-      );
-    }
-  };
+    Swal.fire({
+      title: "Erro",
+      text: "Erro ao cadastrar posto",
+      icon: "error",
+      confirmButtonText: "Fechar",
+      confirmButtonColor: "#d33",
+    });
+  }
+};
 
   /* ====================================== */
   /* UI */

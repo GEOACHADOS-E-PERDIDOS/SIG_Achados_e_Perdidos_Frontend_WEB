@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/LOGO_geoachados.png";
 import RecuperarSenhaPageService from "../services/RecuperarSenhaPageService";
+import Swal from "sweetalert2";
 
 function RecuperarSenhaPage() {
 
@@ -19,35 +20,43 @@ function RecuperarSenhaPage() {
 
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
+const handleSubmit = async (
+  e: React.FormEvent
+) => {
+  e.preventDefault();
 
-    e.preventDefault();
-
-    try {
-
-      const mensagem =
-        await RecuperarSenhaPageService.recuperarSenha(
-          email
-        );
-
-      alert(mensagem);
-
-      setEmail("");
-
-      navigate("/");
-
-    } catch (error: any) {
-
-      console.error(error);
-
-      alert(
-        error?.response?.data ||
-        "Erro ao recuperar senha"
+  try {
+    const mensagem =
+      await RecuperarSenhaPageService.recuperarSenha(
+        email
       );
-    }
-  };
+
+    await Swal.fire({
+      title: "Sucesso",
+      text: mensagem,
+      icon: "success",
+      confirmButtonText: "OK",
+      confirmButtonColor: "#3085d6",
+    });
+
+    setEmail("");
+
+    navigate("/");
+
+  } catch (error: any) {
+    console.error(error);
+
+    await Swal.fire({
+      title: "Erro",
+      text:
+        error?.response?.data ||
+        "Erro ao recuperar senha",
+      icon: "error",
+      confirmButtonText: "Fechar",
+      confirmButtonColor: "#d33",
+    });
+  }
+};
 
   return (
 

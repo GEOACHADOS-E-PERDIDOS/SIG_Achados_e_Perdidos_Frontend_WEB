@@ -10,6 +10,7 @@ import "../styles/Objetos.css";
 import UsuarioCard from "../components/UsuarioCard";
 
 import UsuarioPageService from "../services/UsuarioPageService";
+import Swal from "sweetalert2";
 
 interface Usuario {
   id: number;
@@ -44,17 +45,22 @@ function UsuariosPage() {
     id: number
   ) => {
 
-    if (
-      !window.confirm(
-        "Deseja realmente deletar este usuário?"
-      )
-    ) return;
+    const resultado = await Swal.fire({
+      title: "Confirmar exclusão",
+      text: "Deseja realmente deletar este usuário?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sim, deletar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+    });
+
+    if (!resultado.isConfirmed) return;
 
     try {
 
-      await UsuarioPageService.deletarUsuario(
-        id
-      );
+      await UsuarioPageService.deletarUsuario(id);
 
       setUsuarios(
         usuarios.filter(
@@ -62,13 +68,25 @@ function UsuariosPage() {
         )
       );
 
+      await Swal.fire({
+        title: "Usuário removido",
+        text: "O usuário foi deletado com sucesso.",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
+
     } catch (error) {
 
       console.error(error);
 
-      alert(
-        "Não foi possível deletar o usuário."
-      );
+      await Swal.fire({
+        title: "Erro",
+        text: "Não foi possível deletar o usuário.",
+        icon: "error",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#d33",
+      });
     }
   };
 

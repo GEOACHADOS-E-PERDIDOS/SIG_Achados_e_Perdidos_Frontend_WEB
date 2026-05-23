@@ -3,6 +3,7 @@ import { createUser } from "../services/CadastroUsuarioService"
 import type { User } from "../types/User"
 import { useNavigate } from "react-router-dom"
 import logo from '../assets/LOGO_geoachados.png';
+import Swal from "sweetalert2";
 
 function CadastroUsuarioPage() {
   const navigate = useNavigate() // hook para navegação
@@ -22,81 +23,94 @@ function CadastroUsuarioPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const newUser = await createUser(user)
-      console.log("Usuário criado:", newUser)
-      alert("Usuário cadastrado com sucesso!")
+    e.preventDefault();
 
-      // Limpa formulário
+    try {
+      await createUser(user);
+
+      await Swal.fire({
+        title: "Sucesso",
+        text: "Usuário cadastrado com sucesso!",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
+
       setUser({
         name: "",
         email: "",
         senha: "",
-      })
+      });
 
       // Redireciona para página inicial
-      navigate("/")
+      navigate("/");
 
     } catch (error) {
-      console.error(error)
-      alert("Erro ao cadastrar usuário")
+      console.error(error);
+
+      await Swal.fire({
+        title: "Erro",
+        text: "Erro ao cadastrar usuário",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#d33",
+      });
     }
-  }
+  };
 
-return (
-  <div className="login-container">
+  return (
+    <div className="login-container">
 
-    <img
-      src={logo}
-      alt="GeoAchados e Perdidos"
-      className="logo-login"
-    />
+      <img
+        src={logo}
+        alt="GeoAchados e Perdidos"
+        className="logo-login"
+      />
 
-    <div className="login-box">
-      <form onSubmit={handleSubmit}>
-        <h2>Cadastro de Usuário</h2>
+      <div className="login-box">
+        <form onSubmit={handleSubmit}>
+          <h2>Cadastro de Usuário</h2>
 
-        <div>
-          <label>Nome</label>
-          <input
-            type="text"
-            name="name"
-            value={user.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div>
+            <label>Nome</label>
+            <input
+              type="text"
+              name="name"
+              value={user.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={user.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div>
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={user.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Senha</label>
-          <input
-            type="password"
-            name="senha"
-            value={user.senha}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div>
+            <label>Senha</label>
+            <input
+              type="password"
+              name="senha"
+              value={user.senha}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <button type="submit">
-          Cadastrar
-        </button>
-      </form>
+          <button type="submit">
+            Cadastrar
+          </button>
+        </form>
+      </div>
+
     </div>
-
-  </div>
-);
+  );
 }
 export default CadastroUsuarioPage

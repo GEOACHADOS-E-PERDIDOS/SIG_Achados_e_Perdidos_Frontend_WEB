@@ -6,6 +6,7 @@ import {
   tornarAdmin,
   resetarSenha
 } from "../services/UsuarioCardService";
+import Swal from "sweetalert2";
 
 type Usuario = {
   id: number;
@@ -38,47 +39,66 @@ export default function UsuarioCard({
 
       await tornarAdmin(usuario.id);
 
-      alert(
-        "Usuário promovido para admin!"
-      );
+      await Swal.fire({
+        title: "Sucesso",
+        text: "Usuário promovido para admin!",
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
+      });
 
       setConfirmacaoAberta(false);
-
       setPopupAberto(false);
 
     } catch (error) {
 
       console.error(error);
 
-      alert(
-        "Erro ao promover usuário"
-      );
+      Swal.fire({
+        title: "Erro",
+        text: "Erro ao promover usuário",
+        icon: "error",
+        confirmButtonText: "Fechar",
+        confirmButtonColor: "#d33",
+      });
     }
   };
 
   const handleResetarSenha =
     async () => {
 
-    try {
+      try {
 
-      const resposta =
-        await resetarSenha(
-          usuario.id
+        const resposta =
+          await resetarSenha(
+            usuario.id
+          );
+
+        setSenhaTemporaria(
+          resposta
         );
 
-      setSenhaTemporaria(
-        resposta
-      );
+        await Swal.fire({
+          title: "Sucesso",
+          text: "Senha resetada com sucesso!",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        });
 
-    } catch (error) {
+      } catch (error) {
 
-      console.error(error);
+        console.error(error);
 
-      alert(
-        "Erro ao resetar senha"
-      );
-    }
-  };
+        Swal.fire({
+          title: "Erro",
+          text: "Erro ao resetar senha",
+          icon: "error",
+          confirmButtonText: "Fechar",
+          confirmButtonColor: "#d33",
+        });
+      }
+    };
 
   return (
     <>
