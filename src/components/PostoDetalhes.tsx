@@ -1,14 +1,9 @@
-import React, {useEffect, useState, useRef,
-} from "react";
-
-import { createPortal } from "react-dom";
+import React, { useEffect, useState, useRef } from "react";
 
 import "../styles/PostoDetalhes.css";
 import "../styles/ObjetoDetalhe.css";
 
 import { buscarImagens } from "../services/ObjetoPageService";
-import ObjetoDetalhe from "./ObjetoDetalhe";
-
 import ObjetoPostoCard from "./ObjetoPostoCard";
 
 import {
@@ -17,6 +12,8 @@ import {
     buscarQuantidadeObjetosPosto,
 } from "../services/PostoDetalheService";
 
+import ObjetoDetalhe from "./ObjetoDetalhe";
+
 type PostoDeRetirada = {
     id: number;
     nome: string;
@@ -24,401 +21,192 @@ type PostoDeRetirada = {
     telefone: string;
     email: string;
     imagens?: string[];
-
 };
 
 type Props = {
     posto: PostoDeRetirada;
+    onClose?: () => void; // opcional (não usado aqui mais)
 };
 
-export default function PostoDetalhe({
-    posto,
-}: Props) {
+export default function PostoDetalhe({ posto }: Props) {
 
-    const [aba, setAba] =
-        useState<"info" | "objetos">(
-            "info"
-        );
+    const [aba, setAba] = useState<"info" | "objetos">("info");
+    const [objetos, setObjetos] = useState<any[]>([]);
+    const [quantidadeObjetos, setQuantidadeObjetos] = useState(0);
+    const [objetosCarregados, setObjetosCarregados] = useState(false);
 
-    const [objetos, setObjetos] =
-        useState<any[]>([]);
+    const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
 
-    const [
-        quantidadeObjetos,
-        setQuantidadeObjetos
-    ] = useState(0);
+    const [imagensCarregadas, setImagensCarregadas] = useState<string[]>([]);
 
-    const [
-        objetosCarregados,
-        setObjetosCarregados
-    ] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    const [
-        objetoSelecionado,
-        setObjetoSelecionado
-    ] = useState<any | null>(null);
-
-    const [imagensCarregadas, setImagensCarregadas] =
-    useState<string[]>([]);
-
-    const scrollRef =
-    useRef<HTMLDivElement>(null);
-
-    const handleWheel = (
-        e: React.WheelEvent<HTMLDivElement>
-    ) => {
-
+    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
         e.preventDefault();
-
         e.stopPropagation();
 
-        const container =
-            scrollRef.current;
+        if (!scrollRef.current) return;
 
-        if (!container) return;
-
-        container.scrollLeft +=
-            e.deltaY * 2.5;
+        scrollRef.current.scrollLeft += e.deltaY * 2.5;
     };
 
+    // quantidade de objetos
     useEffect(() => {
-
         async function carregarQuantidade() {
-
             try {
-
-                const qtd =
-                    await buscarQuantidadeObjetosPosto(
-                        posto.id
-                    );
-
-                setQuantidadeObjetos(
-                    qtd
-                );
-
+                const qtd = await buscarQuantidadeObjetosPosto(posto.id);
+                setQuantidadeObjetos(qtd);
             } catch (err) {
-
                 console.error(err);
-
             }
         }
 
         carregarQuantidade();
-
     }, [posto.id]);
 
-
+    // objetos
     useEffect(() => {
-
         async function carregarObjetos() {
-
-            if (
-                aba !== "objetos" ||
-                objetosCarregados
-            ) {
-                return;
-            }
+            if (aba !== "objetos" || objetosCarregados) return;
 
             try {
-
-                const objs =
-                    await buscarObjetosPosto(
-                        posto.id
-                    );
-
-                setObjetos(
-                    objs
-                );
-
-                setObjetosCarregados(
-                    true
-                );
-
+                const objs = await buscarObjetosPosto(posto.id);
+                setObjetos(objs);
+                setObjetosCarregados(true);
             } catch (err) {
-
                 console.error(err);
-
             }
         }
 
         carregarObjetos();
+    }, [aba, posto.id, objetosCarregados]);
 
-    }, [
-        aba,
-        posto.id,
-        objetosCarregados
-    ]);
-
+    // imagens do posto
     useEffect(() => {
-
         async function carregarImagens() {
-
-            if (!posto.imagens ||
-                posto.imagens.length === 0) {
-
+            if (!posto.imagens || posto.imagens.length === 0) {
                 setImagensCarregadas([]);
-
                 return;
             }
 
             try {
-
-                const imgs =
-                    await buscarImagens(
-                        posto.imagens
-                    );
-
+                const imgs = await buscarImagens(posto.imagens);
                 setImagensCarregadas(imgs);
-
             } catch (err) {
-
                 console.error(err);
             }
         }
 
         carregarImagens();
-
     }, [posto.imagens]);
 
-    async function handleClickObjeto(
-        id: number
-    ) {
-
+    async function handleClickObjeto(id: number) {
         try {
-
-            console.log(
-                "Buscando objeto:",
-                id
-            );
-
-            const objeto =
-                await buscarObjetoDetalhado(
-                    id
-                );
-
-            console.log(
-                objeto
-            );
-
-            setObjetoSelecionado(
-                objeto
-            );
-
+            const objeto = await buscarObjetoDetalhado(id);
+            setObjetoSelecionado(objeto);
         } catch (err) {
-
             console.error(err);
-
         }
     }
 
-    console.log("POSTO DETALHE:",posto);
     return (
-
         <div className="posto-detalhe">
 
+            {/* ABAS */}
             <div className="posto-abas">
-
                 <button
-                    className={
-                        aba === "info"
-                            ? "ativo" : ""
-                    }
-                    onClick={() =>
-                        setAba("info")
-                    }
+                    className={aba === "info" ? "ativo" : ""}
+                    onClick={() => setAba("info")}
                 >
                     Informações
                 </button>
 
                 <button
-                    className={
-                        aba === "objetos"
-                            ? "ativo" : ""
-                    }
-                    onClick={() =>
-                        setAba("objetos")
-                    }
+                    className={aba === "objetos" ? "ativo" : ""}
+                    onClick={() => setAba("objetos")}
                 >
-                    Objetos (
-                    {quantidadeObjetos}
-                    )
+                    Objetos ({quantidadeObjetos})
                 </button>
-
             </div>
 
+            {/* INFO */}
             {aba === "info" && (
-
                 <div className="posto-info">
 
-                    <h2>
-                        {posto.nome}
-                    </h2>
-
+                    <h2>{posto.nome}</h2>
 
                     <div className="objeto-detalhe-imagem-container">
-
-                        {imagensCarregadas &&
-                        imagensCarregadas.length > 0 ? (
-
+                        {imagensCarregadas.length > 0 ? (
                             <div
                                 ref={scrollRef}
                                 className={`objeto-detalhe-imagem-scroll ${
-                                    imagensCarregadas.length === 1
-                                        ? "single-image"
-                                        : ""
+                                    imagensCarregadas.length === 1 ? "single-image" : ""
                                 }`}
                                 onWheel={handleWheel}
                             >
-
-                                {imagensCarregadas.map(
-                                    (img, index) => (
-
-                                        <img
-                                            key={index}
-                                            src={img}
-                                            alt={`${posto.nome}-${index}`}
-                                            className="objeto-detalhe-imagem"
-                                        />
-                                    )
-                                )}
-
+                                {imagensCarregadas.map((img, index) => (
+                                    <img
+                                        key={index}
+                                        src={img}
+                                        alt={`${posto.nome}-${index}`}
+                                        className="objeto-detalhe-imagem"
+                                    />
+                                ))}
                             </div>
-
                         ) : (
-
                             <div className="objeto-detalhe-placeholder">
                                 Sem imagem
                             </div>
                         )}
-
                     </div>
 
-
-                    <p>
-                        <strong>
-                            Endereço:
-                        </strong>
-
-                        {" "}
-
-                        {posto.endereco}
-                    </p>
-
-                    <p>
-                        <strong>
-                            Telefone:
-                        </strong>
-
-                        {" "}
-
-                        {posto.telefone}
-                    </p>
-
-                    <p>
-                        <strong>
-                            Email:
-                        </strong>
-
-                        {" "}
-
-                        {posto.email}
-                    </p>
-
+                    <p><strong>Endereço:</strong> {posto.endereco}</p>
+                    <p><strong>Telefone:</strong> {posto.telefone}</p>
+                    <p><strong>Email:</strong> {posto.email}</p>
                 </div>
-
             )}
 
-
+            {/* OBJETOS */}
             {aba === "objetos" && (
-
                 <div className="objetos-lista-vertical">
 
-                    {objetos.length === 0
-                        ? (
-
-                            <p>
-                                Nenhum objeto encontrado
-                            </p>
-
-                        )
-                        : (
-
-                            objetos.map(
-                                obj => (
-
-                                    <ObjetoPostoCard
-                                        key={obj.id}
-                                        obj={obj}
-                                        onClick={
-                                            handleClickObjeto
-                                        }
-                                    />
-
-                                )
-                            )
-
-                        )}
+                    {objetos.length === 0 ? (
+                        <p>Nenhum objeto encontrado</p>
+                    ) : (
+                        objetos.map((obj) => (
+                            <ObjetoPostoCard
+                                key={obj.id}
+                                obj={obj}
+                                onClick={handleClickObjeto}
+                            />
+                        ))
+                    )}
 
                 </div>
-
             )}
 
-
-            {objetoSelecionado &&
-                createPortal(
-
+            {/* MODAL INTERNO (AGORA SIM LIMPO) */}
+            {objetoSelecionado && (
+                <div
+                    className="modal-overlay"
+                    onClick={() => setObjetoSelecionado(null)}
+                >
                     <div
-                        className="modal-overlay"
-                        onClick={() =>
-                            setObjetoSelecionado(
-                                null
-                            )
-                        }
+                        className="modal-conteudo"
+                        onClick={(e) => e.stopPropagation()}
                     >
+                        <ObjetoDetalhe obj={objetoSelecionado} />
 
-                        <div
-                            className="modal-conteudo"
-                            onClick={(e) =>
-                                e.stopPropagation()
-                            }
+                        <button
+                            className="modal-fechar"
+                            onClick={() => setObjetoSelecionado(null)}
                         >
-
-                            <div
-                                className="modal-corpo"
-                            >
-                                <ObjetoDetalhe
-                                    obj={
-                                        objetoSelecionado
-                                    }
-                                />
-                            </div>
-
-                            <div
-                                className="modal-footer"
-                            >
-
-                                <button
-                                    className="modal-fechar"
-                                    onClick={() =>
-                                        setObjetoSelecionado(
-                                            null
-                                        )
-                                    }
-                                >
-                                    Fechar
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>,
-
-                    document.body
-                )}
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div>
-
     );
-
 }

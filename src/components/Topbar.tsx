@@ -39,6 +39,10 @@ function Topbar() {
       path: "/usuarios",
       label: "Usuários",
       admin: true
+    },
+    {
+      path: "/perfil",
+      label: "Meu Perfil"
     }
   ];
 

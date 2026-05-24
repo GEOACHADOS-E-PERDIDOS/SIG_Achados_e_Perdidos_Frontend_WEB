@@ -1,22 +1,50 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import Swal from "sweetalert2";
+
 import Topbar from "../components/Topbar";
-import "../styles/Postos.css";
+import PostoCard from "../components/PostoCard";
+import PostoDetalhe from "../components/PostoDetalhes";
+import "../styles/Postos.css"
 
 import {
   listarPostosService,
   buscarPostosService,
   deletarPostoService,
+  atualizarPostoService,
 } from "../services/PostosPageService";
 
+type Posto = {
+  id: number;
+  nome: string;
+  endereco: string;
+  telefone: string;
+  email: string;
+  latitude?: number;
+  longitude?: number;
+  imagens?: string[];
+};
+
 function PostosPage() {
-  const [postos, setPostos] = useState<any[]>([]);
-  const [postoSelecionado, setPostoSelecionado] = useState<any | null>(null);
+  const [postos, setPostos] = useState<Posto[]>([]);
   const [termo, setTermo] = useState("");
 
+  const [postoSelecionado, setPostoSelecionado] = useState<Posto | null>(null);
+  const [postoEditando, setPostoEditando] = useState<Posto | null>(null);
+
+  const [form, setForm] = useState({
+    nome: "",
+    endereco: "",
+    telefone: "",
+    email: "",
+    latitude: 0,
+    longitude: 0,
+  });
+
   // =========================
-  // LISTAR
+  // CARREGAR
   // =========================
-  const listarPostos = async () => {
+  const carregarPostos = async () => {
     try {
       const data = await listarPostosService();
       setPostos(data);
@@ -25,10 +53,7 @@ function PostosPage() {
     }
   };
 
-  // =========================
-  // BUSCAR
-  // =========================
-  const handleBuscar = async () => {
+  const buscar = async () => {
     try {
       const data = await buscarPostosService(termo);
       setPostos(data);
@@ -37,102 +62,204 @@ function PostosPage() {
     }
   };
 
-  // =========================
-  // LIMPAR
-  // =========================
-  const handleLimpar = () => {
+  const limpar = () => {
     setTermo("");
-    listarPostos();
+    carregarPostos();
   };
 
   // =========================
   // DELETE
   // =========================
-  const deletarPosto = async (id: number) => {
+  const deletar = async (id: number) => {
     try {
       await deletarPostoService(id);
+
       setPostos((prev) => prev.filter((p) => p.id !== id));
+
+      await Swal.fire({
+        title: "Excluído!",
+        text: "Posto removido com sucesso.",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
     } catch (err) {
-      console.error("Erro ao deletar posto:", err);
+      console.error(err);
+
+      Swal.fire({
+        title: "Erro",
+        text: "Não foi possível excluir o posto.",
+        icon: "error",
+      });
     }
   };
 
+  // =========================
+  // EDITAR
+  // =========================
+  const abrirEdicao = (posto: Posto) => {
+    setPostoEditando(posto);
+
+    setForm({
+      nome: posto.nome,
+      endereco: posto.endereco,
+      telefone: posto.telefone,
+      email: posto.email,
+      latitude: posto.latitude ?? 0,
+      longitude: posto.longitude ?? 0,
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const salvarEdicao = async () => {
+    if (!postoEditando) return;
+
+    try {
+      const payload = {
+        nome: form.nome,
+        endereco: form.endereco,
+        telefone: form.telefone,
+        email: form.email,
+        latitude: form.latitude,
+        longitude: form.longitude,
+      };
+
+      await atualizarPostoService(postoEditando.id, payload);
+
+      await Swal.fire({
+        title: "Atualizado!",
+        text: "Posto atualizado com sucesso.",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
+
+      setPostoEditando(null);
+      carregarPostos();
+
+    } catch (err) {
+      console.error(err);
+
+      Swal.fire({
+        title: "Erro",
+        text: "Não foi possível atualizar o posto.",
+        icon: "error",
+      });
+    }
+  };
+
+  // =========================
+  // INIT
+  // =========================
   useEffect(() => {
-    listarPostos();
+    carregarPostos();
   }, []);
 
   return (
     <div className="home-page">
       <Topbar />
 
-      <h2 style={{ margin: "20px" }}>Postos de Retirada</h2>
+      <h2 className="titulo">Postos de Retirada</h2>
 
       {/* FILTRO */}
       <div className="filtro-container">
         <input
-          type="text"
-          placeholder="Buscar por nome ou endereço"
           value={termo}
           onChange={(e) => setTermo(e.target.value)}
+          placeholder="Buscar por nome ou endereço"
         />
 
-        <button onClick={handleBuscar}>Buscar</button>
-        <button onClick={handleLimpar}>Limpar</button>
+        <button onClick={buscar}>Buscar</button>
+        <button onClick={limpar}>Limpar</button>
       </div>
 
       {/* LISTA */}
       <div className="lista-postos">
         {postos.map((posto) => (
-          <div
+          <PostoCard
             key={posto.id}
-            className="card-posto"
+            posto={posto}
             onClick={() => setPostoSelecionado(posto)}
-          >
-            <h3>{posto.nome}</h3>
-            <p>{posto.endereco}</p>
-            <p>{posto.telefone}</p>
-            <p>{posto.email}</p>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                deletarPosto(posto.id);
-              }}
-            >
-              Excluir
-            </button>
-          </div>
+            onDelete={() => deletar(posto.id)}
+            onEdit={() => abrirEdicao(posto)}
+          />
         ))}
       </div>
 
-      {/* MODAL */}
-      {postoSelecionado && (
-        <div
-          className="modal-overlay"
-          onClick={() => setPostoSelecionado(null)}
-        >
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2>{postoSelecionado.nome}</h2>
+      {/* DETALHE */}
+      {postoSelecionado &&
+        createPortal(
+          <div className="modal-overlay" onClick={() => setPostoSelecionado(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <PostoDetalhe
+                posto={postoSelecionado}
+                onClose={() => setPostoSelecionado(null)}
+              />
+            </div>
+          </div>,
+          document.body
+        )}
 
-            <p>
-              <strong>Endereço:</strong> {postoSelecionado.endereco}
-            </p>
-            <p>
-              <strong>Telefone:</strong> {postoSelecionado.telefone}
-            </p>
-            <p>
-              <strong>Email:</strong> {postoSelecionado.email}
-            </p>
+      {/* EDIT MODAL */}
+      {postoEditando &&
+        createPortal(
+          <div className="modal-overlay" onClick={() => setPostoEditando(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
 
-            <button onClick={() => setPostoSelecionado(null)}>
-              Fechar
-            </button>
-          </div>
-        </div>
-      )}
+              <h2>Editar Posto</h2>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+                <input
+                  name="nome"
+                  value={form.nome}
+                  onChange={handleChange}
+                  placeholder="Nome"
+                />
+
+                <input
+                  name="endereco"
+                  value={form.endereco}
+                  onChange={handleChange}
+                  placeholder="Endereço"
+                />
+
+                <input
+                  name="telefone"
+                  value={form.telefone}
+                  onChange={handleChange}
+                  placeholder="Telefone"
+                />
+
+                <input
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                />
+
+                <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+
+                  <button onClick={salvarEdicao}>
+                    Salvar
+                  </button>
+
+                  <button onClick={() => setPostoEditando(null)}>
+                    Cancelar
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

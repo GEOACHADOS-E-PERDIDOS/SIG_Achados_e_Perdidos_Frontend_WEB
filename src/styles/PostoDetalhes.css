@@ -1,7 +1,8 @@
 .posto-detalhe {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 .posto-detalhe h2 {
@@ -141,7 +142,7 @@
     justify-content:center;
     align-items:center;
 
-    z-index:999999;
+    z-index:1000;
 }
 
 .modal-conteudo{
@@ -211,4 +212,32 @@
     object-fit: cover;
     border-radius: 10px;
     border: 1px solid #ccc;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+
+  /* 🔥 ESSENCIAL */
+  max-width: 600px;
+  width: 90%;
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }

@@ -224,7 +224,7 @@ export default function CadastroObjeto({
             onChange={setDataPerdido}
           />
 
-          <p>Clique no mapa para marcar a localização:</p>
+          <p>Clique no mapa para indicar a região onde o objeto foi perdido:</p>
 
           <MapContainer
             center={[-15.7939, -47.8828]}

@@ -239,6 +239,7 @@ function ClickMapa() {
                 posto={
                   itemSelecionado.properties
                 }
+                onClose={() => setItemSelecionado(null)}
               />
 
             ) : (

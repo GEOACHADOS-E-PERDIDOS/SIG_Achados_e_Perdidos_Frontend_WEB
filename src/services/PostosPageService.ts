@@ -4,6 +4,8 @@ const API_URL = "http://localhost:8080/postos";
 
 const getToken = () => localStorage.getItem("token");
 
+
+
 const authHeader = () => ({
   headers: {
     Authorization: `Bearer ${getToken()}`,
@@ -13,9 +15,11 @@ const authHeader = () => ({
 // =========================
 // LISTAR POSTOS
 // =========================
+
 export const listarPostosService = async () => {
   const res = await axios.get(API_URL, authHeader());
   return res.data;
+  
 };
 
 // =========================
@@ -33,4 +37,12 @@ export const buscarPostosService = async (termo: string) => {
 // =========================
 export const deletarPostoService = async (id: number) => {
   await axios.delete(`${API_URL}/${id}`, authHeader());
+};
+
+// =========================
+// EDITAR POSTO
+// =========================
+export const atualizarPostoService = async (id: number, data: any) => {
+  const res = await axios.put(`${API_URL}/${id}`, data, authHeader());
+  return res.data;
 };

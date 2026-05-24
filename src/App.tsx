@@ -15,6 +15,7 @@ import RecuperarSenha from "./pages/RecuperarSenhaPage";
 import AlterarSenhaPage from "./pages/AlterarSenhaPage";
 import UsuariosPage from "./pages/UsuariosPage";
 import PostosPage from "./pages/PostosPage";
+import PerfilPage from "./pages/PerfilPage";
 
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -95,6 +96,16 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <PerfilPage />
+            </PrivateRoute>
+          }
+        />
+        
         <Route
           path="*"
           element={<Navigate to="/login" replace />}

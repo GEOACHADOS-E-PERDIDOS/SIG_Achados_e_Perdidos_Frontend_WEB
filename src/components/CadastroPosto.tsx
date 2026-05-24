@@ -23,6 +23,8 @@ type Props = {
 
 const { BaseLayer } = LayersControl;
 
+const telefoneRegex = /^[0-9]{8,9}$/;
+
 /* ====================================== */
 /* MAPA */
 /* ====================================== */
@@ -137,6 +139,20 @@ const limparImagens = () => {
   ) => {
 
   e.preventDefault();
+
+  const telefoneRegex = /^[0-9]{8,9}$/;
+
+  if (!telefoneRegex.test(posto.telefone)) {
+
+    Swal.fire({
+      title: "Telefone inválido",
+      text: "O telefone deve possuir 8 ou 9 dígitos.",
+      icon: "warning",
+      confirmButtonColor: "#d33",
+    });
+
+    return;
+  }
 
   try {
 

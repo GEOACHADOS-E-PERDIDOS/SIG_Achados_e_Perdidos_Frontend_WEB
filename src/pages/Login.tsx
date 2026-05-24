@@ -20,10 +20,16 @@ function Login() {
       const response = await axios.post("http://localhost:8080/auth/login", { email, senha });
 
       const bearerToken = response.data.token;
+      const user = response.data.usuario;
       const senhaTemporaria = response.data.isTemp; 
 
       localStorage.setItem("token", bearerToken);
-      localStorage.setItem("isTemp", senhaTemporaria); 
+      localStorage.setItem("isTemp", senhaTemporaria);
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("userNome", user.nome);
+      localStorage.setItem("userEmail", user.email);
+      localStorage.setItem("isAdmin", user.isAdmin);
+
       setToken(bearerToken);
       setIsTemp(senhaTemporaria);
 
