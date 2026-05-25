@@ -21,22 +21,14 @@ interface Usuario {
 }
 
 function UsuariosPage() {
-
   const navigate = useNavigate();
-
-  const [usuarios,
-    setUsuarios] = useState<Usuario[]>([]);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   const listarUsuarios = async () => {
     try {
-
-      const data =
-        await UsuarioPageService.listarUsuarios();
-
+      const data = await UsuarioPageService.listarUsuarios();
       setUsuarios(data);
-
     } catch (error) {
-
       console.error(error);
     }
   };
@@ -90,36 +82,25 @@ function UsuariosPage() {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     listarUsuarios();
   }, []);
 
   return (
     <div className="home-page">
-
       <Topbar />
-
       <div className="lista-objetos">
-
         {usuarios.map((user) => (
-
-          <div
-            key={user.id}
-            style={{
-              position: "relative"
-            }}
-          >
-
+          <div key={user.id} style={{ position: "relative" }}>
+            
             <UsuarioCard
+              onActionSuccess={listarUsuarios} 
               usuario={{
                 id: user.id,
                 nome: user.name,
                 email: user.email,
-                role: user.isAdmin
-                  ? "ADMIN"
-                  : "USER",
-                dataCadastro:
-                  user.dataCadastro,
+                role: user.isAdmin ? "ADMIN" : "USER",
+                dataCadastro: user.dataCadastro,
               }}
             />
 
@@ -133,25 +114,13 @@ function UsuariosPage() {
                 zIndex: 2,
               }}
               title="Deletar usuário"
-              onClick={() =>
-                deletarUsuario(user.id)
-              }
+              onClick={() => deletarUsuario(user.id)}
             >
-              <img
-                src={deleteIcon}
-                alt="Deletar"
-                style={{
-                  width: "24px"
-                }}
-              />
+              <img src={deleteIcon} alt="Deletar" style={{ width: "24px" }} />
             </div>
-
           </div>
-
         ))}
-
       </div>
-
     </div>
   );
 }
