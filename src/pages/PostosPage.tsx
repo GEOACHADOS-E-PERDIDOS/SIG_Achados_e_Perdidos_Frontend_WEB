@@ -205,50 +205,90 @@ function PostosPage() {
         )}
 
       {/* EDIT MODAL */}
+      {/* EDIT MODAL */}
       {postoEditando &&
         createPortal(
-          <div className="modal-overlay" onClick={() => setPostoEditando(null)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-overlay"
+            onClick={() => setPostoEditando(null)}
+          >
 
-              <h2>Editar Posto</h2>
+            <div
+              className="modal-editar-posto"
+              onClick={(e) => e.stopPropagation()}
+            >
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <h2 className="modal-title">
+                Editar Posto
+              </h2>
 
-                <input
-                  name="nome"
-                  value={form.nome}
-                  onChange={handleChange}
-                  placeholder="Nome"
-                />
+              <div className="form-editar-posto">
 
-                <input
-                  name="endereco"
-                  value={form.endereco}
-                  onChange={handleChange}
-                  placeholder="Endereço"
-                />
+                <div className="input-group">
 
-                <input
-                  name="telefone"
-                  value={form.telefone}
-                  onChange={handleChange}
-                  placeholder="Telefone"
-                />
+                  <label>Nome</label>
 
-                <input
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="Email"
-                />
+                  <input
+                    name="nome"
+                    value={form.nome}
+                    onChange={handleChange}
+                    placeholder="Nome do posto"
+                  />
 
-                <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+                </div>
 
-                  <button onClick={salvarEdicao}>
+                <div className="input-group">
+
+                  <label>Endereço</label>
+
+                  <input
+                    name="endereco"
+                    value={form.endereco}
+                    onChange={handleChange}
+                    placeholder="Endereço"
+                  />
+
+                </div>
+
+                <div className="input-group">
+
+                  <label>Telefone</label>
+
+                  <input
+                    name="telefone"
+                    value={form.telefone}
+                    onChange={handleChange}
+                    placeholder="Telefone"
+                  />
+
+                </div>
+
+                <div className="input-group">
+
+                  <label>Email</label>
+
+                  <input
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                  />
+
+                </div>
+
+                <div className="modal-buttons">
+
+                  <button
+                    className="btn-salvar-posto"
+                    onClick={salvarEdicao}
+                  >
                     Salvar
                   </button>
 
-                  <button onClick={() => setPostoEditando(null)}>
+                  <button
+                    className="btn-cancelar-posto"
+                    onClick={() => setPostoEditando(null)}
+                  >
                     Cancelar
                   </button>
 
@@ -257,6 +297,7 @@ function PostosPage() {
               </div>
 
             </div>
+
           </div>,
           document.body
         )}

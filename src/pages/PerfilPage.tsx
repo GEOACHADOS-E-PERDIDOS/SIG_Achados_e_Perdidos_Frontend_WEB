@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
 
 import Topbar from "../components/Topbar";
+import ObjetoCardPerfil from "../components/ObjetoCardPerfil";
 
 import {
   buscarMeuPerfil,
@@ -11,6 +12,8 @@ import {
   atualizarStatusObjeto,
   excluirObjeto,
 } from "../services/PerfilPageService";
+
+import { buscarImagens } from "../services/ObjetoPageService";
 
 import "../styles/PerfilPage.css";
 
@@ -25,7 +28,16 @@ type Objeto = {
   nome: string;
   descricao: string;
   status: string;
-  imagens: string[];
+
+  imagens?: string[];
+
+  caminhosImagens?: string[];
+
+  imagemUrl?: string | null;
+
+  enderecoEncontro?: string;
+
+  dataEncontro?: string;
 };
 
 export default function PerfilPage() {
@@ -47,6 +59,7 @@ export default function PerfilPage() {
   // =========================
   // CARREGAR PERFIL
   // =========================
+
   const carregarUsuario = async () => {
 
     try {
@@ -70,28 +83,104 @@ export default function PerfilPage() {
         text: "Não foi possível carregar o perfil.",
         icon: "error",
       });
-
     }
   };
+
+  // =========================
+  // MONTAR OBJETO COM IMAGEM
+  // =========================
+
+  const montarObjetoComImagens =
+    async (obj: any) => {
+
+      try {
+
+        // exatamente igual ao Objetos.tsx
+        const caminhos: string[] =
+          obj.caminhosImagens
+          ?? obj.imagens
+          ?? [];
+
+        let imagemUrl: string | null =
+          null;
+
+        if (
+          caminhos.length > 0
+        ) {
+
+          const imagens =
+            await buscarImagens(
+              caminhos
+            );
+
+          imagemUrl =
+            imagens?.[0] ?? null;
+        }
+
+        return {
+          ...obj,
+          imagemUrl,
+        };
+
+      } catch (err) {
+
+        console.error(
+          "Erro ao carregar imagem:",
+          err
+        );
+
+        return {
+          ...obj,
+          imagemUrl: null,
+        };
+      }
+    };
 
   // =========================
   // CARREGAR OBJETOS
   // =========================
-  const carregarObjetos = async () => {
 
-    try {
+  const carregarObjetos =
+    async () => {
 
-      const res =
-        await buscarMeusObjetos();
+      try {
 
-      setObjetos(res);
+        const res =
+          await buscarMeusObjetos();
 
-    } catch (err) {
+        console.log(
+          "OBJETOS RECEBIDOS:",
+          res
+        );
 
-      console.error(err);
+        const objetosTratados =
+          await Promise.all(
 
-    }
-  };
+            res.map(
+              (obj: any) =>
+                montarObjetoComImagens(
+                  obj
+                )
+            )
+          );
+
+        console.log(
+          "OBJETOS TRATADOS:",
+          objetosTratados
+        );
+
+        setObjetos(
+          objetosTratados
+        );
+
+      } catch (err) {
+
+        console.error(
+          "Erro ao carregar objetos:",
+          err
+        );
+      }
+    };
 
   useEffect(() => {
 
@@ -104,31 +193,35 @@ export default function PerfilPage() {
   // =========================
   // FORM
   // =========================
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
 
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
     });
-
   };
 
   // =========================
   // SALVAR PERFIL
   // =========================
+
   const salvar = async () => {
 
     try {
 
-      await atualizarMeuPerfil(form);
+      await atualizarMeuPerfil(
+        form
+      );
 
       await Swal.fire({
         title: "Sucesso!",
-        text: "Perfil atualizado com sucesso.",
+        text:
+          "Perfil atualizado.",
         icon: "success",
-        confirmButtonColor: "#3085d6",
       });
 
       setEditando(false);
@@ -137,20 +230,19 @@ export default function PerfilPage() {
 
     } catch (err) {
 
-      console.error(err);
-
       Swal.fire({
         title: "Erro",
-        text: "Não foi possível atualizar o perfil.",
+        text:
+          "Não foi possível atualizar.",
         icon: "error",
       });
-
     }
   };
 
   // =========================
   // ALTERAR STATUS
   // =========================
+
   const alterarStatus = async (
     id: number,
     statusAtual: string
@@ -159,17 +251,27 @@ export default function PerfilPage() {
     const { value: novoStatus } =
       await Swal.fire({
 
-        title: "Alterar status",
+        title:
+          "Alterar status",
 
         input: "select",
 
         inputOptions: {
-          DISPONIVEL: "DISPONIVEL",
-          ENTREGUE: "ENTREGUE",
-          PERDIDO: "PERDIDO",
+          DISPONIVEL:
+            "DISPONIVEL",
+
+          DEVOLVIDO:
+            "DEVOLVIDO",
+
+          PERDIDO:
+            "PERDIDO",
+
+          DESCARTADO:
+            "DESCARTADO",
         },
 
-        inputValue: statusAtual,
+        inputValue:
+          statusAtual,
 
         showCancelButton: true,
       });
@@ -185,7 +287,8 @@ export default function PerfilPage() {
 
       Swal.fire({
         title: "Sucesso",
-        text: "Status atualizado.",
+        text:
+          "Status atualizado.",
         icon: "success",
       });
 
@@ -195,16 +298,17 @@ export default function PerfilPage() {
 
       Swal.fire({
         title: "Erro",
-        text: "Não foi possível atualizar.",
+        text:
+          "Não foi possível atualizar.",
         icon: "error",
       });
-
     }
   };
 
   // =========================
-  // EXCLUIR OBJETO
+  // EXCLUIR
   // =========================
+
   const deletarObjeto = async (
     id: number
   ) => {
@@ -212,18 +316,20 @@ export default function PerfilPage() {
     const confirmacao =
       await Swal.fire({
 
-        title: "Excluir objeto?",
+        title:
+          "Excluir objeto?",
 
-        text: "Essa ação não poderá ser desfeita.",
+        text:
+          "Essa ação não poderá ser desfeita.",
 
         icon: "warning",
 
         showCancelButton: true,
-
-        confirmButtonText: "Excluir",
       });
 
-    if (!confirmacao.isConfirmed) return;
+    if (
+      !confirmacao.isConfirmed
+    ) return;
 
     try {
 
@@ -240,10 +346,10 @@ export default function PerfilPage() {
 
       Swal.fire({
         title: "Erro",
-        text: "Não foi possível excluir.",
+        text:
+          "Não foi possível excluir.",
         icon: "error",
       });
-
     }
   };
 
@@ -251,170 +357,211 @@ export default function PerfilPage() {
     return <p>Carregando...</p>;
   }
 
-  return (
+return (
 
-    <div className="home-page">
+  <div className="home-page">
 
-      <Topbar />
+    <Topbar />
 
-      <div className="perfil-container">
+    <div
+      style={{
+        width: "100%",
+        padding: "20px 40px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
 
-        <div className="perfil-card">
+      {/* ========================= */}
+      {/* PERFIL */}
+      {/* ========================= */}
 
-          <h2>Meu Perfil</h2>
+      <div
+        className="perfil-card"
+        style={{
+          width: "350px",
+          marginBottom: "40px",
+        }}
+      >
 
-          <div className="perfil-info">
+        <h2>Meu Perfil</h2>
 
-            <p>
-              <strong>Nome:</strong>
-              {usuario.name}
-            </p>
+        <div className="perfil-info">
 
-            <p>
-              <strong>Email:</strong>
-              {usuario.email}
-            </p>
+          <p>
+            <strong>Nome:</strong>{" "}
+            {usuario.name}
+          </p>
 
-          </div>
+          <p>
+            <strong>Email:</strong>{" "}
+            {usuario.email}
+          </p>
 
-          <button
-            className="perfil-btn"
-            onClick={() => setEditando(true)}
-          >
-            Editar Perfil
-          </button>
+        </div>
+
+        <button
+          className="perfil-btn"
+          onClick={() =>
+            setEditando(true)
+          }
+        >
+          Editar Perfil
+        </button>
+
+      </div>
+
+      {/* ========================= */}
+      {/* OBJETOS */}
+      {/* ========================= */}
+
+      <div
+        className="objetos-section"
+        style={{
+          width: "100%",
+        }}
+      >
+
+        <h2
+          style={{
+            marginBottom: "25px",
+          }}
+        >
+          Meus Objetos
+        </h2>
+
+       <div
+        className="objetos-grid"
+        style={{
+
+            display: "grid",
+
+            gridTemplateColumns:
+            "repeat(2, minmax(0, 1fr))",
+
+            gap: "24px",
+
+            flexDirection: "column",
+
+
+            width: "100%",
+        }}
+        >
+
+          {objetos.map((obj) => (
+
+            <ObjetoCardPerfil
+              key={obj.id}
+
+              obj={{
+
+                ...obj,
+
+                imagemUrl:
+                  obj.imagemUrl,
+
+                enderecoEncontro:
+                  obj.enderecoEncontro
+                  || "Não informado",
+
+                dataEncontro:
+                  obj.dataEncontro
+                  || "",
+              }}
+
+              onDelete={
+                deletarObjeto
+              }
+
+              onEditStatus={
+                alterarStatus
+              }
+            />
+
+          ))}
 
         </div>
 
       </div>
 
-      {/* ========================= */}
-      {/* MEUS OBJETOS */}
-      {/* ========================= */}
+    </div>
 
-      <div className="perfil-container">
+    {/* ========================= */}
+    {/* MODAL */}
+    {/* ========================= */}
 
-        <div className="perfil-card">
+    {editando &&
+      createPortal(
 
-          <h2>Meus Objetos</h2>
+        <div
+          className="perfil-modal-overlay"
 
-          <div className="objetos-grid">
-
-            {objetos.map((obj) => (
-
-              <div
-                className="objeto-card"
-                key={obj.id}
-              >
-
-                {obj.imagens?.length > 0 && (
-
-                  <img
-                    src={`http://localhost:8080/uploads/${obj.imagens[0]}`}
-                    alt={obj.nome}
-                    className="objeto-imagem"
-                  />
-
-                )}
-
-                <h3>{obj.nome}</h3>
-
-                <p>{obj.descricao}</p>
-
-                <span className="status-badge">
-                  {obj.status}
-                </span>
-
-                <div className="acoes-objeto">
-
-                  <button
-                    onClick={() =>
-                      alterarStatus(
-                        obj.id,
-                        obj.status
-                      )
-                    }
-                  >
-                    ⚙️ Status
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      deletarObjeto(obj.id)
-                    }
-                  >
-                    🗑 Excluir
-                  </button>
-
-                </div>
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* MODAL */}
-      {editando &&
-        createPortal(
+          onClick={() =>
+            setEditando(false)
+          }
+        >
 
           <div
-            className="modal-overlay"
-            onClick={() => setEditando(false)}
+            className="perfil-edit-modal"
+
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
 
-            <div
-              className="perfil-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <h2>
+              Editar Perfil
+            </h2>
 
-              <h2>Editar Perfil</h2>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={
+                handleChange
+              }
+              placeholder="Nome"
+            />
 
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Nome"
-              />
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={
+                handleChange
+              }
+              placeholder="Email"
+            />
 
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Email"
-              />
+            <div className="perfil-edit-buttons">
 
-              <div className="perfil-modal-buttons">
+              <button
+                className="perfil-salvar-btn"
+                onClick={salvar}
+              >
+                Salvar
+              </button>
 
-                <button
-                  className="salvar-btn"
-                  onClick={salvar}
-                >
-                  Salvar
-                </button>
+              <button
+                className="perfil-cancelar-btn"
 
-                <button
-                  className="cancelar-btn"
-                  onClick={() => setEditando(false)}
-                >
-                  Cancelar
-                </button>
-
-              </div>
+                onClick={() =>
+                  setEditando(false)
+                }
+              >
+                Cancelar
+              </button>
 
             </div>
 
-          </div>,
+          </div>
 
-          document.body
-        )}
+        </div>,
 
-    </div>
-  );
+        document.body
+      )}
+
+  </div>
+);
 }

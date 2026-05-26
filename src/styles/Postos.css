@@ -2,7 +2,140 @@
   width: 1500px;
   max-width: 100%;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 18px;
   border: 1px solid #ccc;
   font-size: 15px;
+}
+
+.modal-editar-posto {
+  width: 100%;
+  max-width: 520px;
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 32px;
+
+  box-shadow:
+    0 12px 32px rgba(0,0,0,0.18);
+
+  animation: fadeUp 0.2s ease;
+}
+
+.modal-title {
+  margin: 0 0 24px 0;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  color: #1f2937;
+}
+
+.form-editar-posto {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #374151;
+}
+
+.input-group input {
+  height: 48px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 12px;
+
+  padding: 0 14px;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #022268;
+
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,0.12);
+}
+
+.modal-buttons {
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 12px;
+}
+
+.btn-salvar-posto,
+.btn-cancelar-posto {
+  flex: 1;
+
+  height: 48px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.btn-salvar-posto {
+  background: rgb(30,42,56);
+  color: white;
+}
+
+.btn-salvar-posto:hover {
+  transform: translateY(-1px);
+
+  opacity: 0.95;
+}
+
+.btn-cancelar-posto {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-cancelar-posto:hover {
+  transform: translateY(-1px);
+
+  opacity: 0.95;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

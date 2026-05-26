@@ -94,3 +94,52 @@
   color: red;
   font-weight: bold;
 }
+
+.card-acoes-admin {
+  display: flex;
+  border-top: 1px solid #eee;
+  padding: 10px;
+  justify-content: space-around;
+  background-color: #f9f9f9;
+}
+
+.btn-acao-perfil {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-acao-perfil img {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-acao-perfil span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-acao-perfil.edit:hover {
+  background-color: #e7f1ff;
+  color: #007bff;
+}
+
+.btn-acao-perfil.delete:hover {
+  background-color: #fff1f0;
+  color: #dc3545;
+}
+
+.descricao-curta {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 3em;
+}

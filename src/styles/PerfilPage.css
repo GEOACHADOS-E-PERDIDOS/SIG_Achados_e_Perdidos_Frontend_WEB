@@ -1,88 +1,124 @@
-.perfil-container {
-  width: 100%;
+.perfil-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0,0,0,0.45);
+
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 40px;
+
+  z-index: 9999;
 }
 
-.perfil-card {
-  width: 400px;
-  background: white;
-  border-radius: 16px;
+.perfil-edit-modal {
+  width: 100%;
+  max-width: 500px;
+
+  background: #fff;
+
+  border-radius: 12px;
+
   padding: 30px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  text-align: center;
-}
 
-.perfil-card h2 {
-  margin-bottom: 25px;
-}
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.18);
 
-.perfil-info {
-  text-align: left;
-  margin-bottom: 25px;
-}
-
-.perfil-info p {
-  margin: 12px 0;
-  font-size: 16px;
-}
-
-.perfil-btn {
-  background: #3085d6;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.perfil-btn:hover {
-  opacity: 0.9;
-}
-
-/* MODAL */
-
-.perfil-modal {
-  background: white;
-  width: 400px;
-  border-radius: 16px;
-  padding: 30px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+
+  gap: 18px;
+
+  animation: fadePerfil 0.2s ease;
 }
 
-.perfil-modal input {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.perfil-edit-modal h2 {
+  margin: 0;
+
+  font-size: 28px;
+
+  color: #222;
+}
+
+.perfil-edit-modal input {
+  height: 48px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 6px;
+
+  padding: 0 14px;
+
   font-size: 15px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.perfil-modal-buttons {
+.perfil-edit-modal input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,0.10);
+}
+
+.perfil-edit-buttons {
   display: flex;
-  gap: 10px;
+
+  gap: 12px;
+
   margin-top: 10px;
 }
 
-.salvar-btn {
+.perfil-salvar-btn,
+.perfil-cancelar-btn {
   flex: 1;
-  background: #28a745;
-  color: white;
+
+  height: 46px;
+
   border: none;
-  padding: 12px;
-  border-radius: 8px;
+
+  border-radius: 6px;
+
+  font-size: 15px;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
 }
 
-.cancelar-btn {
-  flex: 1;
-  background: #dc3545;
+.perfil-salvar-btn {
+  background: rgb(30,42,56);
   color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
+}
+
+.perfil-cancelar-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.perfil-salvar-btn:hover,
+.perfil-cancelar-btn:hover {
+  transform: translateY(-1px);
+
+  opacity: 0.95;
+}
+
+@keyframes fadePerfil {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

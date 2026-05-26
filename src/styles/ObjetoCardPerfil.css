@@ -1,0 +1,295 @@
+/* =========================
+   CARD PRINCIPAL
+========================= */
+
+.card-objeto-perfil {
+  width: 100%;
+
+  background: white;
+
+  border-radius: 10px;
+
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.1);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card-objeto-perfil:hover {
+
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.12);
+}
+
+/* =========================
+   IMAGEM
+========================= */
+
+.card-image-perfil {
+  width: 150px;
+  height: 150px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: #f1f1f1;
+}
+
+.card-image-perfil img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+/* PLACEHOLDER */
+
+.imagem-placeholder-perfil {
+
+  color: #888;
+
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* =========================
+   TEXTO
+========================= */
+
+.card-text-perfil {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.card-text-perfil h3 {
+
+  font-size: 1.3rem;
+
+  margin: 0;
+
+  color: #222;
+
+  line-height: 1.2;
+}
+
+.card-text-perfil p {
+
+  margin: 0;
+
+  color: #555;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.card-text-perfil strong {
+
+  color: #222;
+}
+
+/* DESCRIÇÃO */
+
+.descricao-curta-perfil {
+
+  display: -webkit-box;
+
+  -webkit-line-clamp: 3;
+
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status-perfil-disponivel {
+
+  color: green;
+
+  font-weight: bold;
+}
+
+.status-perfil-devolvido {
+
+  color: blue;
+
+  font-weight: bold;
+}
+
+.status-perfil-perdido,
+.status-perfil-descartado {
+
+  color: red;
+
+  font-weight: bold;
+}
+
+/* =========================
+   AÇÕES
+========================= */
+
+.card-perfil-acoes {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  align-self: center;
+
+  align-items: center;
+}
+
+/* BOTÕES */
+
+.btn-perfil-edit,
+.btn-perfil-delete {
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.btn-perfil-edit {
+
+  background: #2563eb;
+
+  color: white;
+}
+
+.btn-perfil-edit:hover {
+
+  background: #1d4ed8;
+
+  transform: translateY(-1px);
+}
+
+.btn-perfil-delete {
+
+  background: #ad0707;
+
+  color: white;
+}
+
+.btn-perfil-delete:hover {
+
+  background: #b91c1c;
+
+  transform: translateY(-1px);
+}
+
+.btn-perfil-delete img {
+
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 900px) {
+
+  .card-objeto-perfil {
+
+    flex-direction: column;
+  }
+
+  .card-image-perfil {
+
+    width: 100%;
+
+    height: 240px;
+  }
+
+  .card-perfil-acoes {
+
+    flex-direction: row;
+
+    width: 100%;
+  }
+}
+
+.card-perfil-acoes {
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: auto;
+}
+
+.btn-perfil-icon {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #f3f4f6;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.btn-perfil-icon:hover {
+  background: #e5e7eb;
+
+  transform: scale(1.05);
+}
+
+.btn-perfil-icon.delete:hover {
+  background: #fee2e2;
+}
+
+.btn-perfil-icon img {
+  width: 18px;
+  height: 18px;
+}
