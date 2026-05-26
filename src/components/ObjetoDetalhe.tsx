@@ -12,6 +12,8 @@ type Objeto = {
   enderecoEncontro: string;
   dataEncontro: string;
 
+  nomePosto?: string;
+
   // URLs finais das imagens
   caminhosImagens?: string[];
 
@@ -70,8 +72,8 @@ export default function ObjetoDetalhe({
           <div
             ref={scrollRef}
             className={`objeto-detalhe-imagem-scroll ${obj.caminhosImagens.length === 1
-                ? "single-image"
-                : ""
+              ? "single-image"
+              : ""
               }`}
             onWheel={handleWheel}
           >
@@ -108,6 +110,13 @@ export default function ObjetoDetalhe({
         <strong>Endereço:</strong>{" "}
         {obj.enderecoEncontro}
       </p>
+
+      {obj.nomePosto && (
+        <p>
+          <strong>Posto:</strong>{" "}
+          {obj.nomePosto}
+        </p>
+      )}
 
       <p>
         <strong>Data:</strong>{" "}

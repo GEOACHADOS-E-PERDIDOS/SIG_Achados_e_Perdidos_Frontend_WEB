@@ -86,17 +86,44 @@ export const buscarFeatureMapa = async (
 /* BUSCAR OBJETO COMPLETO */
 /* ===================================================== */
 
+/* ===================================================== */
+/* BUSCAR OBJETO COMPLETO */
+/* ===================================================== */
+
 export const buscarObjetoCompleto =
   async (id: number) => {
 
     const res = await axios.get(
-
       `${API_URL}/objetos/${id}`,
-
       getAuthHeader()
     );
 
-    return res.data;
+    const objeto = res.data;
+
+    // Se existir posto associado
+    if (objeto.postoId) {
+
+      try {
+
+        const posto =
+          await buscarPostoCompleto(
+            objeto.postoId
+          );
+        return {
+          ...objeto,
+          nomePosto: posto.nome
+        };
+
+      } catch (error) {
+
+        console.error(
+          "Erro ao buscar posto:",
+          error
+        );
+      }
+    }
+
+    return objeto;
   };
 
 /* ===================================================== */
