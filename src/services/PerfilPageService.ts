@@ -83,3 +83,24 @@ export const excluirObjeto = async (
 
   return res.data;
 };
+
+export const atualizarObjeto = async (
+  id: number,
+  data: any
+) => {
+
+  const isAchado =
+    data.postoRetiradaId !== undefined;
+
+  const rota = isAchado
+    ? `${API_OBJETOS}/achados/${id}`
+    : `${API_OBJETOS}/perdidos/${id}`;
+
+  const res = await axios.put(
+    rota,
+    data,
+    authHeader()
+  );
+
+  return res.data;
+};

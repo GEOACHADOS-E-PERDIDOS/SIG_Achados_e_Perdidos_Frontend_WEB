@@ -28,8 +28,19 @@ function Home() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [postos, setPostos] = useState<Posto[]>([]);
 
-  // 🔥 controle global de refresh do mapa
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const carregarPostos = async () => {
+      try {
+        const postosData =
+          await HomeService.buscarPostos();
+
+        setPostos(postosData);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
   // =========================
   // CARREGAR DADOS INICIAIS
@@ -37,16 +48,15 @@ function Home() {
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        const [admin, categoriasData, postosData] =
+        const [admin, categoriasData] =
           await Promise.all([
             HomeService.checarAdmin(),
-            HomeService.buscarCategorias(),
-            HomeService.buscarPostos(),
+            HomeService.buscarCategorias()
           ]);
 
         setIsAdmin(admin);
         setCategorias(categoriasData);
-        setPostos(postosData);
+         await carregarPostos();
       } catch (error) {
         console.error(error);
       }
@@ -131,7 +141,8 @@ function Home() {
       <CadastroPosto
         aberto={popupPostoAberto}
         onClose={() => setPopupPostoAberto(false)}
-        onPostoCadastrado={() => {
+        onPostoCadastrado={async() => {
+          await carregarPostos();
           setPopupPostoAberto(false);
           atualizarMapa();
         }}

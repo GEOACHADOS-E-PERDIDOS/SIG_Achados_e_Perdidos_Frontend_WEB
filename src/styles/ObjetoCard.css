@@ -55,15 +55,18 @@
 }
 
 .card-text {
+  text-transform: capitalize;
   flex: 1;
 }
 
 .card-text h3 {
+  text-transform: capitalize;
   margin-top: 0;
   margin-bottom: 10px;
 }
 
 .card-text p {
+   text-transform: capitalize;
   margin: 5px 0;
 }
 
@@ -130,10 +133,6 @@
   color: #007bff;
 }
 
-.btn-acao-perfil.delete:hover {
-  background-color: #fff1f0;
-  color: #dc3545;
-}
 
 .descricao-curta {
   display: -webkit-box;

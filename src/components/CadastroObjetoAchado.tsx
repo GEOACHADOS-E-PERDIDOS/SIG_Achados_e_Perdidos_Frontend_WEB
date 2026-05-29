@@ -201,6 +201,22 @@ export default function CadastroObjetoAchado({
     label: p.nome,
   }));
 
+  const categoriaEletronicosSelecionada =
+  categorias.some(
+    (cat: any) =>
+      cat.id === categoriasSelecionadas[0] &&
+      cat.nome === "Eletrônicos"
+  );
+
+  const postosFiltrados =
+    categoriaEletronicosSelecionada
+      ? postos.filter((posto: any) =>
+          posto.nome
+            .toLowerCase()
+            .includes("delegacia")
+        )
+      : postos;
+
   return (
     <div className="popup-overlay">
       <div className="popup-box">
@@ -305,9 +321,15 @@ export default function CadastroObjetoAchado({
             </MapContainer>
 
           <Select
-            options={postosOptions}
+            options={postosFiltrados.map((posto: any) => ({
+              value: posto.id,
+              label: posto.nome,
+            }))}
+
             value={postoSelecionado}
+
             onChange={handlePostoChange}
+
             placeholder="Selecione o posto de retirada"
           />
 

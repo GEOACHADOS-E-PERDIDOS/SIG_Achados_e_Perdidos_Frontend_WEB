@@ -65,7 +65,7 @@ export default function CadastroObjeto({
   const [objeto, setObjeto] = useState({
     nome: "",
     descricao: "",
-    enderecoEncontro: "",
+    enderecoPerdido: "",
     dataPerdido: "",
     latitude: "",
     longitude: "",
@@ -92,7 +92,7 @@ export default function CadastroObjeto({
     setObjeto({
       nome: "",
       descricao: "",
-      enderecoEncontro: "",
+      enderecoPerdido: "",
       dataPerdido: "",
       latitude: "",
       longitude: "",
@@ -200,7 +200,7 @@ export default function CadastroObjeto({
           />
 
           <input
-            name="enderecoEncontro"
+            name="enderecoPerdido"
             placeholder="Região ou ponto de referência do local da perda"
             onChange={handleChange}
           />

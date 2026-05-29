@@ -245,36 +245,10 @@ function ClickMapa() {
             ) : (
 
               <ObjetoDetalhe
-                obj={
-                  itemSelecionado.properties
-                }
+                obj={itemSelecionado.properties}
+                onClose={() => setItemSelecionado(null)} // ADICIONE ESTA LINHA AQUI
               />
             )}
-
-            <button
-              onClick={() =>
-                setItemSelecionado(null)
-              }
-
-              style={{
-
-                marginTop: "30px",
-
-                padding: "15px 20px",
-
-                border: "none",
-
-                borderRadius: "10px",
-
-                background: "#1976d2",
-
-                color: "white",
-
-                cursor: "pointer",
-              }}
-            >
-              Fechar
-            </button>
 
           </div>
 

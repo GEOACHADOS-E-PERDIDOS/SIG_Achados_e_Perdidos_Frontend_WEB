@@ -25,6 +25,7 @@ const { BaseLayer } = LayersControl;
 
 const telefoneRegex = /^[0-9]{8,9}$/;
 
+
 /* ====================================== */
 /* MAPA */
 /* ====================================== */
@@ -204,6 +205,7 @@ const limparImagens = () => {
   }
 };
 
+
   /* ====================================== */
   /* UI */
   /* ====================================== */
@@ -315,49 +317,32 @@ const limparImagens = () => {
             onChange={handleImagens}
           />
 
-          {imagens.length > 0 && (
+            {imagens.length > 0 && (
+            <div className="imagens-preview">
+              <div className="lista-imagens">
+                
+                <button
+                  type="button"
+                  onClick={limparImagens}
+                  className="btn-remover"
+                  title="Remover todas as imagens"
+                >
+                  ×
+                </button>
 
-            <div
-              style={{
-                marginTop: "10px",
-                position: "relative"
-              }}
-            >
+                <p className="titulo-imagens">
+                  Imagens selecionadas ({imagens.length})
+                </p>
 
-              <button
-                type="button"
-                onClick={limparImagens}
-                style={{
-                  position: "absolute",
-                  top: "-8px",
-                  right: "-8px",
-                  width: "24px",
-                  height: "24px",
-                  borderRadius: "50%",
-                  border: "none",
-                  background: "#e53935",
-                  color: "white",
-                  cursor: "pointer",
-                  fontWeight: "bold"
-                }}
-              >
-                ×
-              </button>
+                <ul>
+                  {imagens.map((img, index) => (
+                    <li key={index} className="item-imagem">
+                      📷 {img.name}
+                    </li>
+                  ))}
+                </ul>
 
-              <p>Imagens selecionadas:</p>
-
-              <ul>
-
-                {imagens.map((img, index) => (
-
-                  <li key={index}>
-                    {img.name}
-                  </li>
-
-                ))}
-
-              </ul>
-
+              </div>
             </div>
           )}
 

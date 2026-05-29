@@ -195,6 +195,12 @@ function PostosPage() {
         createPortal(
           <div className="modal-overlay" onClick={() => setPostoSelecionado(null)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <button
+                  className="btn-fechar-modal"
+                  onClick={() => setPostoSelecionado(null)}
+                >
+                  ✕
+                </button>
               <PostoDetalhe
                 posto={postoSelecionado}
                 onClose={() => setPostoSelecionado(null)}
@@ -204,7 +210,6 @@ function PostosPage() {
           document.body
         )}
 
-      {/* EDIT MODAL */}
       {/* EDIT MODAL */}
       {postoEditando &&
         createPortal(

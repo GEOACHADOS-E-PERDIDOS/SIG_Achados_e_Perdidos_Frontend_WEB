@@ -43,13 +43,20 @@ type Props = {
     statusAtual: string
   ) => void;
 
+  onEditObjeto: (
+    obj: Objeto
+  ) => void;
+
   onClick?: () => void;
+
+
 };
 
 export default function ObjetoCardPerfil({
   obj,
   onDelete,
   onEditStatus,
+  onEditObjeto,
   onClick,
 }: Props) {
 
@@ -188,6 +195,18 @@ export default function ObjetoCardPerfil({
       {/* AÇÕES */}
 
       <div className="card-perfil-acoes">
+
+         <button
+            className="btn-perfil-edit"
+            onClick={(e) => {
+
+            e.stopPropagation();
+
+            onEditObjeto(obj);
+            }}
+        >
+            🖉
+        </button>
 
         <button
             className="btn-perfil-icon"

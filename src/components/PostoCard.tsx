@@ -87,37 +87,17 @@ export default function PostoCard({
         >
             🖉
         </div>
-
         <div
             className="card-delete"
-            onClick={async (e) => {
+            onClick={(e) => {
                 e.stopPropagation();
-
-                const result = await Swal.fire({
-                    title: "Excluir posto?",
-                    text: "Essa ação não pode ser desfeita.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Sim, excluir",
-                    cancelButtonText: "Cancelar",
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                });
-
-                if (result.isConfirmed) {
-                    await onDelete();
-
-                    await Swal.fire({
-                    title: "Excluído!",
-                    text: "O posto foi removido com sucesso.",
-                    icon: "success",
-                    confirmButtonText: "OK",
-                    confirmButtonColor: "#3085d6",
-                    });
-                }
-                }}
+                onDelete?.();
+            }}
         >
-            <img src={deleteIcon} alt="Deletar" />
+            <img
+            src={deleteIcon}
+            alt="Deletar"
+            />
         </div>
 
         </div>

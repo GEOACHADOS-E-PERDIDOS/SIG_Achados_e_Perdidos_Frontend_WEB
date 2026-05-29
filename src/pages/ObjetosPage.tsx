@@ -15,7 +15,6 @@ import type { CategoriaOption } from "../types/Categoria";
 import {
   listarObjetos,
   buscarObjetos,
-  deletarObjeto,
   buscarImagens,
 } from "../services/ObjetoPageService";
 
@@ -178,31 +177,7 @@ function Objetos() {
       await carregarObjetos();
     };
 
-  // =========================
-  // DELETAR
-  // =========================
 
-  const handleDelete =
-    async (id: number) => {
-
-      try {
-
-        await deletarObjeto(id);
-
-        setObjetos((prev) =>
-          prev.filter(
-            (obj) => obj.id !== id
-          )
-        );
-
-      } catch (err) {
-
-        console.error(
-          "Erro ao deletar objeto:",
-          err
-        );
-      }
-    };
 
   // =========================
   // INIT
@@ -332,7 +307,6 @@ function Objetos() {
                 ?? null,
             }}
 
-            onDelete={handleDelete}
 
             onClick={() =>
               setObjetoSelecionado(obj)
@@ -378,11 +352,10 @@ function Objetos() {
       >
 
         {objetoSelecionado && (
-
           <ObjetoDetalhe
             obj={objetoSelecionado}
+            onClose={() => setObjetoSelecionado(null)} // Adicione esta linha
           />
-
         )}
 
         <button

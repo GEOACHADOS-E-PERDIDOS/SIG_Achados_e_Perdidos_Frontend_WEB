@@ -1,5 +1,4 @@
 import React from "react";
-import deleteIcon from "../assets/delete.svg";
 
 import "../styles/ObjetoCard.css";
 
@@ -16,7 +15,9 @@ type Objeto = {
   enderecoEncontro: string;
   dataEncontro: string;
   imagemUrl?: string | null;
+
   categorias?: Categoria[];
+
   status:
     | "DISPONIVEL"
     | "DEVOLVIDO"
@@ -25,22 +26,27 @@ type Objeto = {
 
 type Props = {
   obj: Objeto;
-  onDelete: (id: number) => void;
   onClick: () => void;
 };
 
 export default function ObjetoCard({
   obj,
-  onDelete,
   onClick,
 }: Props) {
 
   return (
+
     <div
       className="card-objeto"
       onClick={onClick}
-      style={{ cursor: "pointer" }}
+
+      style={{
+        cursor: "pointer",
+      }}
     >
+
+      {/* IMAGEM */}
+
       <div className="card-image">
 
         {obj.imagemUrl ? (
@@ -60,11 +66,15 @@ export default function ObjetoCard({
 
       </div>
 
+      {/* TEXTO */}
+
       <div className="card-text">
 
         <h3>{obj.nome}</h3>
 
-        <p>{obj.descricao}</p>
+        <p>
+          {obj.descricao}
+        </p>
 
         <p>
           <strong>Endereço:</strong>{" "}
@@ -114,36 +124,12 @@ export default function ObjetoCard({
               fontWeight: "bold",
             }}
           >
+
             {obj.status}
+
           </span>
 
         </p>
-
-      </div>
-
-      <div
-        style={{
-          cursor: "pointer",
-          padding: "5px",
-          fontSize: "20px",
-        }}
-        title="Deletar objeto"
-        onClick={(e) => {
-
-          e.stopPropagation();
-
-          onDelete(obj.id);
-
-        }}
-      >
-
-        <img
-          src={deleteIcon}
-          alt="Deletar"
-          style={{
-            width: "24px"
-          }}
-        />
 
       </div>
 

@@ -11,7 +11,7 @@ export async function cadastrarObjeto({
   objeto: {
     nome: string;
     descricao: string;
-    enderecoEncontro: string;
+    enderecoPerdido: string;
     dataPerdido: string;
     latitude: string;
     longitude: string;

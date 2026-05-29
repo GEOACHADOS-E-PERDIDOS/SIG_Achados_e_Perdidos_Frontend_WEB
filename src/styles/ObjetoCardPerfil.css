@@ -70,6 +70,7 @@
 ========================= */
 
 .card-text-perfil {
+     text-transform: capitalize;
   flex: 1;
 
   display: flex;
@@ -192,14 +193,18 @@
 
 .btn-perfil-edit {
 
-  background: #2563eb;
+  background: #f1f5f9;
 
-  color: white;
+  border: 1px solid #e2e8f0;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
+  color: #475569;
 }
 
 .btn-perfil-edit:hover {
 
-  background: #1d4ed8;
+  background: #e2e8f0;
 
   transform: translateY(-1px);
 }

@@ -1,124 +1,183 @@
+/* Container Principal */
+.perfil-main-container {
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Card de Informações do Perfil */
+.perfil-card-container {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.perfil-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.perfil-titulo {
+     text-transform: capitalize;
+  font-size: 20px;
+  margin: 0;
+  color: #1e293b;
+}
+
+.perfil-btn-pequeno {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.perfil-btn-pequeno:hover {
+  background: #e2e8f0;
+}
+
+.perfil-info-content p {
+  margin: 8px 0;
+  color: #334155;
+  font-size: 15px;
+}
+
+/* Grid de Objetos (Esquerda para Direita) */
+.objetos-grid-original {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+/* Modal Overlay */
 .perfil-modal-overlay {
   position: fixed;
-
-  inset: 0;
-
-  background: rgba(0,0,0,0.45);
-
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  align-items: center;
   justify-content: center;
-
-  z-index: 9999;
+  align-items: center;
+  z-index: 999999;
 }
 
 .perfil-edit-modal {
-  width: 100%;
-  max-width: 500px;
-
-  background: #fff;
-
-  border-radius: 12px;
-
+  background: white;
   padding: 30px;
-
-  box-shadow:
-    0 12px 30px rgba(0,0,0,0.18);
-
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-
-  gap: 18px;
-
-  animation: fadePerfil 0.2s ease;
+  gap: 15px;
 }
 
 .perfil-edit-modal h2 {
-  margin: 0;
-
-  font-size: 28px;
-
-  color: #222;
+  margin: 0 0 5px 0;
+  text-align: center;
+  font-size: 22px;
 }
 
 .perfil-edit-modal input {
-  height: 48px;
-
-  border: 1px solid #d1d5db;
-
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
   border-radius: 6px;
-
-  padding: 0 14px;
-
-  font-size: 15px;
-
-  outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
-.perfil-edit-modal input:focus {
-  border-color: #2563eb;
-
-  box-shadow:
-    0 0 0 4px rgba(37,99,235,0.10);
-}
-
+/* Botões do Modal Centralizados */
 .perfil-edit-buttons {
   display: flex;
-
+  flex-direction: row;
+  justify-content: center; /* Centraliza os botões */
   gap: 12px;
-
   margin-top: 10px;
 }
 
-.perfil-salvar-btn,
+.perfil-salvar-btn, 
 .perfil-cancelar-btn {
-  flex: 1;
-
-  height: 46px;
-
-  border: none;
-
+  padding: 8px 24px;
+  font-size: 14px;
   border-radius: 6px;
-
-  font-size: 15px;
-  font-weight: 600;
-
   cursor: pointer;
-
-  transition:
-    transform 0.15s ease,
-    opacity 0.2s ease;
+  font-weight: 600;
+  transition: opacity 0.2s;
+  border: none;
 }
 
 .perfil-salvar-btn {
-  background: rgb(30,42,56);
+  background-color: rgb(30, 42, 56);
   color: white;
 }
 
 .perfil-cancelar-btn {
-  background: #e5e7eb;
-  color: #111827;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
-.perfil-salvar-btn:hover,
+.perfil-salvar-btn:hover, 
 .perfil-cancelar-btn:hover {
-  transform: translateY(-1px);
-
-  opacity: 0.95;
+  opacity: 0.85;
 }
 
-@keyframes fadePerfil {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+@media (max-width: 800px) {
+  .objetos-grid-original {
+    grid-template-columns: 1fr;
   }
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.perfil-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.perfil-input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.perfil-input-group input,
+.perfil-input-group textarea,
+.perfil-input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.perfil-input-group input:focus,
+.perfil-input-group textarea:focus,
+.perfil-input-group select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+.home-page {
+  min-height: 100vh;
+  overflow-y: auto;
 }
