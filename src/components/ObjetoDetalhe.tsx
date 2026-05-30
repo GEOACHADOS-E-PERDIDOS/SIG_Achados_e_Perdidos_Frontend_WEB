@@ -47,6 +47,8 @@ export default function ObjetoDetalhe({ obj, onClose }: Props) {
     );
   };
 
+  console.log(obj);
+
   return (
     <div className="objeto-detalhe">
       {/* CARROSSEL */}
@@ -87,7 +89,7 @@ export default function ObjetoDetalhe({ obj, onClose }: Props) {
 
         <div className="objeto-info-lista">
           <div className="info-item">
-            <strong>Data do encontro:</strong>
+            <strong>Data:</strong>
             <span>{formatarData(obj.dataEncontro)}</span>
           </div>
           <div className="info-item">

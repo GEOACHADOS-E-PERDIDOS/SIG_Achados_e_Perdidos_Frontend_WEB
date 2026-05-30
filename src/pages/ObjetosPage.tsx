@@ -341,7 +341,7 @@ function Objetos() {
             transform:
               "translate(-50%, -50%)",
             borderRadius: "10px",
-            padding: "30px",
+            padding: "50px",
           },
 
           overlay: {
@@ -358,15 +358,6 @@ function Objetos() {
           />
         )}
 
-        <button
-          onClick={() =>
-            setObjetoSelecionado(
-              null
-            )
-          }
-        >
-          Fechar
-        </button>
 
       </Modal>
 

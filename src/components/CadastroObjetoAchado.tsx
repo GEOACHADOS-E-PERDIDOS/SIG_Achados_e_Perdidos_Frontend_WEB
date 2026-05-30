@@ -225,19 +225,19 @@ export default function CadastroObjetoAchado({
         <form onSubmit={handleSubmit}>
           <input
             name="nome"
-            placeholder="Nome"
+            placeholder="Nome *"
             onChange={handleChange}
           />
 
           <input
             name="descricao"
-            placeholder="Descrição"
+            placeholder="Descrição *"
             onChange={handleChange}
           />
 
           <input
             name="enderecoEncontro"
-            placeholder="Local onde o objeto foi encontrado"
+            placeholder="Local onde o objeto foi encontrado *"
             onChange={handleChange}
           />
 
@@ -245,7 +245,7 @@ export default function CadastroObjetoAchado({
             isMulti
             options={categoriasOptions}
             onChange={handleCategoriasChange}
-            placeholder="Categorias"
+            placeholder="Categorias *"
             menuPortalTarget={document.body}
             styles={{
               menuPortal: (base) => ({
@@ -264,7 +264,9 @@ export default function CadastroObjetoAchado({
             selected={dataEncontro}
             onChange={setDataEncontro}
           />
-
+          <p className="campo-obrigatorio-info">
+             <span>*</span> Campos Obrigatórios
+          </p>
           <p>Clique no mapa para marcar o local do encontro:</p>
 
           <MapContainer

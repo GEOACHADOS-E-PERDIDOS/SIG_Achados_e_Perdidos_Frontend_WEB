@@ -189,19 +189,19 @@ export default function CadastroObjeto({
         <form onSubmit={handleSubmit}>
           <input
             name="nome"
-            placeholder="Nome"
+            placeholder="Nome *"
             onChange={handleChange}
           />
 
           <input
             name="descricao"
-            placeholder="Descrição"
+            placeholder="Descrição *"
             onChange={handleChange}
           />
 
           <input
             name="enderecoPerdido"
-            placeholder="Região ou ponto de referência do local da perda"
+            placeholder="Região ou ponto de referência do local da perda *"
             onChange={handleChange}
           />
 
@@ -216,13 +216,16 @@ export default function CadastroObjeto({
                 zIndex: 9999,
               }),
             }}
-            placeholder="Categorias"
+            placeholder="Categorias *"
           />
 
           <DataInput
             selected={dataPerdido}
             onChange={setDataPerdido}
           />
+          <p className="campo-obrigatorio-info">
+             <span>*</span> Campos Obrigatórios
+          </p>
 
           <p>Clique no mapa para indicar a região onde o objeto foi perdido:</p>
 

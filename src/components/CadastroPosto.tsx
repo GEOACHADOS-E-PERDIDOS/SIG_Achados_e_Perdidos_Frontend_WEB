@@ -220,23 +220,25 @@ const limparImagens = () => {
           Cadastrar Posto
         </h2>
 
+
         <form onSubmit={handleSubmit}>
 
+           
           <input
             name="nome"
-            placeholder="Nome"
+            placeholder="Nome *"
             onChange={handleChange}
           />
 
           <input
             name="endereco"
-            placeholder="Endereço"
+            placeholder="Endereço *"
             onChange={handleChange}
           />
 
           <input
             name="telefone"
-            placeholder="Telefone"
+            placeholder="Telefone *"
             onChange={handleChange}
           />
 
@@ -245,7 +247,9 @@ const limparImagens = () => {
             placeholder="Email"
             onChange={handleChange}
           />
-
+          <p className="campo-obrigatorio-info">
+             <span>*</span> Campos Obrigatórios
+          </p>
           {/* ====================================== */}
           {/* MAPA */}
           {/* ====================================== */}

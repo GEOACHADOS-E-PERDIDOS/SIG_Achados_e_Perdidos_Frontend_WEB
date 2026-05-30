@@ -19,6 +19,8 @@ type PostoDeRetirada = {
     telefone: string;
     email: string;
     imagens?: string[];
+    latitude: number;
+    longitude: number;
 };
 
 type Props = {
@@ -34,6 +36,14 @@ export default function PostoDetalhe({ posto, onClose }: Props) {
     const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
     const [imagensCarregadas, setImagensCarregadas] = useState<string[]>([]);
     const [imagemAtual, setImagemAtual] = useState(0);
+    const abrirRota = () => {
+        const latitude = Number(posto.latitude);
+        const longitude = Number(posto.longitude);
+        const url =
+            `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+
+        window.open(url, "_blank");
+    };
 
     useEffect(() => {
         async function carregarQuantidade() {
@@ -151,6 +161,12 @@ export default function PostoDetalhe({ posto, onClose }: Props) {
                     onClick={onClose}
                 >
                     Fechar
+                </button>
+                    <button
+                    className="btn-rota"
+                    onClick={abrirRota}
+                >
+                    📍 Como Chegar
                 </button>
             </div>
 

@@ -35,6 +35,7 @@
 }
 
 .posto-footer-acoes {
+    gap: 15px;
     display: flex;
     justify-content: center;
     padding: 20px; /* Um pouco mais de respiro */
@@ -156,4 +157,26 @@
     margin: 0;
     font-size: 13px;
     color: #64748b;
+}
+
+.btn-rota {
+    margin-top: 30px;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #1976d2; /* O azul exato do seu botão do mapa */
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.btn-rota:hover {
+    opacity: 0.9;
+}
+
+.btn-fechar-mapa-style,
+.btn-rota {
+    flex: 1;
 }
