@@ -51,7 +51,9 @@ function ClickMapa() {
         }
 
         const feature =
-          data.features[0];
+          data.features.find(
+            (f: any) => f.geometry?.type === "Point"
+          ) || data.features[0];
 
         const layerName =
           feature.id.split(".")[0];

@@ -14,10 +14,6 @@ export default function ObjetoPostoCard({
 
     const handleClick = () => {
 
-        console.log(
-            "CLICOU:",
-            obj.id
-        );
 
         onClick(
             obj.id
