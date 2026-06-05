@@ -616,7 +616,6 @@ export default function PerfilPage() {
                 onChange={handleChange}
                 placeholder="Nome"
               />
-
               <input
                 type="email"
                 name="email"
@@ -624,9 +623,7 @@ export default function PerfilPage() {
                 onChange={handleChange}
                 placeholder="Email"
               />
-
               <div className="perfil-edit-buttons">
-
                 <button
                   className="perfil-salvar-btn"
                   onClick={salvar}
