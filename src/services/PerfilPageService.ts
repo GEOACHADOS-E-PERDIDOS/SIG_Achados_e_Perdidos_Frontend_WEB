@@ -59,13 +59,30 @@ export const atualizarStatusObjeto = async (
   status: string
 ) => {
 
-  const res = await axios.put(
-    `${API_OBJETOS}/${id}/status`,
-    { status },
-    authHeader()
-  );
+  try {
 
-  return res.data;
+    const res = await axios.put(
+      `${API_OBJETOS}/${id}/status`,
+      { status },
+      authHeader()
+    );
+
+    return res.data;
+
+  } catch (err: any) {
+
+    console.log(
+      "🔥 ERRO BACKEND:",
+      err.response?.data
+    );
+
+    console.log(
+      "🔥 STATUS HTTP:",
+      err.response?.status
+    );
+
+    throw err;
+  }
 };
 
 // =========================
@@ -89,6 +106,10 @@ export const atualizarObjeto = async (
   data: any
 ) => {
 
+  console.log("STATUS ENVIADO:");
+    console.log("id =", id);
+    console.log("status =", status);
+
   const isAchado =
     data.postoRetiradaId !== undefined;
 
@@ -103,4 +124,26 @@ export const atualizarObjeto = async (
   );
 
   return res.data;
+};
+
+export const buscarObjetosDoPosto = async (
+  postoId: number
+) => {
+
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `http://localhost:8080/objetos/achados/buscar/posto/${postoId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Erro ao buscar objetos do posto");
+  }
+
+  return response.json();
 };

@@ -9,6 +9,7 @@ import {
   buscarMeuPerfil,
   atualizarMeuPerfil,
   buscarMeusObjetos,
+  buscarObjetosDoPosto,
   atualizarStatusObjeto,
   excluirObjeto,
   atualizarObjeto,
@@ -24,6 +25,8 @@ type Usuario = {
   id: number;
   name: string;
   email: string;
+  isPosto: boolean;
+  postoId?: number | null;
 };
 
 type Posto = {
@@ -89,6 +92,8 @@ export default function PerfilPage() {
         await buscarMeuPerfil();
 
       setUsuario(res);
+
+      await carregarObjetos(res);
 
       setForm({
         name: res.name || "",
@@ -175,10 +180,21 @@ export default function PerfilPage() {
   // =========================
 
   const carregarObjetos =
-    async () => {
+    async (perfil?: Usuario) => {
       try {
-        const res =
-          await buscarMeusObjetos();
+        let res;
+
+          if (perfil?.isPosto && perfil?.postoId
+          ) {
+            console.log("🏢 Buscando objetos do posto", perfil.postoId);
+
+            res = await buscarObjetosDoPosto(perfil.postoId);
+          } else {
+
+            console.log("👤 Buscando meus objetos");
+
+            res = await buscarMeusObjetos();
+          }
 
         console.log(
           "OBJETOS VINDOS DO BACKEND:",
@@ -213,7 +229,6 @@ export default function PerfilPage() {
 
   useEffect(() => {
     carregarUsuario();
-    carregarObjetos();
     carregarPostos();
   }, []);
 
@@ -267,6 +282,11 @@ export default function PerfilPage() {
     id: number,
     statusAtual: string
   ) => {
+
+
+  console.log("🚀 ALTERAR STATUS CHAMADO");
+  console.log("id =", id);
+  console.log("statusAtual =", statusAtual);
     const { value: novoStatus } =
       await Swal.fire({
         title:
@@ -293,7 +313,7 @@ export default function PerfilPage() {
 
         showCancelButton: true,
       });
-
+        console.log("🚀 NOVO STATUS:", novoStatus);
     if (!novoStatus) return;
 
     try {
@@ -301,6 +321,7 @@ export default function PerfilPage() {
         id,
         novoStatus
       );
+
 
       Swal.fire({
         title: "Sucesso",
@@ -537,45 +558,42 @@ export default function PerfilPage() {
             {objetos.map((obj) => (
 
                 <ObjetoCardPerfil
-                    key={obj.id}
-
-                    obj={{
+                  key={obj.id}
+                  obj={{
                     ...obj,
-
                     imagemUrl:
-                        obj.imagemUrl,
+                      obj.imagemUrl,
 
                     enderecoEncontro:
-                        obj.enderecoEncontro ||
-                        "Não informado",
+                      obj.enderecoEncontro ||
+                      "Não informado",
 
                     dataEncontro:
-                        obj.dataEncontro || "",
-                    }}
+                      obj.dataEncontro || "",
+                  }}
 
-                onDelete={
-                  deletarObjeto
-                }
+                  isPosto={usuario?.isPosto}
+                  onDelete={
+                    deletarObjeto
+                  }
 
-                onEditStatus={
-                  alterarStatus
-                }
+                  onEditStatus={
+                    alterarStatus
+                  }
 
-                onEditObjeto={(
-                  obj
-                ) => {
-                  console.log(
-                    "OBJETO AO ABRIR EDIÇÃO:",
-                    obj
-                  );
+                  onEditObjeto={(obj) => {
+                    console.log(
+                      "OBJETO AO ABRIR EDIÇÃO:",
+                      obj
+                    );
 
-                  setObjetoEditando({
-                    ...(obj as any),
+                    setObjetoEditando({
+                      ...(obj as any),
 
-                    categorias:
+                      categorias:
                         (obj.categorias as any) || [],
                     });
-                }}
+                  }}
               />
 
             ))}

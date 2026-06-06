@@ -38,3 +38,14 @@ export async function resetarSenha(
 
   return response.data;
 }
+
+export async function tornarPosto(
+  id: number
+): Promise<void> {
+
+  await axios.put(
+    `${API_URL}/${id}/tornar-posto`,
+    {},
+    getAuthHeader()
+  );
+}

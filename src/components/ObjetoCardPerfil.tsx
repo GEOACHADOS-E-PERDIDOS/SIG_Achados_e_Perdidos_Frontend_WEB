@@ -33,8 +33,11 @@ type Objeto = {
     | string;
 };
 
+
+
 type Props = {
   obj: Objeto;
+  isPosto?: boolean;
 
   onDelete: (id: number) => void;
 
@@ -58,6 +61,7 @@ export default function ObjetoCardPerfil({
   onEditStatus,
   onEditObjeto,
   onClick,
+  isPosto,
 }: Props) {
 
   // =========================
@@ -88,6 +92,8 @@ export default function ObjetoCardPerfil({
     imagemFinal =
       obj.imagens[0];
   }
+  const podeAlterarStatus =
+  obj.status === "PERDIDO" || isPosto;
 
   return (
 
@@ -196,53 +202,51 @@ export default function ObjetoCardPerfil({
 
       <div className="card-perfil-acoes">
 
-         <button
-            className="btn-perfil-edit"
-            onClick={(e) => {
+  {!isPosto && (
+    <>
+      <button
+        className="btn-perfil-edit"
+        onClick={(e) => {
+          e.stopPropagation();
+          onEditObjeto(obj);
+        }}
+      >
+        🖉
+      </button>
 
-            e.stopPropagation();
+      <button
+        className="btn-perfil-icon delete"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(obj.id);
+        }}
+      >
+        <img
+          src={deleteIcon}
+          alt="Deletar"
+        />
+      </button>
+    </>
+  )}
 
-            onEditObjeto(obj);
-            }}
-        >
-            🖉
-        </button>
+  {podeAlterarStatus && (
+    <button
+      className="btn-perfil-icon"
+      onClick={(e) => {
 
-        <button
-            className="btn-perfil-icon"
+        e.stopPropagation();
 
-            onClick={(e) => {
+        onEditStatus(
+          obj.id,
+          obj.status
+        );
+      }}
+    >
+      ⚙️
+    </button>
+  )}
 
-            e.stopPropagation();
-
-            onEditStatus(
-                obj.id,
-                obj.status
-            );
-            }}
-        >
-            ⚙️
-        </button>
-
-        <button
-            className="btn-perfil-icon delete"
-
-            onClick={(e) => {
-
-            e.stopPropagation();
-
-            onDelete(obj.id);
-            }}
-        >
-
-            <img
-            src={deleteIcon}
-            alt="Deletar"
-            />
-
-        </button>
-
-      </div>
+</div>
 
     </div>
   );

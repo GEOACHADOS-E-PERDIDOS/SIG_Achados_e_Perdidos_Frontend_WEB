@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../styles/UsuarioCard.css";
-import { tornarAdmin, resetarSenha } from "../services/UsuarioCardService";
+import { tornarAdmin, resetarSenha, tornarPosto } from "../services/UsuarioCardService";
 import Swal from "sweetalert2";
 
 type Usuario = {
@@ -59,6 +59,49 @@ export default function UsuarioCard({ usuario, onActionSuccess }: Props) { // 2.
       }
     }
   };
+
+  const handleTornarPosto = async () => {
+    const resultado = await Swal.fire({
+      title: "Confirmar Ação",
+      text: `Deseja realmente vincular ${usuario.nome} a um posto?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, tornar Posto",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (resultado.isConfirmed) {
+      try {
+        await tornarPosto(usuario.id);
+
+        await Swal.fire({
+          title: "Sucesso",
+          text: "Usuário promovido para posto!",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        });
+
+        setPopupAberto(false);
+
+        onActionSuccess();
+
+      } catch (error) {
+        console.error(error);
+
+        Swal.fire({
+          title: "Erro",
+          text: "Erro ao promover usuário para posto",
+          icon: "error",
+          confirmButtonText: "Fechar",
+          confirmButtonColor: "#d33",
+        });
+      }
+    }
+  };
+
 
   const handleResetarSenha = async () => {
     const resultado = await Swal.fire({
@@ -129,6 +172,11 @@ export default function UsuarioCard({ usuario, onActionSuccess }: Props) { // 2.
                 Tornar Admin
               </button>
             )}
+
+            <button
+                className="admin-btn"onClick={handleTornarPosto}>
+                Tornar Posto
+              </button>
 
             <button className="admin-btn" onClick={handleResetarSenha}>
               Resetar Senha
