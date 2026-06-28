@@ -26,6 +26,14 @@ type ObjetoMapa = {
   status?: string;
 };
 
+type PostoMapa = {
+  id: number;
+  nome: string;
+  endereco: string;
+  latitude: number;
+  longitude: number;
+};
+
 type Props = {
   refreshKey: number;
 };
@@ -81,6 +89,9 @@ function Mapa({ refreshKey }: Props) {
   const [resultadoBusca, setResultadoBusca] =
     useState<ObjetoMapa[]>([]);
 
+  const [resultadoBuscaPostos, setResultadoBuscaPostos] =
+    useState<PostoMapa[]>([])
+
   /* ===================================================== */
   /* CONTROLE DE LAYERS */
   /* ===================================================== */
@@ -113,6 +124,8 @@ function Mapa({ refreshKey }: Props) {
           }
         }
       );
+
+      
 
       /* ===================================== */
       /* FILTRA CONFORME LAYERS ATIVAS */
@@ -149,6 +162,39 @@ function Mapa({ refreshKey }: Props) {
       );
     }
   };
+
+  const buscarPostos = async () => {
+
+  const token = localStorage.getItem("token");
+
+  try {
+
+    const res = await axios.get(
+      "http://localhost:8080/postos",
+      {
+        params: {
+          termo: busca
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setResultadoBuscaPostos(res.data);
+
+  } catch (err) {
+
+    console.error("Erro ao buscar postos:", err);
+  }
+};
+
+const buscar = async () => {
+  await Promise.all([
+    buscarObjetos(),
+    buscarPostos()
+  ]);
+};
 
   /* ===================================================== */
   /* ESCONDER RESULTADOS AO DESLIGAR LAYER */
@@ -286,7 +332,7 @@ function Mapa({ refreshKey }: Props) {
 
             if (e.key === "Enter") {
 
-              buscarObjetos();
+              buscar();
             }
           }}
 
@@ -306,7 +352,7 @@ function Mapa({ refreshKey }: Props) {
         />
 
         <button
-          onClick={buscarObjetos}
+          onClick={buscar}
 
           style={{
 
@@ -326,6 +372,7 @@ function Mapa({ refreshKey }: Props) {
             setBusca("");
 
             setResultadoBusca([]);
+            setResultadoBuscaPostos([]);
           }}
 
           style={{
@@ -392,6 +439,40 @@ function Mapa({ refreshKey }: Props) {
 
           </CircleMarker>
         ))}
+
+        {resultadoBuscaPostos
+  .filter(
+    (posto) =>
+      posto.latitude != null &&
+      posto.longitude != null
+  )
+  .map((posto) => (
+
+    <CircleMarker
+      key={`p-${posto.id}`}
+      center={[
+        posto.latitude,
+        posto.longitude
+      ]}
+      radius={45}
+      pathOptions={{
+        color: "#ffcc00",
+        weight: 2,
+        fillColor: "#ffcc00",
+        fillOpacity: 0.15
+      }}
+    >
+      <Tooltip
+        direction="top"
+        permanent
+        offset={[0, -10]}
+        className="map-label"
+      >
+        {posto.nome}
+      </Tooltip>
+    </CircleMarker>
+
+))}
 
       {/* ===================================================== */}
       {/* LAYERS */}
