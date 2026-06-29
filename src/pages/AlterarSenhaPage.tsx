@@ -121,6 +121,7 @@ const handleSubmit =
                         </label>
 
                         <input
+						    autoComplete="off"
                             type="password"
                             value={
                                 senhaNova
@@ -142,6 +143,7 @@ const handleSubmit =
                         </label>
 
                         <input
+						    autoComplete="off"
                             type="password"
                             value={
                                 senhaConfirmacao

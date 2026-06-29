@@ -75,6 +75,7 @@ function Login() {
           <div className="form-group">
             <label>Email</label>
             <input
+						  autoComplete="off"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -85,6 +86,7 @@ function Login() {
           <div className="form-group">
             <label>Senha</label>
             <input
+						  autoComplete="off"
               type="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}

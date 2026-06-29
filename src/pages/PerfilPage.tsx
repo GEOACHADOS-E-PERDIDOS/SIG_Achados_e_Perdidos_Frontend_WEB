@@ -628,6 +628,7 @@ export default function PerfilPage() {
               </h2>
 
               <input
+						    autoComplete="off"
                 type="text"
                 name="name"
                 value={form.name}
@@ -635,6 +636,7 @@ export default function PerfilPage() {
                 placeholder="Nome"
               />
               <input
+						    autoComplete="off"
                 type="email"
                 name="email"
                 value={form.email}
@@ -697,6 +699,7 @@ export default function PerfilPage() {
                 </label>
 
                 <input
+						autoComplete="off"
                   value={
                     objetoEditando.nome
                   }

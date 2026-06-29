@@ -52,6 +52,7 @@ function RecuperarSenhaPage() {
           <div>
             <label>Email</label>
             <input
+						  autoComplete="off"
               type="email"
               name="email"
               value={email}

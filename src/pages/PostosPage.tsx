@@ -168,6 +168,7 @@ function PostosPage() {
       {/* FILTRO */}
       <div className="filtro-container">
         <input
+						autoComplete="off"
           value={termo}
           onChange={(e) => setTermo(e.target.value)}
           placeholder="Buscar por nome ou endereço"
@@ -234,6 +235,7 @@ function PostosPage() {
                   <label>Nome</label>
 
                   <input
+						autoComplete="off"
                     name="nome"
                     value={form.nome}
                     onChange={handleChange}
@@ -247,6 +249,7 @@ function PostosPage() {
                   <label>Endereço</label>
 
                   <input
+						autoComplete="off"
                     name="endereco"
                     value={form.endereco}
                     onChange={handleChange}
@@ -260,6 +263,7 @@ function PostosPage() {
                   <label>Telefone</label>
 
                   <input
+						autoComplete="off"
                     name="telefone"
                     value={form.telefone}
                     onChange={handleChange}
@@ -273,6 +277,7 @@ function PostosPage() {
                   <label>Email</label>
 
                   <input
+						autoComplete="off"
                     name="email"
                     value={form.email}
                     onChange={handleChange}

@@ -74,6 +74,7 @@ function CadastroUsuarioPage() {
           <div>
             <label>Nome</label>
             <input
+						  autoComplete="off"
               type="text"
               name="name"
               value={user.name}
@@ -85,6 +86,7 @@ function CadastroUsuarioPage() {
           <div>
             <label>Email</label>
             <input
+						  autoComplete="off"
               type="email"
               name="email"
               value={user.email}
@@ -96,6 +98,7 @@ function CadastroUsuarioPage() {
           <div>
             <label>Senha</label>
             <input
+						  autoComplete="off"
               type="password"
               name="senha"
               value={user.senha}

@@ -188,18 +188,21 @@ export default function CadastroObjeto({
 
         <form onSubmit={handleSubmit}>
           <input
+						autoComplete="off"
             name="nome"
             placeholder="Nome *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="descricao"
             placeholder="Descrição *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="enderecoPerdido"
             placeholder="Região ou ponto de referência do local da perda *"
             onChange={handleChange}
@@ -277,6 +280,7 @@ export default function CadastroObjeto({
           </MapContainer>
 
           <input
+						autoComplete="off"
             ref={inputImagemRef}
             type="file"
             multiple

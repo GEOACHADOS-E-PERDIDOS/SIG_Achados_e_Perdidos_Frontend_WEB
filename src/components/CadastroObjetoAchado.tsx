@@ -224,18 +224,21 @@ export default function CadastroObjetoAchado({
 
         <form onSubmit={handleSubmit}>
           <input
+						autoComplete="off"
             name="nome"
             placeholder="Nome *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="descricao"
             placeholder="Descrição *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="enderecoEncontro"
             placeholder="Local onde o objeto foi encontrado *"
             onChange={handleChange}
@@ -336,6 +339,7 @@ export default function CadastroObjetoAchado({
           />
 
           <input
+						autoComplete="off"
             ref={inputFileRef}
             type="file"
             multiple

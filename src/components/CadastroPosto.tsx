@@ -225,24 +225,28 @@ const limparImagens = () => {
 
            
           <input
+						autoComplete="off"
             name="nome"
             placeholder="Nome *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="endereco"
             placeholder="Endereço *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="telefone"
             placeholder="Telefone *"
             onChange={handleChange}
           />
 
           <input
+						autoComplete="off"
             name="email"
             placeholder="Email"
             onChange={handleChange}
@@ -315,6 +319,7 @@ const limparImagens = () => {
           </MapContainer>
 
           <input
+						autoComplete="off"
             ref={inputImagemRef}
             type="file"
             multiple

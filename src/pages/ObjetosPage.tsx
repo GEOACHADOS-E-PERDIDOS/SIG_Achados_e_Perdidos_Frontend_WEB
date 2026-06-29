@@ -207,6 +207,7 @@ function Objetos() {
       <div className="filtro-container">
 
         <input
+					autoComplete="off"
           className="input-busca"
           type="text"
           placeholder="Buscar por termo"

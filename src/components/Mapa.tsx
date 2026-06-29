@@ -322,6 +322,7 @@ const buscar = async () => {
       >
 
         <input
+						autoComplete="off"
           value={busca}
 
           onChange={(e) =>
