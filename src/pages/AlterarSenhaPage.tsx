@@ -1,101 +1,68 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import logo from "../assets/LOGO_geoachados.png";
-
-import {
-    alterarSenha
-} from "../services/AlterarSenhaService"
+import { alterarSenha } from "../services/AlterarSenhaService";
 import Swal from "sweetalert2";
 
 function AlterarSenhaPage() {
+    const navigate = useNavigate();
+    const { t } = useTranslation();
 
-    const navigate =
-        useNavigate();
+    const [senhaNova, setSenhaNova] = useState("");
+    const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
 
-    const [
-        senhaNova,
-        setSenhaNova
-    ] = useState("");
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-    const [
-        senhaConfirmacao,
-        setSenhaConfirmacao
-    ] = useState("");
+        if (senhaNova !== senhaConfirmacao) {
+            await Swal.fire({
+                title: t("alterarSenha.atencao"),
+                text: t("alterarSenha.senhasNaoCoincidem"),
+                icon: "warning",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#f39c12",
+            });
 
-const handleSubmit =
-  async (
-    e: React.FormEvent
-  ) => {
+            return;
+        }
 
-    e.preventDefault();
+        try {
+            const mensagem = await alterarSenha(senhaNova);
 
-    if (
-      senhaNova !==
-      senhaConfirmacao
-    ) {
+            await Swal.fire({
+                title: t("alterarSenha.sucesso"),
+                text: mensagem,
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#3085d6",
+            });
 
-      await Swal.fire({
-        title: "Atenção",
-        text: "As senhas não coincidem",
-        icon: "warning",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#f39c12",
-      });
+            setSenhaNova("");
+            setSenhaConfirmacao("");
 
-      return;
-    }
+            localStorage.setItem("isTemp", "false");
 
-    try {
+            navigate("/home");
+        } catch (error: any) {
+            console.error(error);
 
-      const mensagem =
-        await alterarSenha(
-          senhaNova
-        );
+            await Swal.fire({
+                title: t("alterarSenha.erro"),
+                text:
+                    error?.response?.data ||
+                    error?.message ||
+                    t("alterarSenha.erroAlterarSenha"),
+                icon: "error",
+                confirmButtonText: t("alterarSenha.fechar"),
+                confirmButtonColor: "#d33",
+            });
+        }
+    };
 
-      await Swal.fire({
-        title: "Sucesso",
-        text: mensagem,
-        icon: "success",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#3085d6",
-      });
-
-      setSenhaNova("");
-      setSenhaConfirmacao("");
-
-      localStorage.setItem(
-        "isTemp",
-        "false"
-      );
-
-      navigate(
-        "/home"
-      );
-
-    } catch (error: any) {
-
-      console.error(
-        error
-      );
-
-      Swal.fire({
-        title: "Erro",
-        text:
-          error?.response?.data ||
-          error?.message ||
-          "Erro ao alterar senha",
-        icon: "error",
-        confirmButtonText: "Fechar",
-        confirmButtonColor: "#d33",
-      });
-
-    }
-};
     return (
-
         <div className="login-container">
-
             <img
                 src={logo}
                 alt="GeoAchados e Perdidos"
@@ -103,71 +70,42 @@ const handleSubmit =
             />
 
             <div className="login-box">
-
-                <form
-                    onSubmit={
-                        handleSubmit
-                    }
-                >
-
-                    <h2>
-                        Alterar Senha Temporária
-                    </h2>
+                <form onSubmit={handleSubmit}>
+                    <h2>{t("alterarSenha.titulo")}</h2>
 
                     <div>
-
-                        <label>
-                            Nova Senha
-                        </label>
+                        <label>{t("alterarSenha.novaSenha")}</label>
 
                         <input
-						    autoComplete="off"
+                            autoComplete="off"
                             type="password"
-                            value={
-                                senhaNova
-                            }
-                            onChange={(e) =>
-                                setSenhaNova(
-                                    e.target.value
-                                )
-                            }
+                            value={senhaNova}
+                            onChange={(e) => setSenhaNova(e.target.value)}
                             required
                         />
-
                     </div>
 
                     <div>
-
                         <label>
-                            Confirmar Nova Senha
+                            {t("alterarSenha.confirmarNovaSenha")}
                         </label>
 
                         <input
-						    autoComplete="off"
+                            autoComplete="off"
                             type="password"
-                            value={
-                                senhaConfirmacao
-                            }
+                            value={senhaConfirmacao}
                             onChange={(e) =>
-                                setSenhaConfirmacao(
-                                    e.target.value
-                                )
+                                setSenhaConfirmacao(e.target.value)
                             }
                             required
                         />
-
                     </div>
 
-                    <button
-                        type="submit"
-                    >
-                        Alterar Senha
+                    <button type="submit">
+                        {t("alterarSenha.alterar")}
                     </button>
-
                 </form>
-
             </div>
-
         </div>
     );
 }

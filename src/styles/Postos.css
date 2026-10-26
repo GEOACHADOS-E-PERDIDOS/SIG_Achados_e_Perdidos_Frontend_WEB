@@ -189,3 +189,9 @@
 .btn-fechar-modal:hover {
   background: rgba(0,0,0,0.1);
 }
+
+
+.postos-titulo {
+  margin-left: 12px; /* move para a direita */
+  margin-top: 10px;  /* move para baixo */
+}

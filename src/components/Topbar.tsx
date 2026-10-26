@@ -6,10 +6,22 @@ import "../styles/Topbar.css";
 
 import TopBarService from "../services/TopBarService";
 
+import { useTranslation } from "react-i18next";
+
 function Topbar() {
 
   const navigate = useNavigate();
   const location = useLocation();
+const { i18n } = useTranslation();
+
+const trocarIdioma = () => {
+  const novoIdioma = i18n.language.startsWith("pt")
+    ? "en-US"
+    : "pt-BR";
+
+  i18n.changeLanguage(novoIdioma);
+};
+
 
   const [menuAberto,
     setMenuAberto] =
@@ -133,6 +145,16 @@ function Topbar() {
         >
           Sair
         </button>
+
+<button
+  className="sidebar-language-button"
+  onClick={trocarIdioma}
+  type="button"
+>
+  {i18n.language.startsWith("pt")
+    ? "🇧🇷  Português (PT-BR)"
+    : "🇺🇸  English (EN-US)"}
+</button>
 
       </div>
     </>

@@ -1,14 +1,20 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import logo from "../assets/LOGO_geoachados.png";
 import RecuperarSenhaPageService from "../services/RecuperarSenhaPageService";
 import Swal from "sweetalert2";
 
 function RecuperarSenhaPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState<string>("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setEmail(e.target.value);
   };
 
@@ -16,28 +22,29 @@ function RecuperarSenhaPage() {
     e.preventDefault();
 
     try {
-      const mensagem = await RecuperarSenhaPageService.recuperarSenha(email);
+      const mensagem =
+        await RecuperarSenhaPageService.recuperarSenha(email);
 
       await Swal.fire({
-        title: "Sucesso",
+        title: t("recuperarSenha.sucesso"),
         text: mensagem,
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t("recuperarSenha.ok"),
         confirmButtonColor: "#3085d6",
       });
 
       setEmail("");
-      
       navigate("/");
-
     } catch (error: any) {
       console.error(error);
 
       await Swal.fire({
-        title: "Erro",
-        text: error?.response?.data || "Erro ao recuperar senha",
+        title: t("recuperarSenha.erro"),
+        text:
+          error?.response?.data ||
+          t("recuperarSenha.erroRecuperar"),
         icon: "error",
-        confirmButtonText: "Fechar",
+        confirmButtonText: t("recuperarSenha.fechar"),
         confirmButtonColor: "#d33",
       });
     }
@@ -45,14 +52,24 @@ function RecuperarSenhaPage() {
 
   return (
     <div className="login-container">
-      <img src={logo} alt="GeoAchados e Perdidos" className="logo-login" />
+      <img
+        src={logo}
+        alt="GeoAchados e Perdidos"
+        className="logo-login"
+      />
+
       <div className="login-box">
         <form onSubmit={handleSubmit}>
-          <h2>Recuperar Senha</h2>
+          <h2>{t("recuperarSenha.titulo")}</h2>
+
           <div>
-            <label>Email</label>
+            <label htmlFor="email">
+              {t("recuperarSenha.email")}
+            </label>
+
             <input
-						  autoComplete="off"
+              id="email"
+              autoComplete="off"
               type="email"
               name="email"
               value={email}
@@ -60,7 +77,10 @@ function RecuperarSenhaPage() {
               required
             />
           </div>
-          <button type="submit">Enviar senha temporária</button>
+
+          <button type="submit">
+            {t("recuperarSenha.enviar")}
+          </button>
         </form>
       </div>
     </div>

@@ -188,8 +188,11 @@ const limparImagens = () => {
     });
 
       onPostoCadastrado();
-      
+
+      limparImagens();      
+
       onClose();
+
 
   } catch (error) {
 
@@ -365,7 +368,7 @@ const limparImagens = () => {
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => { limparImagens(); onClose(); }}
           >
             Fechar
           </button>

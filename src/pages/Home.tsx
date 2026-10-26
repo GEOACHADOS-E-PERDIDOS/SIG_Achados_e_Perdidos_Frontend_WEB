@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Topbar from "../components/Topbar";
 import CadastroObjeto from "../components/CadastroObjeto";
@@ -12,13 +12,12 @@ import pinAchado from "../assets/icone_achado.png";
 import pinPerdido from "../assets/icone_perdido.png";
 
 import HomeService from "../services/HomeService";
-
 import type { Categoria, Posto } from "../services/HomeService";
 
 import "../styles/Home.css";
 
 function Home() {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [popupAberto, setPopupAberto] = useState(false);
   const [popupPostoAberto, setPopupPostoAberto] = useState(false);
@@ -31,32 +30,27 @@ function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const carregarPostos = async () => {
-      try {
-        const postosData =
-          await HomeService.buscarPostos();
+    try {
+      const postosData = await HomeService.buscarPostos();
+      setPostos(postosData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-        setPostos(postosData);
-
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-  // =========================
   // CARREGAR DADOS INICIAIS
-  // =========================
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        const [admin, categoriasData] =
-          await Promise.all([
-            HomeService.checarAdmin(),
-            HomeService.buscarCategorias()
-          ]);
+        const [admin, categoriasData] = await Promise.all([
+          HomeService.checarAdmin(),
+          HomeService.buscarCategorias(),
+        ]);
 
         setIsAdmin(admin);
         setCategorias(categoriasData);
-         await carregarPostos();
+
+        await carregarPostos();
       } catch (error) {
         console.error(error);
       }
@@ -65,9 +59,7 @@ function Home() {
     carregarDados();
   }, []);
 
-  // =========================
   // REFRESH GLOBAL DO MAPA
-  // =========================
   const atualizarMapa = () => {
     setRefreshKey((prev) => prev + 1);
   };
@@ -82,18 +74,18 @@ function Home() {
       {/* LEGENDA */}
       <div className="legenda-mapa">
         <div className="item-legenda">
-          <img src={pinPosto} alt="Posto" />
-          <span>Postos de Retirada</span>
+          <img src={pinPosto} alt={t("home.altPosto")} />
+          <span>{t("home.postosRetirada")}</span>
         </div>
 
         <div className="item-legenda">
-          <img src={pinAchado} alt="Achado" />
-          <span>Objetos Achados</span>
+          <img src={pinAchado} alt={t("home.altAchado")} />
+          <span>{t("home.objetosAchados")}</span>
         </div>
 
         <div className="item-legenda">
-          <img src={pinPerdido} alt="Perdido" />
-          <span>Objetos Perdidos</span>
+          <img src={pinPerdido} alt={t("home.altPerdido")} />
+          <span>{t("home.objetosPerdidos")}</span>
         </div>
       </div>
 
@@ -105,7 +97,7 @@ function Home() {
             onClick={() => setPopupPostoAberto(true)}
           >
             <div className="add-circle">📍</div>
-            <span>Cadastrar Posto</span>
+            <span>{t("home.cadastrarPosto")}</span>
           </div>
         )}
 
@@ -114,7 +106,7 @@ function Home() {
           onClick={() => setPopupAberto(true)}
         >
           <div className="add-circle">+</div>
-          <span>Cadastrar Objeto Perdido</span>
+          <span>{t("home.cadastrarObjetoPerdido")}</span>
         </div>
 
         <div
@@ -122,7 +114,7 @@ function Home() {
           onClick={() => setPopupAchadoAberto(true)}
         >
           <div className="add-circle">✔️</div>
-          <span>Cadastrar Objeto Achado</span>
+          <span>{t("home.cadastrarObjetoAchado")}</span>
         </div>
       </div>
 
@@ -141,7 +133,7 @@ function Home() {
       <CadastroPosto
         aberto={popupPostoAberto}
         onClose={() => setPopupPostoAberto(false)}
-        onPostoCadastrado={async() => {
+        onPostoCadastrado={async () => {
           await carregarPostos();
           setPopupPostoAberto(false);
           atualizarMapa();

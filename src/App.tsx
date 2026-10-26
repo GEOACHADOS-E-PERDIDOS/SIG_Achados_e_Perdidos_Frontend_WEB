@@ -20,6 +20,8 @@ import PerfilPage from "./pages/PerfilPage";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 
+import "./i18n";
+
 function App() {
 
   return (

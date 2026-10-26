@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import Topbar from "../components/Topbar";
 import Select from "react-select";
@@ -21,201 +22,114 @@ import {
 import { listarCategorias } from "../services/CategoriaService";
 
 function Objetos() {
+  const { t, i18n } = useTranslation();
 
-  const [objetos, setObjetos] =
-    useState<any[]>([]);
+  const [objetos, setObjetos] = useState<any[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+  const [buscarTermo, setBuscarTermo] = useState("");
+  const [buscaData, setBuscaData] = useState("");
+  const [dataSelecionada, setDataSelecionada] = useState<Date | null>(null);
 
-  const [categorias, setCategorias] =
-    useState<CategoriaOption[]>([]);
+  const [categoriaSelecionada, setCategoriaSelecionada] =
+    useState<CategoriaOption | null>(null);
 
-  const [buscarTermo, setBuscarTermo] =
-    useState("");
-
-  const [buscaData, setBuscaData] =
-    useState("");
-
-  const [dataSelecionada, setDataSelecionada] =
-    useState<Date | null>(null);
-
-  const [
-    categoriaSelecionada,
-    setCategoriaSelecionada,
-  ] = useState<CategoriaOption | null>(null);
-
-  const [
-    statusSelecionado,
-    setStatusSelecionado,
-  ] = useState("");
-
-  const [
-    objetoSelecionado,
-    setObjetoSelecionado,
-  ] = useState<any | null>(null);
+  const [statusSelecionado, setStatusSelecionado] = useState("");
+  const [objetoSelecionado, setObjetoSelecionado] = useState<any | null>(null);
 
   const statusOptions = [
-    {
-      value: "PERDIDO",
-      label: "Perdido",
-    },
-    {
-      value: "DISPONIVEL",
-      label: "Disponível",
-    },
-    {
-      value: "DEVOLVIDO",
-      label: "Devolvido",
-    },
-    {
-      value: "DESCARTADO",
-      label: "Descartado",
-    },
+    { value: "PERDIDO", label: t("objetos.perdido") },
+    { value: "DISPONIVEL", label: t("objetos.disponivel") },
+    { value: "DEVOLVIDO", label: t("objetos.devolvido") },
+    { value: "DESCARTADO", label: t("objetos.descartado") },
   ];
 
-  // =========================
-  // NORMALIZA IMAGENS
-  // =========================
+  // NORMALIZAR IMAGENS
+  const montarObjetoComImagens = async (obj: any) => {
+    const caminhos: string[] = obj.caminhosImagens ?? [];
 
-  const montarObjetoComImagens =
-    async (obj: any) => {
+    const imagens =
+      caminhos.length > 0
+        ? await buscarImagens(caminhos)
+        : [];
 
-      const caminhos: string[] =
-        obj.caminhosImagens ?? [];
-
-      const imagens =
-        caminhos.length > 0
-          ? await buscarImagens(caminhos)
-          : [];
-
-      return {
-        ...obj,
-        caminhosImagens: imagens,
-      };
+    return {
+      ...obj,
+      caminhosImagens: imagens,
     };
+  };
 
-  // =========================
   // CARREGAR OBJETOS
-  // =========================
+  const carregarObjetos = async () => {
+    try {
+      const data = await listarObjetos();
 
-  const carregarObjetos =
-    async () => {
+      const objs = await Promise.all(
+        data.map((obj: any) => montarObjetoComImagens(obj))
+      );
 
-      try {
+      setObjetos(objs);
+    } catch (err) {
+      console.error(t("objetos.erroCarregar"), err);
+    }
+  };
 
-        const data =
-          await listarObjetos();
-
-        const objs =
-          await Promise.all(
-            data.map((obj: any) =>
-              montarObjetoComImagens(obj)
-            )
-          );
-
-        setObjetos(objs);
-
-      } catch (err) {
-
-        console.error(
-          "Erro ao carregar objetos:",
-          err
-        );
-      }
-    };
-
-  // =========================
   // BUSCAR
-  // =========================
+  const handleBuscar = async () => {
+    try {
+      const data = await buscarObjetos(
+        buscarTermo,
+        buscaData,
+        categoriaSelecionada?.value,
+        statusSelecionado
+      );
 
-  const handleBuscar =
-    async () => {
+      const objs = await Promise.all(
+        data.map((obj: any) => montarObjetoComImagens(obj))
+      );
 
-      try {
+      setObjetos(objs);
+    } catch (err) {
+      console.error(t("objetos.erroBuscar"), err);
+    }
+  };
 
-        const data =
-          await buscarObjetos(
-            buscarTermo,
-            buscaData,
-            categoriaSelecionada?.value,
-            statusSelecionado
-          );
+  // LIMPAR FILTROS
+  const handleLimpar = async () => {
+    setBuscarTermo("");
+    setBuscaData("");
+    setDataSelecionada(null);
+    setCategoriaSelecionada(null);
+    setStatusSelecionado("");
 
-        const objs =
-          await Promise.all(
-            data.map((obj: any) =>
-              montarObjetoComImagens(obj)
-            )
-          );
+    await carregarObjetos();
+  };
 
-        setObjetos(objs);
-
-      } catch (err) {
-
-        console.error(
-          "Erro ao buscar objetos:",
-          err
-        );
-      }
-    };
-
-  // =========================
-  // LIMPAR
-  // =========================
-
-  const handleLimpar =
-    async () => {
-
-      setBuscarTermo("");
-
-      setBuscaData("");
-
-      setDataSelecionada(null);
-
-      setCategoriaSelecionada(null);
-
-      setStatusSelecionado("");
-
-      await carregarObjetos();
-    };
-
-
-
-  // =========================
-  // INIT
-  // =========================
-
+  // INICIALIZAÇÃO
   useEffect(() => {
-
     carregarObjetos();
 
     listarCategorias()
       .then(setCategorias)
       .catch((err) =>
-        console.error(
-          "Erro ao carregar categorias:",
-          err
-        )
+        console.error(t("objetos.erroCategorias"), err)
       );
 
+    // Recarrega as categorias quando o idioma muda,
+    // caso os rótulos sejam traduzidos no frontend.
   }, []);
 
   return (
     <div className="home-page">
-
       <Topbar />
 
-
       <div className="filtro-container">
-
         <input
-					autoComplete="off"
+          autoComplete="off"
           className="input-busca"
           type="text"
-          placeholder="Buscar por termo"
+          placeholder={t("objetos.buscarTermo")}
           value={buscarTermo}
-          onChange={(e) =>
-            setBuscarTermo(e.target.value)
-          }
-
+          onChange={(e) => setBuscarTermo(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleBuscar();
@@ -223,26 +137,24 @@ function Objetos() {
           }}
         />
 
-        <div className="filtro-data filtro-data-objetos"
-
+        <div
+          className="filtro-data filtro-data-objetos"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleBuscar();
             }
-          }}>
-
+          }}
+        >
           <DataInput
             selected={dataSelecionada}
             onChange={(date) => {
               setDataSelecionada(date);
 
               setBuscaData(
-                date
-                  ? date.toISOString().split("T")[0]
-                  : ""
+                date ? date.toISOString().split("T")[0] : ""
               );
             }}
-            placeholder="Buscar por data"
+            placeholder={t("objetos.buscarData")}
           />
         </div>
 
@@ -250,11 +162,14 @@ function Objetos() {
           <Select
             options={categorias}
             value={categoriaSelecionada}
-            onChange={(option) =>
-              setCategoriaSelecionada(option)
-            }
-            placeholder="Categoria"
+            onChange={(option) => setCategoriaSelecionada(option)}
+            placeholder={t("objetos.categoria")}
             isClearable
+            noOptionsMessage={() =>
+              i18n.language.startsWith("pt")
+                ? "Nenhuma opção disponível"
+                : "No options available"
+            }
           />
         </div>
 
@@ -263,105 +178,66 @@ function Objetos() {
             options={statusOptions}
             value={
               statusOptions.find(
-                (opt) =>
-                  opt.value === statusSelecionado
+                (opt) => opt.value === statusSelecionado
               ) || null
             }
             onChange={(option) =>
-              setStatusSelecionado(
-                option?.value || ""
-              )
+              setStatusSelecionado(option?.value || "")
             }
-            placeholder="Status"
+            placeholder={t("objetos.status")}
             isClearable
           />
         </div>
 
-        <button
-          className="botao-filtro"
-          onClick={handleBuscar}
-        >
-          Buscar
+        <button className="botao-filtro" onClick={handleBuscar}>
+          {t("objetos.buscar")}
         </button>
 
-        <button
-          className="botao-filtro"
-          onClick={handleLimpar}
-        >
-          Limpar
+        <button className="botao-filtro" onClick={handleLimpar}>
+          {t("objetos.limpar")}
         </button>
       </div>
 
-      {/* LISTA */}
-
+      {/* LISTA DE OBJETOS */}
       <div className="lista-objetos">
-
         {objetos.map((obj) => (
-
           <ObjetoCard
             key={obj.id}
-
             obj={{
               ...obj,
-              imagemUrl:
-                obj.caminhosImagens?.[0]
-                ?? null,
+              imagemUrl: obj.caminhosImagens?.[0] ?? null,
             }}
-
-
-            onClick={() =>
-              setObjetoSelecionado(obj)
-            }
+            onClick={() => setObjetoSelecionado(obj)}
           />
-
         ))}
-
       </div>
 
-      {/* MODAL */}
-
+      {/* MODAL DE DETALHES */}
       <Modal
-        isOpen={
-          !!objetoSelecionado
-        }
-
-        onRequestClose={() =>
-          setObjetoSelecionado(
-            null
-          )
-        }
-
-        contentLabel="Detalhes do Objeto"
-
+        isOpen={!!objetoSelecionado}
+        onRequestClose={() => setObjetoSelecionado(null)}
+        contentLabel={t("objetos.detalhesObjeto")}
         style={{
           content: {
             width: "700px",
             maxWidth: "90%",
-            inset:
-              "50% auto auto 50%",
-            transform:
-              "translate(-50%, -50%)",
+            inset: "50% auto auto 50%",
+            transform: "translate(-50%, -50%)",
             borderRadius: "10px",
             padding: "50px",
           },
-
           overlay: {
-            backgroundColor:
-              "rgba(0,0,0,0.6)",
+            backgroundColor: "rgba(0,0,0,0.6)",
           },
         }}
       >
-
         {objetoSelecionado && (
           <ObjetoDetalhe
             obj={objetoSelecionado}
-            onClose={() => setObjetoSelecionado(null)} // Adicione esta linha
+            onClose={() => setObjetoSelecionado(null)}
           />
         )}
-
-
       </Modal>
-
     </div>
   );
 }

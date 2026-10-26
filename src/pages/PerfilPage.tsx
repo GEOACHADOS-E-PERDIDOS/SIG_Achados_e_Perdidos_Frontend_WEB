@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 
 import Topbar from "../components/Topbar";
@@ -16,7 +17,6 @@ import {
 } from "../services/PerfilPageService";
 
 import { buscarImagens } from "../services/ObjetoPageService";
-
 import { listarPostosService } from "../services/PostosPageService";
 
 import "../styles/PerfilPage.css";
@@ -44,36 +44,24 @@ type Objeto = {
   nome: string;
   descricao: string;
   status: string;
-
   postoId?: number | null;
-
   imagens?: string[];
   caminhosImagens?: string[];
-
   imagemUrl?: string | null;
-
   enderecoEncontro?: string;
   dataEncontro?: string;
-
   latitudeEncontro?: number;
   longitudeEncontro?: number;
-
   categorias?: Categoria[];
 };
 
 export default function PerfilPage() {
-  const [usuario, setUsuario] =
-    useState<Usuario | null>(null);
+  const { t } = useTranslation();
 
-  const [objetos, setObjetos] =
-    useState<Objeto[]>([]);
-
-  const [postos, setPostos] =
-    useState<Posto[]>([]);
-
-  const [editando, setEditando] =
-    useState(false);
-
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [objetos, setObjetos] = useState<Objeto[]>([]);
+  const [postos, setPostos] = useState<Posto[]>([]);
+  const [editando, setEditando] = useState(false);
   const [objetoEditando, setObjetoEditando] =
     useState<Objeto | null>(null);
 
@@ -82,749 +70,501 @@ export default function PerfilPage() {
     email: "",
   });
 
-  // =========================
   // CARREGAR PERFIL
-  // =========================
-
   const carregarUsuario = async () => {
     try {
-      const res =
-        await buscarMeuPerfil();
+      const res = await buscarMeuPerfil();
 
       setUsuario(res);
-
       await carregarObjetos(res);
 
       setForm({
         name: res.name || "",
         email: res.email || "",
       });
-
     } catch (err) {
       console.error(err);
 
-      Swal.fire({
-        title: "Erro",
-        text: "Não foi possível carregar o perfil.",
+      await Swal.fire({
+        title: t("perfil.erro"),
+        text: t("perfil.perfilCarregadoErro"),
         icon: "error",
       });
     }
   };
 
-  // =========================
   // CARREGAR POSTOS
-  // =========================
-
   const carregarPostos = async () => {
     try {
-      const data =
-        await listarPostosService();
-
-      console.log("POSTOS:", data);
-
+      const data = await listarPostosService();
       setPostos(data);
-
     } catch (err) {
-      console.error(
-        "Erro ao carregar postos:",
-        err
-      );
+      console.error("Erro ao carregar postos:", err);
     }
   };
 
-  // =========================
   // MONTAR OBJETO COM IMAGEM
-  // =========================
+  const montarObjetoComImagens = async (
+    obj: Objeto
+  ): Promise<Objeto> => {
+    try {
+      const caminhos: string[] =
+        obj.caminhosImagens ?? obj.imagens ?? [];
 
-  const montarObjetoComImagens =
-    async (obj: Objeto): Promise<Objeto> => {
-      try {
-        const caminhos: string[] =
-          obj.caminhosImagens ??
-          obj.imagens ??
-          [];
+      let imagemUrl: string | null = null;
 
-        let imagemUrl: string | null =
-          null;
-
-        if (caminhos.length > 0) {
-          const imagens =
-            await buscarImagens(
-              caminhos
-            );
-
-          imagemUrl =
-            imagens?.[0] ?? null;
-        }
-
-        return {
-          ...obj,
-          imagemUrl,
-        };
-
-      } catch (err) {
-        console.error(
-          "Erro ao carregar imagem:",
-          err
-        );
-
-        return {
-          ...obj,
-          imagemUrl: null,
-        };
+      if (caminhos.length > 0) {
+        const imagens = await buscarImagens(caminhos);
+        imagemUrl = imagens?.[0] ?? null;
       }
-    };
 
-  // =========================
+      return {
+        ...obj,
+        imagemUrl,
+      };
+    } catch (err) {
+      console.error("Erro ao carregar imagem:", err);
+
+      return {
+        ...obj,
+        imagemUrl: null,
+      };
+    }
+  };
+
   // CARREGAR OBJETOS
-  // =========================
+  const carregarObjetos = async (perfil?: Usuario) => {
+    try {
+      let res;
 
-  const carregarObjetos =
-    async (perfil?: Usuario) => {
-      try {
-        let res;
-
-          if (perfil?.isPosto && perfil?.postoId
-          ) {
-            console.log("🏢 Buscando objetos do posto", perfil.postoId);
-
-            res = await buscarObjetosDoPosto(perfil.postoId);
-          } else {
-
-            console.log("👤 Buscando meus objetos");
-
-            res = await buscarMeusObjetos();
-          }
-
-        console.log(
-          "OBJETOS VINDOS DO BACKEND:",
-          res
-        );
-
-        const objetosTratados =
-          await Promise.all(
-            res.map((obj: Objeto) =>
-              montarObjetoComImagens(obj)
-            )
-          );
-
-        console.log(
-          "OBJETOS TRATADOS:",
-          objetosTratados
-        );
-
-        setObjetos(objetosTratados);
-
-      } catch (err) {
-        console.error(
-          "Erro ao carregar objetos:",
-          err
-        );
+      if (perfil?.isPosto && perfil?.postoId) {
+        res = await buscarObjetosDoPosto(perfil.postoId);
+      } else {
+        res = await buscarMeusObjetos();
       }
-    };
 
-  // =========================
-  // INIT
-  // =========================
+      const objetosTratados = await Promise.all(
+        res.map((obj: Objeto) =>
+          montarObjetoComImagens(obj)
+        )
+      );
 
+      setObjetos(objetosTratados);
+    } catch (err) {
+      console.error("Erro ao carregar objetos:", err);
+    }
+  };
+
+  // INICIALIZAÇÃO
   useEffect(() => {
     carregarUsuario();
     carregarPostos();
   }, []);
 
-  // =========================
-  // FORM
-  // =========================
-
+  // FORMULÁRIO DE PERFIL
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setForm({
       ...form,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  // =========================
   // SALVAR PERFIL
-  // =========================
-
   const salvar = async () => {
     try {
       await atualizarMeuPerfil(form);
 
       await Swal.fire({
-        title: "Sucesso!",
-        text: "Perfil atualizado.",
+        title: t("perfil.sucesso"),
+        text: t("perfil.perfilAtualizado"),
         icon: "success",
       });
 
       setEditando(false);
-
       carregarUsuario();
-
     } catch (err) {
-      Swal.fire({
-        title: "Erro",
-        text:
-          "Não foi possível atualizar.",
+      await Swal.fire({
+        title: t("perfil.erro"),
+        text: t("perfil.perfilAtualizarErro"),
         icon: "error",
       });
     }
   };
 
-  // =========================
   // ALTERAR STATUS
-  // =========================
-
   const alterarStatus = async (
     id: number,
     statusAtual: string
   ) => {
+    const { value: novoStatus } = await Swal.fire({
+      title: t("perfil.alterarStatus"),
+      input: "select",
+      inputOptions: {
+        DISPONIVEL: t("perfil.disponivel"),
+        DEVOLVIDO: t("perfil.devolvido"),
+        PERDIDO: t("perfil.perdido"),
+        DESCARTADO: t("perfil.descartado"),
+      },
+      inputValue: statusAtual,
+      showCancelButton: true,
+      confirmButtonText: t("perfil.salvar"),
+      cancelButtonText: t("perfil.cancelar"),
+    });
 
-
-  console.log("🚀 ALTERAR STATUS CHAMADO");
-  console.log("id =", id);
-  console.log("statusAtual =", statusAtual);
-    const { value: novoStatus } =
-      await Swal.fire({
-        title:
-          "Alterar status",
-
-        input: "select",
-
-        inputOptions: {
-          DISPONIVEL:
-            "DISPONIVEL",
-
-          DEVOLVIDO:
-            "DEVOLVIDO",
-
-          PERDIDO:
-            "PERDIDO",
-
-          DESCARTADO:
-            "DESCARTADO",
-        },
-
-        inputValue:
-          statusAtual,
-
-        showCancelButton: true,
-      });
-        console.log("🚀 NOVO STATUS:", novoStatus);
     if (!novoStatus) return;
 
     try {
-      await atualizarStatusObjeto(
-        id,
-        novoStatus
-      );
+      await atualizarStatusObjeto(id, novoStatus);
 
-
-      Swal.fire({
-        title: "Sucesso",
-        text:
-          "Status atualizado.",
+      await Swal.fire({
+        title: t("perfil.sucesso"),
+        text: t("perfil.statusAtualizado"),
         icon: "success",
       });
 
       carregarObjetos();
-
     } catch (err) {
-      Swal.fire({
-        title: "Erro",
-        text:
-          "Não foi possível atualizar.",
+      await Swal.fire({
+        title: t("perfil.erro"),
+        text: t("perfil.statusAtualizarErro"),
         icon: "error",
       });
     }
   };
 
-  // =========================
   // EXCLUIR OBJETO
-  // =========================
+  const deletarObjeto = async (id: number) => {
+    const confirmacao = await Swal.fire({
+      title: t("perfil.excluirObjeto"),
+      text: t("perfil.excluirAviso"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: t("perfil.excluido"),
+      cancelButtonText: t("perfil.cancelar"),
+    });
 
-  const deletarObjeto = async (
-    id: number
-  ) => {
-    const confirmacao =
-      await Swal.fire({
-        title:
-          "Excluir objeto?",
-
-        text:
-          "Essa ação não poderá ser desfeita.",
-
-        icon: "warning",
-
-        showCancelButton: true,
-      });
-
-    if (
-      !confirmacao.isConfirmed
-    ) return;
+    if (!confirmacao.isConfirmed) return;
 
     try {
       await excluirObjeto(id);
 
-      Swal.fire({
-        title: "Excluído",
+      await Swal.fire({
+        title: t("perfil.excluido"),
         icon: "success",
       });
 
       carregarObjetos();
-
     } catch (err) {
-      Swal.fire({
-        title: "Erro",
-        text:
-          "Não foi possível excluir.",
+      await Swal.fire({
+        title: t("perfil.erro"),
+        text: t("perfil.excluirErro"),
         icon: "error",
       });
     }
   };
 
-  // =========================
-  // SALVAR OBJETO
-  // =========================
-
+  // SALVAR OBJETO EDITADO
   const salvarObjeto = async () => {
     if (!objetoEditando) return;
 
     try {
-      console.log(
-        "SALVANDO OBJETO:",
-        objetoEditando
-      );
-
       const isAchado =
         objetoEditando.postoId !== null &&
         objetoEditando.postoId !== undefined;
 
       const payload = isAchado
         ? {
-            nome:
-              objetoEditando.nome,
-
-            descricao:
-              objetoEditando.descricao,
-
+            nome: objetoEditando.nome,
+            descricao: objetoEditando.descricao,
             enderecoEncontro:
               objetoEditando.enderecoEncontro || "",
-
             dataEncontro:
               objetoEditando.dataEncontro ||
-                new Date()
-                    .toISOString()
-                    .split("T")[0],
-
-            postoRetiradaId:
-              objetoEditando.postoId,
-
+              new Date().toISOString().split("T")[0],
+            postoRetiradaId: objetoEditando.postoId,
             latitudeAchado:
               objetoEditando.latitudeEncontro,
-
             longitudeAchado:
               objetoEditando.longitudeEncontro,
-
             categorias:
               objetoEditando.categorias?.map(
                 (c) => c.id
               ) || [],
           }
-
         : {
-            nome:
-              objetoEditando.nome,
-
-            descricao:
-              objetoEditando.descricao,
-
+            nome: objetoEditando.nome,
+            descricao: objetoEditando.descricao,
             enderecoPerdido:
               objetoEditando.enderecoEncontro || "",
-
             dataPerdido:
               objetoEditando.dataEncontro || "",
-
-            latitude:
-              objetoEditando.latitudeEncontro,
-
-            longitude:
-              objetoEditando.longitudeEncontro,
-
+            latitude: objetoEditando.latitudeEncontro,
+            longitude: objetoEditando.longitudeEncontro,
             categorias:
               objetoEditando.categorias?.map(
                 (c) => c.id
               ) || [],
           };
 
-      console.log(
-        "PAYLOAD:",
-        payload
-      );
-
-      await atualizarObjeto(
-        objetoEditando.id,
-        payload
-      );
+      await atualizarObjeto(objetoEditando.id, payload);
 
       await Swal.fire({
-        title: "Sucesso",
-        text:
-          "Objeto atualizado com sucesso.",
+        title: t("perfil.sucesso"),
+        text: t("perfil.objetoAtualizado"),
         icon: "success",
       });
 
       setObjetoEditando(null);
-
       carregarObjetos();
-
     } catch (err) {
       console.error(err);
 
-      Swal.fire({
-        title: "Erro",
-        text:
-          "Não foi possível atualizar o objeto.",
+      await Swal.fire({
+        title: t("perfil.erro"),
+        text: t("perfil.objetoAtualizarErro"),
         icon: "error",
       });
     }
   };
 
   if (!usuario) {
-    return <p>Carregando...</p>;
+    return <p>{t("perfil.carregando")}</p>;
   }
 
   return (
     <div className="home-page">
       <Topbar />
 
+      {/* PERFIL */}
       <div className="perfil-main-container">
-
-        {/* PERFIL */}
-
         <div className="perfil-card-container">
-
           <div className="perfil-card-header">
             <h2 className="perfil-titulo">
-              Meu Perfil
+              {t("perfil.perfilTitulo")}
             </h2>
 
             <button
               type="button"
               className="perfil-btn-pequeno"
-              onClick={() =>
-                setEditando(true)
-              }
+              onClick={() => setEditando(true)}
             >
-              Editar Perfil
+              {t("perfil.editarPerfil")}
             </button>
           </div>
 
           <div className="perfil-info-content">
             <p>
-              <strong>Nome:</strong>{" "}
+              <strong>{t("perfil.nome")}:</strong>{" "}
               {usuario.name}
             </p>
 
             <p>
-              <strong>Email:</strong>{" "}
+              <strong>{t("perfil.email")}:</strong>{" "}
               {usuario.email}
             </p>
           </div>
-
         </div>
 
         {/* OBJETOS */}
-
         <div
           className="objetos-section"
-          style={{
-            width: "100%",
-          }}
+          style={{ width: "100%" }}
         >
-          <h2
-            style={{
-              marginBottom: "25px",
-            }}
-          >
-            Meus Objetos
+          <h2 style={{ marginBottom: "25px" }}>
+            {t("perfil.meusObjetos")}
           </h2>
 
           <div className="objetos-grid-original">
-
             {objetos.map((obj) => (
-
-                <ObjetoCardPerfil
-                  key={obj.id}
-                  obj={{
-                    ...obj,
-                    imagemUrl:
-                      obj.imagemUrl,
-
-                    enderecoEncontro:
-                      obj.enderecoEncontro ||
-                      "Não informado",
-
-                    dataEncontro:
-                      obj.dataEncontro || "",
-                  }}
-
-                  isPosto={usuario?.isPosto}
-                  onDelete={
-                    deletarObjeto
-                  }
-
-                  onEditStatus={
-                    alterarStatus
-                  }
-
-                  onEditObjeto={(obj) => {
-                    console.log(
-                      "OBJETO AO ABRIR EDIÇÃO:",
-                      obj
-                    );
-
-                    setObjetoEditando({
-                      ...(obj as any),
-
-                      categorias:
-                        (obj.categorias as any) || [],
-                    });
-                  }}
+              <ObjetoCardPerfil
+                key={obj.id}
+                obj={{
+                  ...obj,
+                  imagemUrl: obj.imagemUrl,
+                  enderecoEncontro:
+                    obj.enderecoEncontro ||
+                    t("perfil.naoInformado"),
+                  dataEncontro: obj.dataEncontro || "",
+                }}
+                isPosto={usuario.isPosto}
+                onDelete={deletarObjeto}
+                onEditStatus={alterarStatus}
+                onEditObjeto={(obj) => {
+                  setObjetoEditando({
+                    ...(obj as any),
+                    categorias:
+                      (obj.categorias as any) || [],
+                  });
+                }}
               />
-
             ))}
-
           </div>
-
         </div>
-
       </div>
 
-      {/* MODAL PERFIL */}
-
+      {/* MODAL EDITAR PERFIL */}
       {editando &&
         createPortal(
-
           <div
             className="perfil-modal-overlay"
-            onClick={() =>
-              setEditando(false)
-            }
+            onClick={() => setEditando(false)}
           >
-
             <div
               className="perfil-edit-modal"
-              onClick={(e) =>
-                e.stopPropagation()
-              }
+              onClick={(e) => e.stopPropagation()}
             >
-
-              <h2>
-                Editar Perfil
-              </h2>
+              <h2>{t("perfil.editarPerfil")}</h2>
 
               <input
-						    autoComplete="off"
+                autoComplete="off"
                 type="text"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Nome"
+                placeholder={t("perfil.nome")}
               />
+
               <input
-						    autoComplete="off"
+                autoComplete="off"
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="Email"
+                placeholder={t("perfil.email")}
               />
+
               <div className="perfil-edit-buttons">
                 <button
                   className="perfil-salvar-btn"
                   onClick={salvar}
                 >
-                  Salvar
+                  {t("perfil.salvar")}
                 </button>
 
                 <button
                   className="perfil-cancelar-btn"
-                  onClick={() =>
-                    setEditando(false)
-                  }
+                  onClick={() => setEditando(false)}
                 >
-                  Cancelar
+                  {t("perfil.cancelar")}
                 </button>
-
               </div>
-
             </div>
-
           </div>,
-
           document.body
         )}
 
-      {/* MODAL OBJETO */}
-
+      {/* MODAL EDITAR OBJETO */}
       {objetoEditando &&
         createPortal(
-
           <div
             className="perfil-modal-overlay"
-            onClick={() =>
-              setObjetoEditando(null)
-            }
+            onClick={() => setObjetoEditando(null)}
           >
-
             <div
               className="perfil-edit-modal"
-              onClick={(e) =>
-                e.stopPropagation()
-              }
+              onClick={(e) => e.stopPropagation()}
             >
-
-              <h2>
-                Editar Objeto
-              </h2>
+              <h2>{t("perfil.editarObjeto")}</h2>
 
               <div className="perfil-input-group">
-
-                <label>
-                  Nome do objeto
-                </label>
+                <label>{t("perfil.nomeObjeto")}</label>
 
                 <input
-						autoComplete="off"
-                  value={
-                    objetoEditando.nome
-                  }
-
+                  autoComplete="off"
+                  value={objetoEditando.nome}
                   onChange={(e) =>
                     setObjetoEditando({
                       ...objetoEditando,
-
-                      nome:
-                        e.target.value,
+                      nome: e.target.value,
                     })
                   }
-
-                  placeholder="Nome"
+                  placeholder={t("perfil.nome")}
                 />
-
               </div>
 
               <div className="perfil-input-group">
-
-                <label>
-                  Descrição
-                </label>
+                <label>{t("perfil.descricao")}</label>
 
                 <textarea
-                  value={
-                    objetoEditando.descricao
-                  }
-
+                  value={objetoEditando.descricao}
                   onChange={(e) =>
                     setObjetoEditando({
                       ...objetoEditando,
-
-                      descricao:
-                        e.target.value,
+                      descricao: e.target.value,
                     })
                   }
-
-                  placeholder="Descrição"
-
+                  placeholder={t("perfil.descricao")}
                   style={{
                     minHeight: "120px",
                     resize: "none",
                   }}
                 />
-
               </div>
 
-              {(objetoEditando.postoId !== null &&
-                objetoEditando.postoId !== undefined) && (
-                <div className="perfil-input-group">
+              {objetoEditando.postoId !== null &&
+                objetoEditando.postoId !== undefined && (
+                  <div className="perfil-input-group">
                     <label>
-                    Posto de retirada
+                      {t("perfil.postoRetirada")}
                     </label>
+
                     <select
-                    value={
-                        objetoEditando.postoId
-                    }
-                    onChange={(e) =>
+                      value={objetoEditando.postoId}
+                      onChange={(e) =>
                         setObjetoEditando({
-                        ...objetoEditando,
-                        postoId:
-                            Number(
-                            e.target.value
-                            ),
+                          ...objetoEditando,
+                          postoId: Number(e.target.value),
                         })
-                    }
+                      }
                     >
-
-                    {postos
+                      {postos
                         .filter((posto) => {
-                        const ehEletronico =
+                          const ehEletronico =
                             objetoEditando.categorias?.some(
-                            (c) =>
-                                c.nome === "Eletrônicos"
+                              (c) => c.nome === "Eletrônicos"
                             );
-                        if (ehEletronico) {
-                            return posto.nome
-                            .toLowerCase()
-                            .includes("delegacia");
-                        }
 
-                        return true;
+                          if (ehEletronico) {
+                            return posto.nome
+                              .toLowerCase()
+                              .includes("delegacia");
+                          }
+
+                          return true;
                         })
                         .map((posto) => (
-                        <option
+                          <option
                             key={posto.id}
                             value={posto.id}
-                        >
+                          >
                             {posto.nome}
-                        </option>
-                    ))}
+                          </option>
+                        ))}
                     </select>
-                </div>
+                  </div>
                 )}
 
               <div className="perfil-edit-buttons">
-
                 <button
                   className="perfil-salvar-btn"
-                  onClick={
-                    salvarObjeto
-                  }
+                  onClick={salvarObjeto}
                 >
-                  Salvar
+                  {t("perfil.salvar")}
                 </button>
 
                 <button
                   className="perfil-cancelar-btn"
-                  onClick={() =>
-                    setObjetoEditando(null)
-                  }
+                  onClick={() => setObjetoEditando(null)}
                 >
-                  Cancelar
+                  {t("perfil.cancelar")}
                 </button>
-
               </div>
-
             </div>
-
           </div>,
-
           document.body
         )}
-
     </div>
   );
 }

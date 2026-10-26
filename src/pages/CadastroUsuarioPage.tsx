@@ -1,26 +1,32 @@
-import { useState } from "react"
-import { createUser } from "../services/CadastroUsuarioService"
-import type { User } from "../types/User"
-import { useNavigate } from "react-router-dom"
-import logo from '../assets/LOGO_geoachados.png';
+
+import { useState } from "react";
+import { createUser } from "../services/CadastroUsuarioService";
+import type { User } from "../types/User";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import logo from "../assets/LOGO_geoachados.png";
 import Swal from "sweetalert2";
 
 function CadastroUsuarioPage() {
-  const navigate = useNavigate() // hook para navegação
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [user, setUser] = useState<User>({
     name: "",
     email: "",
-    senha: ""
-  })
+    senha: "",
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value, type, checked } = e.target;
+
     setUser({
       ...user,
-      [name]: type === "checkbox" ? checked : value
-    })
-  }
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +35,10 @@ function CadastroUsuarioPage() {
       await createUser(user);
 
       await Swal.fire({
-        title: "Sucesso",
-        text: "Usuário cadastrado com sucesso!",
+        title: t("cadastroUsuario.sucesso"),
+        text: t("cadastroUsuario.sucessoMensagem"),
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t("cadastroUsuario.ok"),
         confirmButtonColor: "#3085d6",
       });
 
@@ -42,17 +48,15 @@ function CadastroUsuarioPage() {
         senha: "",
       });
 
-      // Redireciona para página inicial
       navigate("/");
-
     } catch (error) {
       console.error(error);
 
       await Swal.fire({
-        title: "Erro",
-        text: "Erro ao cadastrar usuário",
+        title: t("cadastroUsuario.erro"),
+        text: t("cadastroUsuario.erroMensagem"),
         icon: "error",
-        confirmButtonText: "OK",
+        confirmButtonText: t("cadastroUsuario.ok"),
         confirmButtonColor: "#d33",
       });
     }
@@ -60,7 +64,6 @@ function CadastroUsuarioPage() {
 
   return (
     <div className="login-container">
-
       <img
         src={logo}
         alt="GeoAchados e Perdidos"
@@ -69,12 +72,16 @@ function CadastroUsuarioPage() {
 
       <div className="login-box">
         <form onSubmit={handleSubmit}>
-          <h2>Cadastro de Usuário</h2>
+          <h2>{t("cadastroUsuario.titulo")}</h2>
 
           <div>
-            <label>Nome</label>
+            <label htmlFor="name">
+              {t("cadastroUsuario.nome")}
+            </label>
+
             <input
-						  autoComplete="off"
+              id="name"
+              autoComplete="off"
               type="text"
               name="name"
               value={user.name}
@@ -84,9 +91,13 @@ function CadastroUsuarioPage() {
           </div>
 
           <div>
-            <label>Email</label>
+            <label htmlFor="email">
+              {t("cadastroUsuario.email")}
+            </label>
+
             <input
-						  autoComplete="off"
+              id="email"
+              autoComplete="off"
               type="email"
               name="email"
               value={user.email}
@@ -96,9 +107,13 @@ function CadastroUsuarioPage() {
           </div>
 
           <div>
-            <label>Senha</label>
+            <label htmlFor="senha">
+              {t("cadastroUsuario.senha")}
+            </label>
+
             <input
-						  autoComplete="off"
+              id="senha"
+              autoComplete="off"
               type="password"
               name="senha"
               value={user.senha}
@@ -108,12 +123,12 @@ function CadastroUsuarioPage() {
           </div>
 
           <button type="submit">
-            Cadastrar
+            {t("cadastroUsuario.cadastrar")}
           </button>
         </form>
       </div>
-
     </div>
   );
 }
-export default CadastroUsuarioPage
+
+export default CadastroUsuarioPage;
