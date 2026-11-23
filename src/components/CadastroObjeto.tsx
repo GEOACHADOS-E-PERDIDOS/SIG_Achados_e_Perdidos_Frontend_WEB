@@ -1,4 +1,6 @@
+
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import Select from "react-select";
 import type { MultiValue } from "react-select";
@@ -20,9 +22,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import "../styles/pop_up.css";
 
-
-import Swal from 'sweetalert2'
-
+import Swal from "sweetalert2";
 
 type Props = {
   aberto: boolean;
@@ -62,6 +62,8 @@ export default function CadastroObjeto({
   categorias,
   onObjetoCadastrado,
 }: Props) {
+  const { t, i18n } = useTranslation();
+
   const [objeto, setObjeto] = useState({
     nome: "",
     descricao: "",
@@ -121,10 +123,7 @@ export default function CadastroObjeto({
     setCategoriasSelecionadas(selecionadas.map((cat) => cat.value));
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
-
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
@@ -134,7 +133,6 @@ export default function CadastroObjeto({
       : "";
 
     try {
-
       await cadastrarObjeto({
         objeto: {
           ...objeto,
@@ -146,10 +144,10 @@ export default function CadastroObjeto({
       });
 
       await Swal.fire({
-        title: "Sucesso",
-        text: "Objeto cadastrado com sucesso!",
+        title: t("cadastroObjeto.sucesso"),
+        text: t("cadastroObjeto.sucessoTexto"),
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t("cadastroObjeto.ok"),
         confirmButtonColor: "#3085d6",
       });
 
@@ -158,19 +156,17 @@ export default function CadastroObjeto({
       limparFormulario();
 
       onClose();
-
     } catch (error) {
-
       console.error(error);
 
       Swal.fire({
-        title: "Erro",
-        text: "Erro ao cadastrar objeto",
+        title: t("cadastroObjeto.erro"),
+        text: t("cadastroObjeto.erroTexto"),
         icon: "error",
-        confirmButtonText: "Fechar",
+        confirmButtonText: t("cadastroObjeto.fechar"),
         confirmButtonColor: "#d33",
         customClass: {
-          popup: "swal-popup"
+          popup: "swal-popup",
         },
       });
     }
@@ -184,27 +180,27 @@ export default function CadastroObjeto({
   return (
     <div className="popup-overlay">
       <div className="popup-box">
-        <h2>Cadastrar Objeto Perdido</h2>
+        <h2>{t("cadastroObjeto.titulo")}</h2>
 
         <form onSubmit={handleSubmit}>
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="nome"
-            placeholder="Nome *"
+            placeholder={t("cadastroObjeto.nome")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="descricao"
-            placeholder="Descrição *"
+            placeholder={t("cadastroObjeto.descricao")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="enderecoPerdido"
-            placeholder="Região ou ponto de referência do local da perda *"
+            placeholder={t("cadastroObjeto.enderecoPerdido")}
             onChange={handleChange}
           />
 
@@ -219,31 +215,34 @@ export default function CadastroObjeto({
                 zIndex: 9999,
               }),
             }}
-            placeholder="Categorias *"
+            placeholder={t("cadastroObjeto.categorias")}
+            noOptionsMessage={() =>
+              i18n.language === "en-US"
+                ? "No options found"
+                : "Nenhuma opção encontrada"
+            }
           />
 
           <DataInput
             selected={dataPerdido}
             onChange={setDataPerdido}
           />
+
           <p className="campo-obrigatorio-info">
-             <span>*</span> Campos Obrigatórios
+            <span>*</span> {t("cadastroObjeto.camposObrigatorios")}
           </p>
 
-          <p>Clique no mapa para indicar a região onde o objeto foi perdido:</p>
+          <p>{t("cadastroObjeto.instrucaoMapa")}</p>
 
           <MapContainer
             center={[-15.7939, -47.8828]}
             zoom={13}
             className="map-container"
           >
-
             <LayersControl position="topright">
-
-              {/* SATÉLITE (PADRÃO) */}
               <LayersControl.BaseLayer
                 checked
-                name="Satélite"
+                name={t("cadastroObjeto.satelite")}
               >
                 <TileLayer
                   url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -251,56 +250,54 @@ export default function CadastroObjeto({
                 />
               </LayersControl.BaseLayer>
 
-              {/* MAPA NORMAL */}
               <LayersControl.BaseLayer
-                name="Mapa"
+                name={t("cadastroObjeto.mapa")}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution="© OpenStreetMap"
                 />
               </LayersControl.BaseLayer>
-
             </LayersControl>
 
-            <SelecionadorMapa
-              setObjeto={setObjeto}
-            />
+            <SelecionadorMapa setObjeto={setObjeto} />
 
-            {objeto.latitude &&
-              objeto.longitude && (
-                <Marker
-                  position={[
-                    Number(objeto.latitude),
-                    Number(objeto.longitude),
-                  ]}
-                />
-              )}
-
+            {objeto.latitude && objeto.longitude && (
+              <Marker
+                position={[
+                  Number(objeto.latitude),
+                  Number(objeto.longitude),
+                ]}
+              />
+            )}
           </MapContainer>
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             ref={inputImagemRef}
             type="file"
             multiple
+            accept="image/*"
             onChange={handleImagens}
+            aria-label={t("cadastroObjeto.selecionarImagens")}
           />
 
           {imagens.length > 0 && (
             <div className="imagens-preview">
               <div className="lista-imagens">
-
                 <button
                   type="button"
                   onClick={limparImagens}
                   className="btn-remover"
+                  aria-label={t("cadastroObjeto.removerImagens")}
                 >
                   ×
                 </button>
 
                 <p className="titulo-imagens">
-                  Imagens selecionadas ({imagens.length})
+                  {t("cadastroObjeto.imagensSelecionadas", {
+                    quantidade: imagens.length,
+                  })}
                 </p>
 
                 <ul>
@@ -310,12 +307,13 @@ export default function CadastroObjeto({
                     </li>
                   ))}
                 </ul>
-
               </div>
             </div>
           )}
 
-          <button type="submit">Cadastrar</button>
+          <button type="submit">
+            {t("cadastroObjeto.cadastrar")}
+          </button>
 
           <button
             type="button"
@@ -324,7 +322,7 @@ export default function CadastroObjeto({
               onClose();
             }}
           >
-            Fechar
+            {t("cadastroObjeto.fechar")}
           </button>
         </form>
       </div>

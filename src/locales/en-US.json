@@ -137,7 +137,211 @@
     "fechar": "Close",
     "deletarUsuario": "Delete user",
     "deletar": "Delete"
-  }
+  },
 
+"cadastroObjeto": {
+  "titulo": "Register Lost Item",
+  "nome": "Name *",
+  "descricao": "Description *",
+  "enderecoPerdido": "Region or landmark where the item was lost *",
+  "categorias": "Categories *",
+  "camposObrigatorios": "Required Fields",
+  "instrucaoMapa": "Click on the map to indicate the area where the item was lost:",
+  "satelite": "Satellite",
+  "mapa": "Map",
+  "selecionarImagens": "Select images",
+  "removerImagens": "Remove selected images",
+  "imagensSelecionadas": "Selected images ({{quantidade}})",
+  "cadastrar": "Register",
+  "fechar": "Close",
+  "sucesso": "Success",
+  "sucessoTexto": "Item successfully registered!",
+  "ok": "OK",
+  "erro": "Error",
+  "erroTexto": "Error registering item"
+},
 
+"cadastroObjetoAchado": {
+  "titulo": "Register Found Item",
+  "nome": "Name *",
+  "descricao": "Description *",
+  "enderecoEncontro": "Location where the item was found *",
+  "categorias": "Categories *",
+  "camposObrigatorios": "Required Fields",
+  "instrucaoMapa": "Click on the map to mark the meeting location:",
+  "satelite": "Satellite",
+  "mapa": "Map",
+  "selecionePosto": "Select the pickup point",
+  "selecionarImagens": "Select images",
+  "removerImagens": "Remove selected images",
+  "imagensSelecionadas": "Selected images ({{quantidade}})",
+  "cadastrar": "Register",
+  "fechar": "Close",
+  "atencao": "Attention",
+  "postoObrigatorio": "A pickup point is required!",
+  "sucesso": "Success",
+  "sucessoTexto": "Item successfully registered!",
+  "ok": "OK",
+  "erro": "Error",
+  "erroTexto": "Error registering item"
+
+},
+
+"dateInput": {
+  "placeholder": "Select a date"
+},
+
+"mapa": {
+  "buscarObjeto": "Search for an object...",
+  "buscar": "Search",
+  "limpar": "Clear",
+  "satelite": "Satellite",
+  "mapa": "Map",
+  "postosRetirada": "Pickup Locations",
+  "objetosPerdidos": "Lost Objects",
+  "objetoAchado": "Found Object"
+},
+
+"objetoCard": {
+  "semImagem": "No image",
+  "endereco": "Address",
+  "data": "Date",
+  "categorias": "Categories",
+  "semCategoria": "No category",
+  "status": "Status",
+  "statusDisponivel": "Available",
+  "statusDevolvido": "Returned",
+  "statusDescartado": "Discarded"
+},
+
+"objetoCardPerfil": {
+  "semImagem": "No image",
+  "endereco": "Address",
+  "data": "Date",
+  "categorias": "Categories",
+  "semCategoria": "No category",
+  "status": "Status",
+  "statusDisponivel": "Available",
+  "statusDevolvido": "Returned",
+  "statusDescartado": "Discarded",
+  "statusPerdido": "Lost",
+  "editar": "Edit object",
+  "deletar": "Delete object",
+  "alterarStatus": "Change status"
+},
+
+"objetoDetalhe": {
+  "dataNaoInformada": "Date not provided",
+  "statusDisponivel": "Available",
+  "statusDevolvido": "Returned",
+  "statusDescartado": "Discarded",
+  "statusPerdido": "Lost",
+  "imagemAnterior": "Previous image",
+  "proximaImagem": "Next image",
+  "semImagem": "No image available",
+  "data": "Date",
+  "endereco": "Address",
+  "enderecoNaoInformado": "Address not provided",
+  "postoColeta": "Pickup Location",
+  "categorias": "Categories",
+  "naoCategorizado": "Uncategorized",
+  "descricao": "Description",
+  "fechar": "Close"
+},
+
+"objetoPostoCard": {
+  "semImagem": "No image",
+  "semCategoria": "No category"
+}
+,"postoCard": {
+  "semImagem": "No image",
+  "endereco": "Address",
+  "telefone": "Phone",
+  "email": "Email",
+  "editar": "Edit pickup location",
+  "deletar": "Delete pickup location"
+},
+"postoDetalhe": {
+  "informacoes": "Information",
+  "objetos": "Objects ({{quantidade}})",
+  "imagemAnterior": "Previous image",
+  "proximaImagem": "Next image",
+  "semImagem": "No image available",
+  "endereco": "Address",
+  "telefone": "Phone",
+  "email": "Email",
+  "nenhumObjeto": "No objects found.",
+  "fechar": "Close",
+  "comoChegar": "Get Directions"
+},
+"privateRoute": {
+  "carregando": "Loading..."
+},
+"topbar": {
+  "home": "Home",
+  "objetos": "Objects",
+  "postos": "Pickup Locations",
+  "usuarios": "Users",
+  "meuPerfil": "My Profile",
+  "sair": "Log Out",
+  "idiomaPortugues": "🇧🇷 Português (PT-BR)",
+  "idiomaIngles": "🇺🇸 English (EN-US)",
+  "logoAlt": "GeoAchados Lost and Found",
+  "abrirMenu": "Open menu"
+},
+"usuarioCard": {
+  "confirmarAcao": "Confirm Action",
+  "confirmarAdmin": "Do you really want to make {{nome}} an administrator?",
+  "simTornarAdmin": "Yes, make Admin",
+  "confirmarPosto": "Do you really want to link {{nome}} to a pickup location?",
+  "simTornarPosto": "Yes, make Pickup Location",
+  "cancelar": "Cancel",
+  "sucesso": "Success",
+  "sucessoComExclamacao": "Success!",
+  "usuarioPromovidoAdmin": "User promoted to admin!",
+  "usuarioPromovidoPosto": "User promoted to pickup location!",
+  "erro": "Error",
+  "erroPromoverUsuario": "Error promoting user",
+  "erroPromoverPosto": "Error promoting user to pickup location",
+  "resetarSenha": "Reset Password",
+  "confirmarResetarSenha": "Do you really want to generate a new password for {{nome}}?",
+  "simResetar": "Yes, reset",
+  "linkRecuperacaoEnviado": "The recovery link/password has been sent to the user.",
+  "erroResetarSenha": "Error resetting password",
+  "ok": "OK",
+  "fechar": "Close",
+  "email": "Email",
+  "admin": "Admin",
+  "sim": "Yes",
+  "nao": "No",
+  "cadastro": "Registration",
+  "usuario": "User",
+  "nome": "Name",
+  "role": "Role",
+  "tornarAdmin": "Make Admin",
+  "tornarPosto": "Make Pickup Location"
+},
+
+"cadastroPosto": {
+  "titulo": "Register Pickup Location",
+  "nome": "Name *",
+  "endereco": "Address *",
+  "telefone": "Phone *",
+  "email": "Email",
+  "camposObrigatorios": "Required Fields",
+  "instrucaoMapa": "Click on the map to mark the location:",
+  "satelite": "Satellite",
+  "mapa": "Map",
+  "removerImagens": "Remove all images",
+  "imagensSelecionadas": "Selected images ({{quantidade}})",
+  "cadastrar": "Register",
+  "fechar": "Close",
+  "telefoneInvalido": "Invalid phone number",
+  "telefoneInvalidoTexto": "The phone number must contain 8 or 9 digits.",
+  "sucesso": "Success",
+  "sucessoTexto": "Pickup location registered successfully!",
+  "ok": "OK",
+  "erro": "Error",
+  "erroTexto": "Error registering pickup location"
+}
 }

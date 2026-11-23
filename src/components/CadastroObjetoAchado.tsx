@@ -1,4 +1,6 @@
+
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import Select from "react-select";
 import type { MultiValue } from "react-select";
@@ -58,6 +60,8 @@ export default function CadastroObjetoAchado({
   postos,
   onObjetoCadastrado,
 }: Props) {
+  const { t, i18n } = useTranslation();
+
   const [objeto, setObjeto] = useState({
     nome: "",
     descricao: "",
@@ -125,16 +129,14 @@ export default function CadastroObjetoAchado({
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
-
     e.preventDefault();
 
     if (!postoSelecionado) {
-
       await Swal.fire({
-        title: "Atenção",
-        text: "Posto de retirada é obrigatório!",
+        title: t("cadastroObjetoAchado.atencao"),
+        text: t("cadastroObjetoAchado.postoObrigatorio"),
         icon: "warning",
-        confirmButtonText: "OK",
+        confirmButtonText: t("cadastroObjetoAchado.ok"),
         confirmButtonColor: "#f39c12",
       });
 
@@ -148,7 +150,6 @@ export default function CadastroObjetoAchado({
       : "";
 
     try {
-
       await cadastrarObjetoAchado({
         objeto: {
           ...objeto,
@@ -160,29 +161,25 @@ export default function CadastroObjetoAchado({
         token,
       });
 
-
       await Swal.fire({
-        title: "Sucesso",
-        text: "Objeto cadastrado com sucesso!",
+        title: t("cadastroObjetoAchado.sucesso"),
+        text: t("cadastroObjetoAchado.sucessoTexto"),
         icon: "success",
-        confirmButtonText: "OK",
+        confirmButtonText: t("cadastroObjetoAchado.ok"),
         confirmButtonColor: "#3085d6",
       });
-
 
       onObjetoCadastrado();
       limparFormulario();
       onClose();
-
     } catch (error) {
-
       console.error(error);
 
       Swal.fire({
-        title: "Erro",
-        text: "Erro ao cadastrar objeto",
+        title: t("cadastroObjetoAchado.erro"),
+        text: t("cadastroObjetoAchado.erroTexto"),
         icon: "error",
-        confirmButtonText: "Fechar",
+        confirmButtonText: t("cadastroObjetoAchado.fechar"),
         confirmButtonColor: "#d33",
         customClass: {
           popup: "swal-popup",
@@ -201,46 +198,47 @@ export default function CadastroObjetoAchado({
     label: p.nome,
   }));
 
-  const categoriaEletronicosSelecionada =
-  categorias.some(
+  const categoriaEletronicosSelecionada = categorias.some(
     (cat: any) =>
       cat.id === categoriasSelecionadas[0] &&
       cat.nome === "Eletrônicos"
   );
 
-  const postosFiltrados =
-    categoriaEletronicosSelecionada
-      ? postos.filter((posto: any) =>
-          posto.nome
-            .toLowerCase()
-            .includes("delegacia")
-        )
-      : postos;
+  const postosFiltrados = categoriaEletronicosSelecionada
+    ? postos.filter((posto: any) =>
+        posto.nome.toLowerCase().includes("delegacia")
+      )
+    : postos;
+
+  const mensagemSemOpcoes =
+    i18n.language === "en-US"
+      ? "No options found"
+      : "Nenhuma opção encontrada";
 
   return (
     <div className="popup-overlay">
       <div className="popup-box">
-        <h2>Cadastrar Objeto Achado</h2>
+        <h2>{t("cadastroObjetoAchado.titulo")}</h2>
 
         <form onSubmit={handleSubmit}>
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="nome"
-            placeholder="Nome *"
+            placeholder={t("cadastroObjetoAchado.nome")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="descricao"
-            placeholder="Descrição *"
+            placeholder={t("cadastroObjetoAchado.descricao")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="enderecoEncontro"
-            placeholder="Local onde o objeto foi encontrado *"
+            placeholder={t("cadastroObjetoAchado.enderecoEncontro")}
             onChange={handleChange}
           />
 
@@ -248,14 +246,14 @@ export default function CadastroObjetoAchado({
             isMulti
             options={categoriasOptions}
             onChange={handleCategoriasChange}
-            placeholder="Categorias *"
+            placeholder={t("cadastroObjetoAchado.categorias")}
+            noOptionsMessage={() => mensagemSemOpcoes}
             menuPortalTarget={document.body}
             styles={{
               menuPortal: (base) => ({
                 ...base,
                 zIndex: 9999,
               }),
-
               menu: (base) => ({
                 ...base,
                 zIndex: 9999,
@@ -267,99 +265,92 @@ export default function CadastroObjetoAchado({
             selected={dataEncontro}
             onChange={setDataEncontro}
           />
+
           <p className="campo-obrigatorio-info">
-             <span>*</span> Campos Obrigatórios
+            <span>*</span> {t("cadastroObjetoAchado.camposObrigatorios")}
           </p>
-          <p>Clique no mapa para marcar o local do encontro:</p>
+
+          <p>{t("cadastroObjetoAchado.instrucaoMapa")}</p>
 
           <MapContainer
-              center={[-15.7939, -47.8828]}
-              zoom={13}
+            center={[-15.7939, -47.8828]}
+            zoom={13}
+            style={{
+              height: "300px",
+              width: "100%",
+              marginBottom: "15px",
+            }}
+          >
+            <LayersControl position="topright">
+              <LayersControl.BaseLayer
+                checked
+                name={t("cadastroObjetoAchado.satelite")}
+              >
+                <TileLayer
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  attribution="Tiles © Esri"
+                />
+              </LayersControl.BaseLayer>
 
-              style={{
-                height: "300px",
-                width: "100%",
-                marginBottom: "15px"
-              }}
-            >
+              <LayersControl.BaseLayer
+                name={t("cadastroObjetoAchado.mapa")}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution="© OpenStreetMap"
+                />
+              </LayersControl.BaseLayer>
+            </LayersControl>
 
-              <LayersControl position="topright">
+            <SelecionadorMapa setObjeto={setObjeto} />
 
-                {/* SATÉLITE */}
-                <LayersControl.BaseLayer
-                  checked
-                  name="Satélite"
-                >
-                  <TileLayer
-                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                    attribution="Tiles © Esri"
-                  />
-                </LayersControl.BaseLayer>
-
-                {/* MAPA */}
-                <LayersControl.BaseLayer
-                  name="Mapa"
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution="© OpenStreetMap"
-                  />
-                </LayersControl.BaseLayer>
-
-              </LayersControl>
-
-              <SelecionadorMapa
-                setObjeto={setObjeto}
+            {objeto.latitudeAchado && objeto.longitudeAchado && (
+              <Marker
+                position={[
+                  Number(objeto.latitudeAchado),
+                  Number(objeto.longitudeAchado),
+                ]}
               />
-
-              {objeto.latitudeAchado &&
-                objeto.longitudeAchado && (
-
-                  <Marker
-                    position={[
-                      Number(objeto.latitudeAchado),
-                      Number(objeto.longitudeAchado),
-                    ]}
-                  />
-                )}
-
-            </MapContainer>
+            )}
+          </MapContainer>
 
           <Select
             options={postosFiltrados.map((posto: any) => ({
               value: posto.id,
               label: posto.nome,
             }))}
-
             value={postoSelecionado}
-
             onChange={handlePostoChange}
-
-            placeholder="Selecione o posto de retirada"
+            placeholder={t("cadastroObjetoAchado.selecionePosto")}
+            noOptionsMessage={() => mensagemSemOpcoes}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             ref={inputFileRef}
             type="file"
             multiple
+            accept="image/*"
             onChange={handleImagem}
+            aria-label={t("cadastroObjetoAchado.selecionarImagens")}
           />
 
           {imagens.length > 0 && (
             <div className="imagens-preview">
               <div className="lista-imagens">
-
                 <button
                   type="button"
                   onClick={limparImagens}
                   className="btn-remover"
+                  aria-label={t("cadastroObjetoAchado.removerImagens")}
                 >
                   ×
                 </button>
 
                 <p className="titulo-imagens">
-                  Imagens selecionadas ({imagens.length})
+                  {t("cadastroObjetoAchado.imagensSelecionadas", {
+                    quantidade: imagens.length,
+                  })}
                 </p>
 
                 <ul>
@@ -369,14 +360,13 @@ export default function CadastroObjetoAchado({
                     </li>
                   ))}
                 </ul>
-
               </div>
             </div>
           )}
 
           <div className="botoes-container">
             <button type="submit">
-              Cadastrar
+              {t("cadastroObjetoAchado.cadastrar")}
             </button>
 
             <button
@@ -386,7 +376,7 @@ export default function CadastroObjetoAchado({
                 onClose();
               }}
             >
-              Fechar
+              {t("cadastroObjetoAchado.fechar")}
             </button>
           </div>
         </form>

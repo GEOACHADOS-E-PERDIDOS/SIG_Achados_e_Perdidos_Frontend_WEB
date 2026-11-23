@@ -1,4 +1,5 @@
-import React from "react";
+
+import { useTranslation } from "react-i18next";
 
 import deleteIcon from "../assets/delete.svg";
 
@@ -33,8 +34,6 @@ type Objeto = {
     | string;
 };
 
-
-
 type Props = {
   obj: Objeto;
   isPosto?: boolean;
@@ -51,8 +50,6 @@ type Props = {
   ) => void;
 
   onClick?: () => void;
-
-
 };
 
 export default function ObjetoCardPerfil({
@@ -63,6 +60,7 @@ export default function ObjetoCardPerfil({
   onClick,
   isPosto,
 }: Props) {
+  const { t } = useTranslation();
 
   // =========================
   // RESOLVE IMAGEM
@@ -71,183 +69,154 @@ export default function ObjetoCardPerfil({
   let imagemFinal: string | null = null;
 
   if (obj.imagemUrl) {
-
     imagemFinal = obj.imagemUrl;
-  }
-
-  else if (
+  } else if (
     obj.caminhosImagens &&
     obj.caminhosImagens.length > 0
   ) {
-
-    imagemFinal =
-      obj.caminhosImagens[0];
-  }
-
-  else if (
+    imagemFinal = obj.caminhosImagens[0];
+  } else if (
     obj.imagens &&
     obj.imagens.length > 0
   ) {
-
-    imagemFinal =
-      obj.imagens[0];
+    imagemFinal = obj.imagens[0];
   }
+
   const podeAlterarStatus =
-  obj.status === "PERDIDO" || isPosto;
+    obj.status === "PERDIDO" || isPosto;
+
+  // =========================
+  // TRADUZ STATUS
+  // =========================
+
+  const statusTraduzido: Record<string, string> = {
+    DISPONIVEL: t("objetoCardPerfil.statusDisponivel"),
+    DEVOLVIDO: t("objetoCardPerfil.statusDevolvido"),
+    DESCARTADO: t("objetoCardPerfil.statusDescartado"),
+    PERDIDO: t("objetoCardPerfil.statusPerdido"),
+  };
 
   return (
-
     <div
       className="card-objeto-perfil"
       onClick={onClick}
       style={{
-        cursor: onClick
-          ? "pointer"
-          : "default",
+        cursor: onClick ? "pointer" : "default",
       }}
     >
-
       {/* IMAGEM */}
 
-      <div
-        className="card-image-perfil"
-      >
-
+      <div className="card-image-perfil">
         {imagemFinal ? (
-
           <img
             src={imagemFinal}
             alt={obj.nome}
-
             onError={(e) => {
-
               console.log(
                 "ERRO AO CARREGAR:",
                 imagemFinal
               );
 
-              e.currentTarget.style.display =
-                "none";
+              e.currentTarget.style.display = "none";
             }}
           />
-
         ) : (
-
-          <div
-            className="imagem-placeholder-perfil"
-          >
-            Sem imagem
+          <div className="imagem-placeholder-perfil">
+            {t("objetoCardPerfil.semImagem")}
           </div>
-
         )}
-
       </div>
 
       {/* TEXTO */}
 
-      <div
-        className="card-text-perfil"
-      >
-
-        <h3>
-          {obj.nome}
-        </h3>
+      <div className="card-text-perfil">
+        <h3>{obj.nome}</h3>
 
         <p className="descricao-curta-perfil">
           {obj.descricao}
         </p>
 
         <p>
-          <strong>Endereço:</strong>{" "}
+          <strong>{t("objetoCardPerfil.endereco")}:</strong>{" "}
           {obj.enderecoEncontro}
         </p>
 
         <p>
-          <strong>Data:</strong>{" "}
-          {formatarData(
-            obj.dataEncontro
-          )}
+          <strong>{t("objetoCardPerfil.data")}:</strong>{" "}
+          {formatarData(obj.dataEncontro)}
         </p>
 
         <p>
-          <strong>Categorias:</strong>{" "}
-
-          {obj.categorias &&
-          obj.categorias.length > 0
-
+          <strong>{t("objetoCardPerfil.categorias")}:</strong>{" "}
+          {obj.categorias && obj.categorias.length > 0
             ? obj.categorias
-                .map(
-                  (cat) => cat.nome
-                )
+                .map((cat) => cat.nome)
                 .join(", ")
-
-            : "Sem categoria"}
+            : t("objetoCardPerfil.semCategoria")}
         </p>
 
         <p>
-          <strong>Status:</strong>{" "}
-
+          <strong>{t("objetoCardPerfil.status")}:</strong>{" "}
           <span
             className={`status-perfil-${obj.status.toLowerCase()}`}
           >
-
-            {obj.status}
-
+            {statusTraduzido[obj.status] || obj.status}
           </span>
         </p>
-
       </div>
 
       {/* AÇÕES */}
 
       <div className="card-perfil-acoes">
+        {!isPosto && (
+          <>
+            <button
+              className="btn-perfil-edit"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditObjeto(obj);
+              }}
+              aria-label={t("objetoCardPerfil.editar")}
+              title={t("objetoCardPerfil.editar")}
+            >
+              🖉
+            </button>
 
-  {!isPosto && (
-    <>
-      <button
-        className="btn-perfil-edit"
-        onClick={(e) => {
-          e.stopPropagation();
-          onEditObjeto(obj);
-        }}
-      >
-        🖉
-      </button>
+            <button
+              className="btn-perfil-icon delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(obj.id);
+              }}
+              aria-label={t("objetoCardPerfil.deletar")}
+              title={t("objetoCardPerfil.deletar")}
+            >
+              <img
+                src={deleteIcon}
+                alt={t("objetoCardPerfil.deletar")}
+              />
+            </button>
+          </>
+        )}
 
-      <button
-        className="btn-perfil-icon delete"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(obj.id);
-        }}
-      >
-        <img
-          src={deleteIcon}
-          alt="Deletar"
-        />
-      </button>
-    </>
-  )}
+        {podeAlterarStatus && (
+          <button
+            className="btn-perfil-icon"
+            onClick={(e) => {
+              e.stopPropagation();
 
-  {podeAlterarStatus && (
-    <button
-      className="btn-perfil-icon"
-      onClick={(e) => {
-
-        e.stopPropagation();
-
-        onEditStatus(
-          obj.id,
-          obj.status
-        );
-      }}
-    >
-      ⚙️
-    </button>
-  )}
-
-</div>
-
+              onEditStatus(
+                obj.id,
+                obj.status
+              );
+            }}
+            aria-label={t("objetoCardPerfil.alterarStatus")}
+            title={t("objetoCardPerfil.alterarStatus")}
+          >
+            ⚙️
+          </button>
+        )}
+      </div>
     </div>
   );
 }

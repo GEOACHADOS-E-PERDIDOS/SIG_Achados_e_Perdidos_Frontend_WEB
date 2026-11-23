@@ -1,7 +1,8 @@
-import { useState, useRef} from "react";
 
-import CadastroPostoService
-from "../services/CadastroPostoService";
+import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
+
+import CadastroPostoService from "../services/CadastroPostoService";
 import Swal from "sweetalert2";
 
 import {
@@ -17,35 +18,18 @@ import "leaflet/dist/leaflet.css";
 type Props = {
   aberto: boolean;
   onClose: () => void;
-
   onPostoCadastrado: () => void;
 };
 
 const { BaseLayer } = LayersControl;
 
-const telefoneRegex = /^[0-9]{8,9}$/;
-
-
-/* ====================================== */
-/* MAPA */
-/* ====================================== */
-
-function SelecionadorMapa({
-  setPosto
-}: any) {
-
-  const [posicao, setPosicao] =
-    useState<any>(null);
+function SelecionadorMapa({ setPosto }: any) {
+  const [posicao, setPosicao] = useState<any>(null);
 
   useMapEvents({
-
     click(e) {
-
-      const lat =
-        e.latlng.lat;
-
-      const lng =
-        e.latlng.lng;
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
 
       setPosicao([lat, lng]);
 
@@ -57,234 +41,163 @@ function SelecionadorMapa({
     },
   });
 
-  return posicao
-    ? <Marker position={posicao} />
-    : null;
+  return posicao ? <Marker position={posicao} /> : null;
 }
-
-/* ====================================== */
-/* COMPONENTE */
-/* ====================================== */
 
 export default function CadastroPosto({
   aberto,
   onClose,
   onPostoCadastrado
 }: Props) {
+  const { t, i18n } = useTranslation();
 
-  const [posto, setPosto] =
-    useState({
-
-      nome: "",
-
-      endereco: "",
-
-      telefone: "",
-
-      email: "",
-
-      latitude: "",
-
-      longitude: ""
-    });
+  const [posto, setPosto] = useState({
+    nome: "",
+    endereco: "",
+    telefone: "",
+    email: "",
+    latitude: "",
+    longitude: ""
+  });
 
   const [imagens, setImagens] = useState<File[]>([]);
-
   const inputImagemRef = useRef<HTMLInputElement>(null);
 
-
   if (!aberto) return null;
-
-  /* ====================================== */
-  /* INPUTS */
-  /* ====================================== */
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-
     setPosto({
       ...posto,
-      [e.target.name]:
-        e.target.value
+      [e.target.name]: e.target.value
     });
   };
 
   const handleImagens = (
-  e: React.ChangeEvent<HTMLInputElement>
-) => {
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files || []);
+    setImagens(files);
+  };
 
-  const files = Array.from(
-    e.target.files || []
-  );
+  const limparImagens = () => {
+    setImagens([]);
 
-  setImagens(files);
-};
-
-const limparImagens = () => {
-
-  setImagens([]);
-
-  if (inputImagemRef.current) {
-
-    inputImagemRef.current.value = "";
-  }
-};
-
-  /* ====================================== */
-  /* SUBMIT */
-  /* ====================================== */
+    if (inputImagemRef.current) {
+      inputImagemRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
+    e.preventDefault();
 
-  e.preventDefault();
+    const telefoneRegex = /^[0-9]{8,9}$/;
 
-  const telefoneRegex = /^[0-9]{8,9}$/;
+    if (!telefoneRegex.test(posto.telefone)) {
+      Swal.fire({
+        title: t("cadastroPosto.telefoneInvalido"),
+        text: t("cadastroPosto.telefoneInvalidoTexto"),
+        icon: "warning",
+        confirmButtonColor: "#d33",
+      });
 
-  if (!telefoneRegex.test(posto.telefone)) {
+      return;
+    }
 
-    Swal.fire({
-      title: "Telefone inválido",
-      text: "O telefone deve possuir 8 ou 9 dígitos.",
-      icon: "warning",
-      confirmButtonColor: "#d33",
-    });
+    try {
+      await CadastroPostoService.cadastrarPosto({
+        nome: posto.nome,
+        endereco: posto.endereco,
+        telefone: posto.telefone,
+        email: posto.email,
+        latitude: parseFloat(String(posto.latitude)),
+        longitude: parseFloat(String(posto.longitude)),
+        imagens
+      });
 
-    return;
-  }
-
-  try {
-
-    await CadastroPostoService
-      .cadastrarPosto({
-
-          nome: posto.nome,
-
-          endereco: posto.endereco,
-
-          telefone: posto.telefone,
-
-          email: posto.email,
-
-          latitude: parseFloat(
-            String(posto.latitude)
-          ),
-
-          longitude: parseFloat(
-            String(posto.longitude)
-          ),
-
-          imagens
-        });
-
-    await Swal.fire({
-      title: "Sucesso",
-      text: "Posto cadastrado com sucesso!",
-      icon: "success",
-      confirmButtonText: "OK",
-      confirmButtonColor: "#3085d6",
-    });
+      await Swal.fire({
+        title: t("cadastroPosto.sucesso"),
+        text: t("cadastroPosto.sucessoTexto"),
+        icon: "success",
+        confirmButtonText: t("cadastroPosto.ok"),
+        confirmButtonColor: "#3085d6",
+      });
 
       onPostoCadastrado();
-
-      limparImagens();      
-
+      limparImagens();
       onClose();
 
+    } catch (error) {
+      console.error(error);
 
-  } catch (error) {
-
-    console.error(error);
-
-    Swal.fire({
-      title: "Erro",
-      text: "Erro ao cadastrar posto",
-      icon: "error",
-      confirmButtonText: "Fechar",
-      confirmButtonColor: "#d33",
-    });
-  }
-};
-
-
-  /* ====================================== */
-  /* UI */
-  /* ====================================== */
+      Swal.fire({
+        title: t("cadastroPosto.erro"),
+        text: t("cadastroPosto.erroTexto"),
+        icon: "error",
+        confirmButtonText: t("cadastroPosto.fechar"),
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
 
   return (
-
     <div className="popup-overlay">
-
       <div className="popup-box">
-
-        <h2>
-          Cadastrar Posto
-        </h2>
-
+        <h2>{t("cadastroPosto.titulo")}</h2>
 
         <form onSubmit={handleSubmit}>
-
-           
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="nome"
-            placeholder="Nome *"
+            placeholder={t("cadastroPosto.nome")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="endereco"
-            placeholder="Endereço *"
+            placeholder={t("cadastroPosto.endereco")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="telefone"
-            placeholder="Telefone *"
+            placeholder={t("cadastroPosto.telefone")}
             onChange={handleChange}
           />
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             name="email"
-            placeholder="Email"
+            placeholder={t("cadastroPosto.email")}
             onChange={handleChange}
           />
+
           <p className="campo-obrigatorio-info">
-             <span>*</span> Campos Obrigatórios
+            <span>*</span> {t("cadastroPosto.camposObrigatorios")}
           </p>
-          {/* ====================================== */}
-          {/* MAPA */}
-          {/* ====================================== */}
 
           <p>
-            Clique no mapa para
-            marcar a localização:
+            {t("cadastroPosto.instrucaoMapa")}
           </p>
 
           <MapContainer
             center={[-15.7939, -47.8828]}
             zoom={13}
-
             style={{
               height: "300px",
               width: "100%",
               marginBottom: "15px",
             }}
           >
-
-            <LayersControl
-              position="topright"
-            >
-
-              {/* SATÉLITE */}
+            <LayersControl position="topright">
               <BaseLayer
                 checked
-                name="Satélite"
+                name={t("cadastroPosto.satelite")}
               >
                 <TileLayer
                   url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -292,58 +205,52 @@ const limparImagens = () => {
                 />
               </BaseLayer>
 
-              {/* MAPA */}
-              <BaseLayer
-                name="Mapa"
-              >
+              <BaseLayer name={t("cadastroPosto.mapa")}>
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution="© OpenStreetMap"
                 />
               </BaseLayer>
-
             </LayersControl>
 
-            <SelecionadorMapa
-              setPosto={setPosto}
-            />
+            <SelecionadorMapa setPosto={setPosto} />
 
-            {posto.latitude &&
-              posto.longitude && (
-
-                <Marker
-                  position={[
-                    Number(posto.latitude),
-                    Number(posto.longitude),
-                  ]}
-                />
-              )}
-
+            {posto.latitude && posto.longitude && (
+              <Marker
+                position={[
+                  Number(posto.latitude),
+                  Number(posto.longitude),
+                ]}
+              />
+            )}
           </MapContainer>
 
           <input
-						autoComplete="off"
+            autoComplete="off"
             ref={inputImagemRef}
             type="file"
             multiple
+            accept="image/*"
             onChange={handleImagens}
           />
 
-            {imagens.length > 0 && (
+          {imagens.length > 0 && (
             <div className="imagens-preview">
               <div className="lista-imagens">
-                
                 <button
                   type="button"
                   onClick={limparImagens}
                   className="btn-remover"
-                  title="Remover todas as imagens"
+                  title={t("cadastroPosto.removerImagens")}
+                  aria-label={t("cadastroPosto.removerImagens")}
                 >
                   ×
                 </button>
 
                 <p className="titulo-imagens">
-                  Imagens selecionadas ({imagens.length})
+                  {t("cadastroPosto.imagensSelecionadas", {
+                    quantidade: imagens.length
+                  })}
                 </p>
 
                 <ul>
@@ -353,30 +260,25 @@ const limparImagens = () => {
                     </li>
                   ))}
                 </ul>
-
               </div>
             </div>
           )}
 
-          {/* ====================================== */}
-          {/* BOTÕES */}
-          {/* ====================================== */}
-
           <button type="submit">
-            Cadastrar
+            {t("cadastroPosto.cadastrar")}
           </button>
 
           <button
             type="button"
-            onClick={() => { limparImagens(); onClose(); }}
+            onClick={() => {
+              limparImagens();
+              onClose();
+            }}
           >
-            Fechar
+            {t("cadastroPosto.fechar")}
           </button>
-
         </form>
-
       </div>
-
     </div>
   );
 }

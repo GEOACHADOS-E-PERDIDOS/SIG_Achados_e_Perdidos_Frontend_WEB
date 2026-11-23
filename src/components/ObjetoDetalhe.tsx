@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import "../styles/ObjetoDetalhe.css";
 
 type Categoria = {
@@ -17,24 +20,37 @@ type Objeto = {
   status: "DISPONIVEL" | "DEVOLVIDO" | "DESCARTADO" | "PERDIDO";
 };
 
-// ADICIONADO: onClose nas Props
 type Props = {
   obj: Objeto;
-  onClose: () => void; 
+  onClose: () => void;
 };
 
-// ADICIONADO: recebendo o onClose aqui
 export default function ObjetoDetalhe({ obj, onClose }: Props) {
   const [imagemAtual, setImagemAtual] = useState(0);
+  const { t, i18n } = useTranslation();
 
   const formatarData = (data: string) => {
-    if (!data) return "Data não informada";
+    if (!data) return t("objetoDetalhe.dataNaoInformada");
+
     const [ano, mes, dia] = data.split("-");
-    return `${dia}/${mes}/${ano}`;
+
+    if (!ano || !mes || !dia) return data;
+
+    return i18n.language === "en-US"
+      ? `${mes}/${dia}/${ano}`
+      : `${dia}/${mes}/${ano}`;
+  };
+
+  const statusTraduzido: Record<string, string> = {
+    DISPONIVEL: t("objetoDetalhe.statusDisponivel"),
+    DEVOLVIDO: t("objetoDetalhe.statusDevolvido"),
+    DESCARTADO: t("objetoDetalhe.statusDescartado"),
+    PERDIDO: t("objetoDetalhe.statusPerdido"),
   };
 
   const proximaImagem = () => {
     if (!obj.caminhosImagens) return;
+
     setImagemAtual((prev) =>
       prev === obj.caminhosImagens!.length - 1 ? 0 : prev + 1
     );
@@ -42,20 +58,29 @@ export default function ObjetoDetalhe({ obj, onClose }: Props) {
 
   const imagemAnterior = () => {
     if (!obj.caminhosImagens) return;
+
     setImagemAtual((prev) =>
       prev === 0 ? obj.caminhosImagens!.length - 1 : prev - 1
     );
   };
 
-  console.log(obj);
-
   return (
     <div className="objeto-detalhe">
       {/* CARROSSEL */}
+
       <div className="objeto-carousel">
         {obj.caminhosImagens && obj.caminhosImagens.length > 0 ? (
           <>
-            <button className="carousel-btn left" onClick={imagemAnterior} type="button">❮</button>
+            <button
+              className="carousel-btn left"
+              onClick={imagemAnterior}
+              type="button"
+              aria-label={t("objetoDetalhe.imagemAnterior")}
+              title={t("objetoDetalhe.imagemAnterior")}
+            >
+              ❮
+            </button>
+
             <div className="carousel-image-container">
               <img
                 src={obj.caminhosImagens[imagemAtual]}
@@ -63,70 +88,95 @@ export default function ObjetoDetalhe({ obj, onClose }: Props) {
                 className="carousel-image"
               />
             </div>
-            <button className="carousel-btn right" onClick={proximaImagem} type="button">❯</button>
+
+            <button
+              className="carousel-btn right"
+              onClick={proximaImagem}
+              type="button"
+              aria-label={t("objetoDetalhe.proximaImagem")}
+              title={t("objetoDetalhe.proximaImagem")}
+            >
+              ❯
+            </button>
+
             <div className="carousel-indicators">
               {obj.caminhosImagens.map((_, index) => (
                 <span
                   key={index}
-                  className={`indicator ${imagemAtual === index ? "active" : ""}`}
+                  className={`indicator ${
+                    imagemAtual === index ? "active" : ""
+                  }`}
                 />
               ))}
             </div>
           </>
         ) : (
-          <div className="objeto-detalhe-placeholder">Sem imagem disponível</div>
+          <div className="objeto-detalhe-placeholder">
+            {t("objetoDetalhe.semImagem")}
+          </div>
         )}
       </div>
 
       <div className="objeto-detalhe-conteudo">
-        <h1 className="objeto-detalhe-titulo">{obj.nome}</h1>
-        
+        <h1 className="objeto-detalhe-titulo">
+          {obj.nome}
+        </h1>
+
         <div className="objeto-status-container">
-           <span className={`objeto-status-badge ${obj.status?.toLowerCase()}`}>
-            {obj.status}
+          <span
+            className={`objeto-status-badge ${obj.status?.toLowerCase()}`}
+          >
+            {statusTraduzido[obj.status] || obj.status}
           </span>
         </div>
 
         <div className="objeto-info-lista">
           <div className="info-item">
-            <strong>Data:</strong>
+            <strong>{t("objetoDetalhe.data")}:</strong>
             <span>{formatarData(obj.dataEncontro)}</span>
           </div>
+
           <div className="info-item">
-            <strong>Endereço:</strong>
-            <span>{obj.enderecoEncontro || "Endereço não informado"}</span>
+            <strong>{t("objetoDetalhe.endereco")}:</strong>
+            <span>
+              {obj.enderecoEncontro ||
+                t("objetoDetalhe.enderecoNaoInformado")}
+            </span>
           </div>
+
           {obj.nomePosto && (
             <div className="info-item">
-              <strong>Posto de Coleta:</strong>
+              <strong>{t("objetoDetalhe.postoColeta")}:</strong>
               <span>{obj.nomePosto}</span>
             </div>
           )}
+
           <div className="info-item">
-            <strong>Categorias:</strong>
+            <strong>{t("objetoDetalhe.categorias")}:</strong>
             <span>
               {obj.categorias && obj.categorias.length > 0
                 ? obj.categorias.map((c) => c.nome).join(", ")
-                : "Não categorizado"}
+                : t("objetoDetalhe.naoCategorizado")}
             </span>
           </div>
         </div>
 
         <div className="objeto-descricao">
-          <h3>Descrição</h3>
+          <h3>{t("objetoDetalhe.descricao")}</h3>
           <p>{obj.descricao}</p>
         </div>
 
-        {/* BOTÃO CORRIGIDO: Agora chama o onClose diretamente */}
+        {/* BOTÃO FECHAR */}
+
         <div className="posto-footer-acoes">
-          <button 
-              type="button"
-              className="btn-fechar-mapa-style" 
-              onClick={onClose}
+          <button
+            type="button"
+            className="btn-fechar-mapa-style"
+            onClick={onClose}
           >
-              Fechar
+            {t("objetoDetalhe.fechar")}
           </button>
-      </div>
+        </div>
       </div>
     </div>
   );

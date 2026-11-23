@@ -1,3 +1,4 @@
+
 import {
   MapContainer,
   TileLayer,
@@ -9,7 +10,9 @@ import {
 } from "react-leaflet";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
+
 import "leaflet/dist/leaflet.css";
 import "../styles/CadastroObjeto.css";
 
@@ -49,31 +52,24 @@ function LayerEvents({
 }: any) {
 
   useMapEvents({
-
     overlayadd(e: any) {
-
-      if (e.name === "Objetos Perdidos") {
+      if (e.name === "lostObjectsLayer") {
         setMostrarPerdidos(true);
       }
 
-      if (e.name === "Objeto Achado") {
+      if (e.name === "foundObjectLayer") {
         setMostrarAchados(true);
       }
     },
 
     overlayremove(e: any) {
-
-      if (e.name === "Objetos Perdidos") {
-
+      if (e.name === "lostObjectsLayer") {
         setMostrarPerdidos(false);
-
         limparResultados("PERDIDO");
       }
 
-      if (e.name === "Objeto Achado") {
-
+      if (e.name === "foundObjectLayer") {
         setMostrarAchados(false);
-
         limparResultados("DISPONIVEL");
       }
     },
@@ -83,6 +79,7 @@ function LayerEvents({
 }
 
 function Mapa({ refreshKey }: Props) {
+  const { t } = useTranslation();
 
   const [busca, setBusca] = useState("");
 
@@ -90,7 +87,7 @@ function Mapa({ refreshKey }: Props) {
     useState<ObjetoMapa[]>([]);
 
   const [resultadoBuscaPostos, setResultadoBuscaPostos] =
-    useState<PostoMapa[]>([])
+    useState<PostoMapa[]>([]);
 
   /* ===================================================== */
   /* CONTROLE DE LAYERS */
@@ -107,25 +104,20 @@ function Mapa({ refreshKey }: Props) {
   /* ===================================================== */
 
   const buscarObjetos = async () => {
-
     const token = localStorage.getItem("token");
 
     try {
-
       const res = await axios.get(
         "http://localhost:8080/objetos/buscar",
         {
           params: {
             termo: busca
           },
-
           headers: {
             Authorization: `Bearer ${token}`
           }
         }
       );
-
-      
 
       /* ===================================== */
       /* FILTRA CONFORME LAYERS ATIVAS */
@@ -133,7 +125,6 @@ function Mapa({ refreshKey }: Props) {
 
       const objetosFiltrados = res.data.filter(
         (obj: ObjetoMapa) => {
-
           if (
             obj.status === "PERDIDO" &&
             !mostrarPerdidos
@@ -155,7 +146,6 @@ function Mapa({ refreshKey }: Props) {
       setResultadoBusca(objetosFiltrados);
 
     } catch (err) {
-
       console.error(
         "Erro ao buscar objetos:",
         err
@@ -164,58 +154,47 @@ function Mapa({ refreshKey }: Props) {
   };
 
   const buscarPostos = async () => {
+    const token = localStorage.getItem("token");
 
-  const token = localStorage.getItem("token");
-
-  try {
-
-    const res = await axios.get(
-      "http://localhost:8080/postos",
-      {
-        params: {
-          termo: busca
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
+    try {
+      const res = await axios.get(
+        "http://localhost:8080/postos",
+        {
+          params: {
+            termo: busca
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      }
-    );
+      );
 
-    setResultadoBuscaPostos(res.data);
+      setResultadoBuscaPostos(res.data);
 
-  } catch (err) {
+    } catch (err) {
+      console.error("Erro ao buscar postos:", err);
+    }
+  };
 
-    console.error("Erro ao buscar postos:", err);
-  }
-};
-
-const buscar = async () => {
-  await Promise.all([
-    buscarObjetos(),
-    buscarPostos()
-  ]);
-};
+  const buscar = async () => {
+    await Promise.all([
+      buscarObjetos(),
+      buscarPostos()
+    ]);
+  };
 
   /* ===================================================== */
   /* ESCONDER RESULTADOS AO DESLIGAR LAYER */
   /* ===================================================== */
 
-  const limparResultados = (
-    tipo: string
-  ) => {
-
+  const limparResultados = (tipo: string) => {
     setResultadoBusca((prev) =>
       prev.filter((obj) => {
-
-        if (
-          tipo === "PERDIDO"
-        ) {
+        if (tipo === "PERDIDO") {
           return obj.status !== "PERDIDO";
         }
 
-        if (
-          tipo === "DISPONIVEL"
-        ) {
+        if (tipo === "DISPONIVEL") {
           return obj.status !== "DISPONIVEL";
         }
 
@@ -229,10 +208,8 @@ const buscar = async () => {
   /* ===================================================== */
 
   useEffect(() => {
-
     setResultadoBusca((prev) =>
       prev.filter((obj) => {
-
         if (
           obj.status === "PERDIDO" &&
           !mostrarPerdidos
@@ -250,14 +227,9 @@ const buscar = async () => {
         return true;
       })
     );
-
-  }, [
-    mostrarPerdidos,
-    mostrarAchados
-  ]);
+  }, [mostrarPerdidos, mostrarAchados]);
 
   return (
-
     <MapContainer
       center={[-15.7939, -47.8828]}
       zoom={14}
@@ -267,235 +239,161 @@ const buscar = async () => {
       }}
     >
 
-      {/* ===================================================== */}
       {/* EVENTOS DE LAYERS */}
-      {/* ===================================================== */}
 
       <LayerEvents
-        setMostrarPerdidos={
-          setMostrarPerdidos
-        }
-
-        setMostrarAchados={
-          setMostrarAchados
-        }
-
-        limparResultados={
-          limparResultados
-        }
+        setMostrarPerdidos={setMostrarPerdidos}
+        setMostrarAchados={setMostrarAchados}
+        limparResultados={limparResultados}
       />
 
-      {/* ===================================================== */}
       {/* BLOCO DE BUSCA */}
-      {/* ===================================================== */}
 
       <div
         style={{
           position: "absolute",
-
           zIndex: 1000,
-
           top: 20,
-
           left: "50%",
-
-          transform:
-            "translateX(-50%)",
-
+          transform: "translateX(-50%)",
           display: "flex",
-
           flexDirection: "row",
-
           alignItems: "center",
-
           gap: "10px",
-
           background: "white",
-
           padding: "20px",
-
           borderRadius: "10px",
-
-          boxShadow:
-            "0 2px 6px rgba(0,0,0,0.2)"
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
         }}
       >
-
         <input
-						autoComplete="off"
+          autoComplete="off"
           value={busca}
-
-          onChange={(e) =>
-            setBusca(e.target.value)
-          }
-
+          onChange={(e) => setBusca(e.target.value)}
           onKeyDown={(e) => {
-
             if (e.key === "Enter") {
-
               buscar();
             }
           }}
-
-          placeholder="Buscar objeto..."
-
+          placeholder={t("mapa.buscarObjeto")}
           style={{
-
             width: "220px",
-
             padding: "10px",
-
-            border:
-              "1px solid #ccc",
-
+            border: "1px solid #ccc",
             borderRadius: "4px"
           }}
         />
 
         <button
           onClick={buscar}
-
           style={{
-
             padding: "6px 10px",
-
             fontSize: "15px",
-
             cursor: "pointer"
           }}
         >
-          Buscar
+          {t("mapa.buscar")}
         </button>
 
         <button
           onClick={() => {
-
             setBusca("");
-
             setResultadoBusca([]);
             setResultadoBuscaPostos([]);
           }}
-
           style={{
-
             padding: "6px 10px",
-
             fontSize: "15px",
-
             cursor: "pointer"
           }}
         >
-          Limpar
+          {t("mapa.limpar")}
         </button>
-
       </div>
 
-      {/* ===================================================== */}
       {/* RESULTADOS DA BUSCA */}
-      {/* ===================================================== */}
 
       {resultadoBusca
-
         .filter(
           (obj) =>
             obj.latitudeEncontro != null &&
             obj.longitudeEncontro != null
         )
-
         .map((obj) => (
-
           <CircleMarker
             key={`c-${obj.id}`}
-
             center={[
               obj.latitudeEncontro,
               obj.longitudeEncontro
             ]}
-
             radius={45}
-
             pathOptions={{
-
               color: "#ffcc00",
-
               weight: 2,
-
               fillColor: "#ffcc00",
-
               fillOpacity: 0.15
             }}
           >
-
             <Tooltip
               direction="top"
-
               permanent
-
               offset={[0, -10]}
-
               className="map-label"
             >
               {obj.nome}
             </Tooltip>
-
           </CircleMarker>
         ))}
 
-        {resultadoBuscaPostos
-  .filter(
-    (posto) =>
-      posto.latitude != null &&
-      posto.longitude != null
-  )
-  .map((posto) => (
+      {resultadoBuscaPostos
+        .filter(
+          (posto) =>
+            posto.latitude != null &&
+            posto.longitude != null
+        )
+        .map((posto) => (
+          <CircleMarker
+            key={`p-${posto.id}`}
+            center={[
+              posto.latitude,
+              posto.longitude
+            ]}
+            radius={45}
+            pathOptions={{
+              color: "#ffcc00",
+              weight: 2,
+              fillColor: "#ffcc00",
+              fillOpacity: 0.15
+            }}
+          >
+            <Tooltip
+              direction="top"
+              permanent
+              offset={[0, -10]}
+              className="map-label"
+            >
+              {posto.nome}
+            </Tooltip>
+          </CircleMarker>
+        ))}
 
-    <CircleMarker
-      key={`p-${posto.id}`}
-      center={[
-        posto.latitude,
-        posto.longitude
-      ]}
-      radius={45}
-      pathOptions={{
-        color: "#ffcc00",
-        weight: 2,
-        fillColor: "#ffcc00",
-        fillOpacity: 0.15
-      }}
-    >
-      <Tooltip
-        direction="top"
-        permanent
-        offset={[0, -10]}
-        className="map-label"
-      >
-        {posto.nome}
-      </Tooltip>
-    </CircleMarker>
-
-))}
-
-      {/* ===================================================== */}
       {/* LAYERS */}
-      {/* ===================================================== */}
 
       <LayersControl position="topright">
 
         <BaseLayer
           checked
-          name="Satélite"
+          name={t("mapa.satelite")}
         >
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-
             attribution="Tiles © Esri"
           />
         </BaseLayer>
 
-        <BaseLayer name="Mapa">
+        <BaseLayer name={t("mapa.mapa")}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-
             attribution="© OpenStreetMap"
           />
         </BaseLayer>
@@ -504,18 +402,14 @@ const buscar = async () => {
 
         <Overlay
           checked
-          name="Postos de Retirada"
+          name={t("mapa.postosRetirada")}
         >
           <WMSTileLayer
             key={`postos-${refreshKey}`}
             url="/geoserver/wms"
-
             layers="Geoachados:view_posto_retirada_map"
-
             format="image/png"
-
             transparent={true}
-
             version="1.1.0"
           />
         </Overlay>
@@ -524,20 +418,15 @@ const buscar = async () => {
 
         <Overlay
           checked
-          name="Objetos Perdidos"
+          name="lostObjectsLayer"
         >
           <WMSTileLayer
             key={`perdidos-${refreshKey}`}
             url="/geoserver/wms"
-
             layers="Geoachados:view_objeto_perdido_map"
-
             format="image/png"
-
             transparent={true}
-
             version="1.1.0"
-            
           />
         </Overlay>
 
@@ -545,18 +434,14 @@ const buscar = async () => {
 
         <Overlay
           checked
-          name="Objeto Achado"
+          name="foundObjectLayer"
         >
           <WMSTileLayer
             key={`achados-${refreshKey}`}
             url="/geoserver/wms"
-
             layers="Geoachados:view_objeto_achado_map"
-
             format="image/png"
-
             transparent={true}
-
             version="1.1.0"
           />
         </Overlay>

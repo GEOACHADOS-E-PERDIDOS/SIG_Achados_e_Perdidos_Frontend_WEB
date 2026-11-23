@@ -1,138 +1,96 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import logo from "../assets/LOGO_geoachados.png";
 import "../styles/Topbar.css";
 
 import TopBarService from "../services/TopBarService";
 
-import { useTranslation } from "react-i18next";
-
 function Topbar() {
-
   const navigate = useNavigate();
   const location = useLocation();
-const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-const trocarIdioma = () => {
-  const novoIdioma = i18n.language.startsWith("pt")
-    ? "en-US"
-    : "pt-BR";
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  i18n.changeLanguage(novoIdioma);
-};
+  const trocarIdioma = () => {
+    const novoIdioma = i18n.language.startsWith("pt")
+      ? "en-US"
+      : "pt-BR";
 
-
-  const [menuAberto,
-    setMenuAberto] =
-      useState(false);
-
-  const [isAdmin,
-    setIsAdmin] =
-      useState(false);
+    i18n.changeLanguage(novoIdioma);
+  };
 
   const sair = () => {
-
     TopBarService.logout();
-
     navigate("/");
-
   };
 
   const menuItems = [
-    { path: "/home", label: "Home" },
-    { path: "/objetos", label: "Objetos" },
+    { path: "/home", label: t("topbar.home") },
+    { path: "/objetos", label: t("topbar.objetos") },
     {
       path: "/postos",
-      label: "Postos",
+      label: t("topbar.postos"),
       admin: true
     },
     {
       path: "/usuarios",
-      label: "Usuários",
+      label: t("topbar.usuarios"),
       admin: true
     },
     {
       path: "/perfil",
-      label: "Meu Perfil"
+      label: t("topbar.meuPerfil")
     }
   ];
 
   useEffect(() => {
-
-    const carregarAdmin =
-      async () => {
-
-      const isAdminUser =
-        await TopBarService
-          .checarAdmin();
-
-      setIsAdmin(
-        isAdminUser
-      );
+    const carregarAdmin = async () => {
+      const isAdminUser = await TopBarService.checarAdmin();
+      setIsAdmin(isAdminUser);
     };
 
     carregarAdmin();
-
   }, []);
 
   return (
     <>
       <div className="topbar">
-
         <img
           src={logo}
-          alt="GeoAchados e Perdidos"
+          alt={t("topbar.logoAlt")}
           className="logo-top"
         />
 
         <div
           className="menu-icon"
-          onClick={() =>
-            setMenuAberto(
-              !menuAberto
-            )
-          }
+          onClick={() => setMenuAberto(!menuAberto)}
+          role="button"
+          aria-label={t("topbar.abrirMenu")}
+          title={t("topbar.abrirMenu")}
         >
           ☰
         </div>
-
       </div>
 
       <div
-        className={`sidebar ${
-          menuAberto
-            ? "open"
-            : ""
-        }`}
+        className={`sidebar ${menuAberto ? "open" : ""}`}
       >
+        {menuItems.map((item) => {
+          if (item.path === location.pathname) return null;
 
-        {menuItems.map(
-          (item) => {
-
-          if (
-            item.path ===
-            location.pathname
-          ) return null;
-
-          if (
-            item.admin &&
-            !isAdmin
-          ) return null;
+          if (item.admin && !isAdmin) return null;
 
           return (
             <button
               key={item.path}
               onClick={() => {
-
-                navigate(
-                  item.path
-                );
-
-                setMenuAberto(
-                  false
-                );
-
+                navigate(item.path);
+                setMenuAberto(false);
               }}
             >
               {item.label}
@@ -140,22 +98,19 @@ const trocarIdioma = () => {
           );
         })}
 
-        <button
-          onClick={sair}
-        >
-          Sair
+        <button onClick={sair}>
+          {t("topbar.sair")}
         </button>
 
-<button
-  className="sidebar-language-button"
-  onClick={trocarIdioma}
-  type="button"
->
-  {i18n.language.startsWith("pt")
-    ? "🇧🇷  Português (PT-BR)"
-    : "🇺🇸  English (EN-US)"}
-</button>
-
+        <button
+          className="sidebar-language-button"
+          onClick={trocarIdioma}
+          type="button"
+        >
+          {i18n.language.startsWith("pt")
+            ? t("topbar.idiomaPortugues")
+            : t("topbar.idiomaIngles")}
+        </button>
       </div>
     </>
   );

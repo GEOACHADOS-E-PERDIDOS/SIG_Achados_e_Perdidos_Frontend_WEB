@@ -1,13 +1,20 @@
+
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 interface PrivateRouteProps {
   children: React.ReactNode;
   adminOnly?: boolean;
 }
 
-const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
+const PrivateRoute = ({
+  children,
+  adminOnly = false
+}: PrivateRouteProps) => {
+  const { t } = useTranslation();
+
   const token = localStorage.getItem("token");
   const isTemp = localStorage.getItem("isTemp") === "true";
   const location = useLocation();
@@ -27,14 +34,15 @@ const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
     }
   }, [adminOnly, token]);
 
-
   if (!token) return <Navigate to="/" replace />;
+
   if (isTemp && location.pathname !== "/alterar-senha") {
     return <Navigate to="/alterar-senha" replace />;
   }
+
   if (adminOnly) {
     if (isAdmin === null) {
-      return <div>Carregando...</div>;
+      return <div>{t("privateRoute.carregando")}</div>;
     }
 
     if (!isAdmin) {

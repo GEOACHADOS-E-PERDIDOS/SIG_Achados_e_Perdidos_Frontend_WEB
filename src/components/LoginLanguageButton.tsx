@@ -1,3 +1,4 @@
+
 import { useTranslation } from "react-i18next";
 import "../styles/LoginLanguageButton.css";
 
@@ -19,9 +20,9 @@ function LoginLanguageButton() {
       type="button"
       className="language-button"
       onClick={trocarIdioma}
-      aria-label="Trocar idioma"
+      aria-label={idiomaAtual ? "Switch to English" : "Mudar para português"}
     >
-      {idiomaAtual ? "🇧🇷 PT-BR" : "🇺🇸 EN-US"}
+      {idiomaAtual ? "🇺🇸 EN-US" : "🇧🇷 PT-BR"}
     </button>
   );
 }

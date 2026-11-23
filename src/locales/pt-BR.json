@@ -139,7 +139,216 @@
     "fechar": "Fechar",
     "deletarUsuario": "Deletar usuário",
     "deletar": "Deletar"
-  }
+  },
+
+"cadastroObjeto": {
+  "titulo": "Cadastrar Objeto Perdido",
+  "nome": "Nome *",
+  "descricao": "Descrição *",
+  "enderecoPerdido": "Região ou ponto de referência do local da perda *",
+  "categorias": "Categorias *",
+  "camposObrigatorios": "Campos Obrigatórios",
+  "instrucaoMapa": "Clique no mapa para indicar a região onde o objeto foi perdido:",
+  "satelite": "Satélite",
+  "mapa": "Mapa",
+  "selecionarImagens": "Selecionar imagens",
+  "removerImagens": "Remover imagens selecionadas",
+  "imagensSelecionadas": "Imagens selecionadas ({{quantidade}})",
+  "cadastrar": "Cadastrar",
+  "fechar": "Fechar",
+  "sucesso": "Sucesso",
+  "sucessoTexto": "Objeto cadastrado com sucesso!",
+  "ok": "OK",
+  "erro": "Erro",
+  "erroTexto": "Erro ao cadastrar objeto"
+},
+
+"cadastroObjetoAchado": {
+  "titulo": "Cadastrar Objeto Achado",
+  "nome": "Nome *",
+  "descricao": "Descrição *",
+  "enderecoEncontro": "Local onde o objeto foi encontrado *",
+  "categorias": "Categorias *",
+  "camposObrigatorios": "Campos Obrigatórios",
+  "instrucaoMapa": "Clique no mapa para marcar o local do encontro:",
+  "satelite": "Satélite",
+  "mapa": "Mapa",
+  "selecionePosto": "Selecione o posto de retirada",
+  "selecionarImagens": "Selecionar imagens",
+  "removerImagens": "Remover imagens selecionadas",
+  "imagensSelecionadas": "Imagens selecionadas ({{quantidade}})",
+  "cadastrar": "Cadastrar",
+  "fechar": "Fechar",
+  "atencao": "Atenção",
+  "postoObrigatorio": "Posto de retirada é obrigatório!",
+  "sucesso": "Sucesso",
+  "sucessoTexto": "Objeto cadastrado com sucesso!",
+  "ok": "OK",
+  "erro": "Erro",
+  "erroTexto": "Erro ao cadastrar objeto"
+},
+
+"dateInput": {
+  "placeholder": "Selecione uma data"
+},
+
+"mapa": {
+  "buscarObjeto": "Buscar objeto...",
+  "buscar": "Buscar",
+  "limpar": "Limpar",
+  "satelite": "Satélite",
+  "mapa": "Mapa",
+  "postosRetirada": "Postos de Retirada",
+  "objetosPerdidos": "Objetos Perdidos",
+  "objetoAchado": "Objeto Achado"
+},
+
+"objetoCard": {
+  "semImagem": "Sem imagem",
+  "endereco": "Endereço",
+  "data": "Data",
+  "categorias": "Categorias",
+  "semCategoria": "Sem categoria",
+  "status": "Status",
+  "statusDisponivel": "Disponível",
+  "statusDevolvido": "Devolvido",
+  "statusDescartado": "Descartado"
+},
+
+"objetoCardPerfil": {
+  "semImagem": "Sem imagem",
+  "endereco": "Endereço",
+  "data": "Data",
+  "categorias": "Categorias",
+  "semCategoria": "Sem categoria",
+  "status": "Status",
+  "statusDisponivel": "Disponível",
+  "statusDevolvido": "Devolvido",
+  "statusDescartado": "Descartado",
+  "statusPerdido": "Perdido",
+  "editar": "Editar objeto",
+  "deletar": "Excluir objeto",
+  "alterarStatus": "Alterar status"
+},
+
+"objetoDetalhe": {
+  "dataNaoInformada": "Data não informada",
+  "statusDisponivel": "Disponível",
+  "statusDevolvido": "Devolvido",
+  "statusDescartado": "Descartado",
+  "statusPerdido": "Perdido",
+  "imagemAnterior": "Imagem anterior",
+  "proximaImagem": "Próxima imagem",
+  "semImagem": "Sem imagem disponível",
+  "data": "Data",
+  "endereco": "Endereço",
+  "enderecoNaoInformado": "Endereço não informado",
+  "postoColeta": "Posto de Coleta",
+  "categorias": "Categorias",
+  "naoCategorizado": "Não categorizado",
+  "descricao": "Descrição",
+  "fechar": "Fechar"
+},
+
+"objetoPostoCard": {
+  "semImagem": "Sem imagem",
+  "semCategoria": "Sem categoria"
 }
+,
+"postoCard": {
+  "semImagem": "Sem imagem",
+  "endereco": "Endereço",
+  "telefone": "Telefone",
+  "email": "Email",
+  "editar": "Editar posto",
+  "deletar": "Deletar posto"
+},
+"postoDetalhe": {
+  "informacoes": "Informações",
+  "objetos": "Objetos ({{quantidade}})",
+  "imagemAnterior": "Imagem anterior",
+  "proximaImagem": "Próxima imagem",
+  "semImagem": "Sem imagem disponível",
+  "endereco": "Endereço",
+  "telefone": "Telefone",
+  "email": "E-mail",
+  "nenhumObjeto": "Nenhum objeto encontrado.",
+  "fechar": "Fechar",
+  "comoChegar": "Como Chegar"
+},
+"privateRoute": {
+  "carregando": "Carregando..."
+},
+"topbar": {
+  "home": "Home",
+  "objetos": "Objetos",
+  "postos": "Postos",
+  "usuarios": "Usuários",
+  "meuPerfil": "Meu Perfil",
+  "sair": "Sair",
+  "idiomaPortugues": "🇧🇷 Português (PT-BR)",
+  "idiomaIngles": "🇺🇸 English (EN-US)",
+  "logoAlt": "GeoAchados e Perdidos",
+  "abrirMenu": "Abrir menu"
+},
+"usuarioCard": {
+  "confirmarAcao": "Confirmar Ação",
+  "confirmarAdmin": "Deseja realmente tornar {{nome}} um administrador?",
+  "simTornarAdmin": "Sim, tornar Admin",
+  "confirmarPosto": "Deseja realmente vincular {{nome}} a um posto?",
+  "simTornarPosto": "Sim, tornar Posto",
+  "cancelar": "Cancelar",
+  "sucesso": "Sucesso",
+  "sucessoComExclamacao": "Sucesso!",
+  "usuarioPromovidoAdmin": "Usuário promovido para admin!",
+  "usuarioPromovidoPosto": "Usuário promovido para posto!",
+  "erro": "Erro",
+  "erroPromoverUsuario": "Erro ao promover usuário",
+  "erroPromoverPosto": "Erro ao promover usuário para posto",
+  "resetarSenha": "Resetar Senha",
+  "confirmarResetarSenha": "Deseja realmente gerar uma nova senha para {{nome}}?",
+  "simResetar": "Sim, resetar",
+  "linkRecuperacaoEnviado": "O link/senha de recuperação foi enviado para o usuário.",
+  "erroResetarSenha": "Erro ao resetar senha",
+  "ok": "OK",
+  "fechar": "Fechar",
+  "email": "Email",
+  "admin": "Admin",
+  "sim": "Sim",
+  "nao": "Não",
+  "cadastro": "Cadastro",
+  "usuario": "Usuário",
+  "nome": "Nome",
+  "role": "Função",
+  "tornarAdmin": "Tornar Admin",
+  "tornarPosto": "Tornar Posto"
+},
+
+"cadastroPosto": {
+  "titulo": "Cadastrar Posto",
+  "nome": "Nome *",
+  "endereco": "Endereço *",
+  "telefone": "Telefone *",
+  "email": "Email",
+  "camposObrigatorios": "Campos Obrigatórios",
+  "instrucaoMapa": "Clique no mapa para marcar a localização:",
+  "satelite": "Satélite",
+  "mapa": "Mapa",
+  "removerImagens": "Remover todas as imagens",
+  "imagensSelecionadas": "Imagens selecionadas ({{quantidade}})",
+  "cadastrar": "Cadastrar",
+  "fechar": "Fechar",
+  "telefoneInvalido": "Telefone inválido",
+  "telefoneInvalidoTexto": "O telefone deve possuir 8 ou 9 dígitos.",
+  "sucesso": "Sucesso",
+  "sucessoTexto": "Posto cadastrado com sucesso!",
+  "ok": "OK",
+  "erro": "Erro",
+  "erroTexto": "Erro ao cadastrar posto"
+}
+
+
+}
+
 
 
